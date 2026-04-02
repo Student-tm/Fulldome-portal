@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fulldome.pro — Internal Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Consolas,"Courier New",monospace;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+header{padding:20px 40px;border-bottom:3px solid #CC0000;display:flex;align-items:center;justify-content:space-between;}
+.tagline{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.15em;}
+.main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;}
+.welcome{text-align:center;margin-bottom:48px;}
+.welcome h1{font-size:13px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:8px;}
+.welcome p{font-size:11px;color:#444;letter-spacing:0.1em;text-transform:uppercase;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;width:100%;max-width:900px;}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-top:3px solid #CC0000;border-radius:3px;padding:28px 24px;cursor:pointer;transition:all 0.2s;}
+.card:hover{background:#222;border-color:#CC0000;transform:translateY(-2px);}
+.card:hover .arrow{color:#CC0000;}
+.card-label{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:10px;}
+.card-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:8px;}
+.card-desc{font-size:11px;color:#555;line-height:1.6;}
+.arrow{font-size:16px;color:#333;margin-top:16px;display:block;transition:color 0.2s;}
+.soon{opacity:0.4;cursor:default;}
+.soon:hover{transform:none;background:#1a1a1a;border-color:#2a2a2a;}
+.badge{display:inline-block;font-size:8px;font-weight:700;background:#333;color:#666;padding:2px 6px;border-radius:2px;text-transform:uppercase;margin-left:8px;}
+footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;}
+.ft{font-size:9px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
+.user-info{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:0.1em;}
+</style>
+</head>
+<body>
+<header>
+  <img src="logo.png" style="height:36px" alt="Fulldome.pro"/>
+  <span class="tagline">Internal Staff Portal</span>
+</header>
+<div class="main">
+  <div class="welcome">
+    <h1>Welcome to Fulldome.pro</h1>
+    <p>Select a module to continue</p>
+  </div>
+  <div class="cards">
+    <div class="card" onclick="window.location.href='rental.html'">
+      <div class="card-label">Module 01</div>
+      <div class="card-title">Rental</div>
+      <div class="card-desc">Equipment packing list for dome rental projects. Select dome, add groups, track status.</div>
+      <span class="arrow">&rarr;</span>
+    </div>
+    <div class="card soon">
+      <div class="card-label">Module 02 <span class="badge">Soon</span></div>
+      <div class="card-title">Sales</div>
+      <div class="card-desc">Equipment list and quotation builder for dome sales projects.</div>
+      <span class="arrow">&rarr;</span>
+    </div>
+    <div class="card" onclick="window.open('https://docs.google.com/spreadsheets/d/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/edit','_blank')">
+      <div class="card-label">Module 03</div>
+      <div class="card-title">Inventory</div>
+      <div class="card-desc">Full dome and equipment inventory database in Google Sheets.</div>
+      <span class="arrow">&rarr;</span>
+    </div>
+  </div>
+</div>
+<footer>
+  <span class="ft">Fulldome.pro &copy; 2026 &mdash; Internal use only</span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="ft">Team channel:</span>
+    <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:9px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:3px 10px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram &nearr;</a>
+  </div>
+</footer>
+<script src="auth.js"></script>
+<script>
+initGoogleAuth(function() {
+  console.log("Authenticated");
+});
+</script>
+</body>
+</html>
