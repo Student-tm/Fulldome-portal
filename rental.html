@@ -20,7 +20,7 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .new-btn:hover .ns{color:rgba(255,255,255,0.7);}
 .ni{font-size:20px;color:#CC0000;font-weight:700;transition:color 0.2s;}
 .nt{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#fff;}
-.ns{font-size:10px;color:#555;margin-top:2px;}
+.ns{font-size:10px;color:#555;margin-top:4px;}
 .projects-list{display:flex;flex-direction:column;gap:8px;max-width:900px;}
 .pitem{background:#1a1a1a;border:1px solid #2a2a2a;border-left:3px solid #CC0000;border-radius:3px;padding:14px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.15s;}
 .pitem:hover{background:#222;border-color:#CC0000;}
@@ -43,6 +43,8 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .minput{width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:10px 12px;outline:none;margin-bottom:12px;}
 .minput:focus{border-color:#CC0000;}
 .minput::placeholder{color:#444;}
+input[type="datetime-local"]{color-scheme:dark;}
+input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:0.5;}
 .mbtn{padding:8px 20px;border-radius:3px;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;border:none;}
 .mbtn-red{background:#CC0000;color:#fff;}
 .mbtn-gray{background:#2a2a2a;color:#888;}
@@ -62,10 +64,12 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <div class="section-label">Create</div>
   <div class="new-btn" id="newBtn">
     <div class="ni">+</div>
-    <div><div class="nt">New Project</div><div class="ns">Create new rental packing list</div></div>
+    <div><div class="nt">New Project</div><div class="ns" style="font-size:8px;margin-top:8px">Create new rental project &nbsp;|&nbsp; General info</div></div>
   </div>
   <div class="section-label">Current Projects</div>
   <div class="projects-list" id="list"><div class="empty" id="emptyMsg">Loading...</div></div>
+  <div class="section-label" style="margin-top:40px">Completed Projects</div>
+  <div class="projects-list" id="listDone"><div class="empty" id="emptyMsgDone" style="display:none"></div></div>
 </div>
 
 <div class="overlay" id="newModal">
@@ -81,8 +85,8 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
       <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
     </select>
     <div class="mrow">
-      <input class="minput" id="projStart" placeholder="Installation start..." type="datetime-local" style="color:#888;min-width:0;flex:1"/>
-      <input class="minput" id="projEnd" placeholder="Installation end..." type="datetime-local" style="color:#888;min-width:0;flex:1"/>
+      <input class="minput" id="projStart" placeholder="Installation start..." type="date" style="color:#888;min-width:0;flex:1"/>
+      <input class="minput" id="projEnd" placeholder="Installation end..." type="date" style="color:#888;min-width:0;flex:1"/>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#111;border:1px solid #333;border-radius:2px;padding:6px 10px">
       <span style="font-size:10px;color:#444;white-space:nowrap">Telegram:</span>
@@ -237,25 +241,41 @@ function formatDate(ts){var d=new Date(ts);return (d.getMonth()+1)+'/'+(d.getDat
 
 function render(){
   var list=document.getElementById('list');
+  var listDone=document.getElementById('listDone');
   list.innerHTML='';
-  if(!projects.length){
-    list.innerHTML='<div class="empty">No projects yet &mdash; create your first one</div>';
-    return;
+  listDone.innerHTML='';
+
+  var active=projects.filter(function(p){return p.status!=='done';});
+  var done=projects.filter(function(p){return p.status==='done';});
+
+  if(!active.length){
+    list.innerHTML='<div class="empty">No active projects &mdash; create your first one</div>';
   }
-  projects.forEach(function(p){
-    var item=document.createElement('div');item.className='pitem';
+
+  function makeItem(p){
+    var isDone=p.status==='done';
+    var item=document.createElement('div');
+    item.className='pitem';
+    if(isDone) item.style.opacity='0.6';
     item.innerHTML=
-      '<div style="display:flex;align-items:center;gap:8px;flex:1">'+
-        '<span class="pname">'+p.name+'</span>'+
-        '<button class="pedit" data-id="'+p.id+'" title="Edit">&#9998;</button>'+
+      '<div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0">'+
+        '<span class="pname" style="white-space:nowrap">'+p.name+'</span>'+
+        (p.client?'<span style="color:#555;font-size:13px">|</span><span class="pname" style="font-weight:400;white-space:nowrap">'+p.client+'</span>':'')+
+        (p.event?'<span style="color:#555;font-size:13px">|</span><span class="pname" style="font-weight:400;white-space:nowrap">'+p.event+'</span>':'')+
+        '<button class="pedit" data-id="'+p.id+'" title="Edit" style="margin-left:8px;flex-shrink:0">&#9998;</button>'+
       '</div>'+
-      (p.client?'<div class="pclient">'+p.client+'</div>':'')+
-      (p.event?'<div class="pclient" style="color:#888">'+p.event+'</div>':'')+
-      (p.start?'<div class="pdate">'+p.start.replace('T',' ')+'</div>':'<div class="pdate">'+formatDate(p.created)+'</div>')+
-      '<div class="pstatus">Active</div>'+
-      (p.telegram?'<a href="'+p.telegram+'" target="_blank" onclick="event.stopPropagation()" style="font-size:9px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:2px 8px;border-radius:2px;white-space:nowrap;font-weight:700;text-transform:uppercase">TG &#8599;</a>':'')+
-      '<button class="pdel" data-id="'+p.id+'">Delete</button>'+
-      '<div class="parrow">&#8594;</div>';
+      (p.start?'<div class="pdate" style="white-space:nowrap;flex-shrink:0">'+p.start.substring(0,10)+'</div>':'')+
+      '<button class="pstatus-btn" data-id="'+p.id+'" style="font-size:9px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:2px;border:1px solid '+(isDone?'#555':'#1D9E75')+';background:'+(isDone?'#2a2a2a':'#0f2a1e')+';color:'+(isDone?'#555':'#1D9E75')+';cursor:pointer;font-family:Consolas,monospace;flex-shrink:0">'+(isDone?'Done':'Active')+'</button>'+
+      (p.telegram?'<a href="'+p.telegram+'" target="_blank" onclick="event.stopPropagation()" style="font-size:9px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:2px 8px;border-radius:2px;white-space:nowrap;font-weight:700;text-transform:uppercase;flex-shrink:0">TG &#8599;</a>':'')+
+      '<button class="pdel" data-id="'+p.id+'" style="flex-shrink:0">Delete</button>'+
+      '<div class="parrow" style="flex-shrink:0">&#8594;</div>';
+
+    item.querySelector('.pstatus-btn').onclick=function(e){
+      e.stopPropagation();
+      var proj=projects.find(function(x){return x.id===p.id;});
+      proj.status=proj.status==='done'?'active':'done';
+      saveProject(proj).then(function(){render();});
+    };
     item.querySelector('.pedit').onclick=function(e){
       e.stopPropagation();
       var proj=projects.find(function(x){return x.id===p.id;});
@@ -280,8 +300,11 @@ function render(){
     item.onclick=function(){
       window.location.href='equipment.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name);
     };
-    list.appendChild(item);
-  });
+    return item;
+  }
+
+  active.forEach(function(p){ list.appendChild(makeItem(p)); });
+  done.forEach(function(p){ listDone.appendChild(makeItem(p)); });
 }
 </script>
 </body>

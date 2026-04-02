@@ -105,7 +105,8 @@ async function getProjects() {
     start: r[5] || '',
     end: r[6] || '',
     telegram: r[7] || '',
-    created: r[8] ? parseInt(r[8]) : Date.now()
+    created: r[8] ? parseInt(r[8]) : Date.now(),
+    status: r[9] || 'active'
   }));
 }
 
@@ -116,11 +117,11 @@ async function saveProject(p) {
   for (let i = 1; i < rows.length; i++) {
     if (rows[i][0] === String(p.id)) { rowIdx = i + 1; break; }
   }
-  const vals = [[p.id, p.name, p.client, p.event||'', p.address||'', p.start||'', p.end||'', p.telegram, p.created]];
+  const vals = [[p.id, p.name, p.client, p.event||'', p.address||'', p.start||'', p.end||'', p.telegram, p.created, p.status||'active']];
   if (rowIdx > 0) {
-    await sheetsUpdate(`Projects!A${rowIdx}:I${rowIdx}`, vals);
+    await sheetsUpdate(`Projects!A${rowIdx}:J${rowIdx}`, vals);
   } else {
-    await sheetsAppend('Projects!A:I', vals);
+    await sheetsAppend('Projects!A:J', vals);
   }
 }
 
