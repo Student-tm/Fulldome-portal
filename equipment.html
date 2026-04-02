@@ -691,8 +691,6 @@ function exportCSV(){
   var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.replace(/\s+/g,'_')+'.csv';a.click();
 }
-
-});
 </script>
 </body>
 </html>
