@@ -74,7 +74,15 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <input class="minput" id="projName" placeholder="Project name (e.g. 10m Planetarium NY)..."/>
     <div class="mrow">
       <input class="minput" id="projClient" placeholder="Client name..."/>
-      <input class="minput" id="projDate" placeholder="Date (mm/dd/yy)..." style="max-width:160px"/>
+      <input class="minput" id="projEvent" placeholder="Event name..."/>
+    </div>
+    <select class="minput" id="projAddress" style="color:#888;cursor:pointer">
+      <option value="" disabled selected style="color:#444">Location (State)...</option>
+      <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
+    </select>
+    <div class="mrow">
+      <input class="minput" id="projStart" placeholder="Installation start..." type="datetime-local" style="color:#888;"/>
+      <input class="minput" id="projEnd" placeholder="Installation end..." type="datetime-local" style="color:#888;"/>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#111;border:1px solid #333;border-radius:2px;padding:6px 10px">
       <span style="font-size:10px;color:#444;white-space:nowrap">Telegram:</span>
@@ -142,7 +150,10 @@ document.getElementById('newBtn').onclick=function(){
   document.getElementById('modalTitle').textContent='New Rental Project';
   document.getElementById('projName').value='';
   document.getElementById('projClient').value='';
-  document.getElementById('projDate').value='';
+  document.getElementById('projEvent').value='';
+  document.getElementById('projAddress').value='';
+  document.getElementById('projStart').value='';
+  document.getElementById('projEnd').value='';
   document.getElementById('projTG').value='';
   document.getElementById('tgLink').href='#';
   document.getElementById('createBtn').textContent='Create Project';
@@ -163,7 +174,10 @@ document.getElementById('createBtn').onclick=function(){
     id:editId||Date.now()+'',
     name:name,
     client:document.getElementById('projClient').value.trim(),
-    date:document.getElementById('projDate').value.trim(),
+    event:document.getElementById('projEvent').value.trim(),
+    address:document.getElementById('projAddress').value.trim(),
+    start:document.getElementById('projStart').value.trim(),
+    end:document.getElementById('projEnd').value.trim(),
     telegram:document.getElementById('projTG').value.trim(),
     created:Date.now()
   };
@@ -236,7 +250,8 @@ function render(){
         '<button class="pedit" data-id="'+p.id+'" title="Edit">&#9998;</button>'+
       '</div>'+
       (p.client?'<div class="pclient">'+p.client+'</div>':'')+
-      '<div class="pdate">'+formatDate(p.created)+'</div>'+
+      (p.event?'<div class="pclient" style="color:#888">'+p.event+'</div>':'')+
+      (p.start?'<div class="pdate">'+p.start.replace('T',' ')+'</div>':'<div class="pdate">'+formatDate(p.created)+'</div>')+
       '<div class="pstatus">Active</div>'+
       (p.telegram?'<a href="'+p.telegram+'" target="_blank" onclick="event.stopPropagation()" style="font-size:9px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:2px 8px;border-radius:2px;white-space:nowrap;font-weight:700;text-transform:uppercase">TG &#8599;</a>':'')+
       '<button class="pdel" data-id="'+p.id+'">Delete</button>'+
@@ -248,7 +263,10 @@ function render(){
       document.getElementById('modalTitle').textContent='Edit Project';
       document.getElementById('projName').value=proj.name||'';
       document.getElementById('projClient').value=proj.client||'';
-      document.getElementById('projDate').value=proj.date||'';
+      document.getElementById('projEvent').value=proj.event||'';
+      document.getElementById('projAddress').value=proj.address||'';
+      document.getElementById('projStart').value=proj.start||'';
+      document.getElementById('projEnd').value=proj.end||'';
       document.getElementById('projTG').value=proj.telegram||'';
       document.getElementById('tgLink').href=proj.telegram||'#';
       document.getElementById('createBtn').textContent='Save Changes';

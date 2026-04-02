@@ -94,15 +94,18 @@ async function sheetsClear(range) {
 }
 
 async function getProjects() {
-  const data = await sheetsGet('Projects!A:F');
+  const data = await sheetsGet('Projects!A:J');
   const rows = data.values || [];
   return rows.slice(1).filter(r => r[0] && r[1]).map(r => ({
     id: r[0] || '',
     name: r[1] || '',
     client: r[2] || '',
-    date: r[3] || '',
-    telegram: r[4] || '',
-    created: r[5] ? parseInt(r[5]) : Date.now()
+    event: r[3] || '',
+    address: r[4] || '',
+    start: r[5] || '',
+    end: r[6] || '',
+    telegram: r[7] || '',
+    created: r[8] ? parseInt(r[8]) : Date.now()
   }));
 }
 
@@ -113,11 +116,11 @@ async function saveProject(p) {
   for (let i = 1; i < rows.length; i++) {
     if (rows[i][0] === String(p.id)) { rowIdx = i + 1; break; }
   }
-  const vals = [[p.id, p.name, p.client, p.date, p.telegram, p.created]];
+  const vals = [[p.id, p.name, p.client, p.event||'', p.address||'', p.start||'', p.end||'', p.telegram, p.created]];
   if (rowIdx > 0) {
-    await sheetsUpdate(`Projects!A${rowIdx}:F${rowIdx}`, vals);
+    await sheetsUpdate(`Projects!A${rowIdx}:I${rowIdx}`, vals);
   } else {
-    await sheetsAppend('Projects!A:F', vals);
+    await sheetsAppend('Projects!A:I', vals);
   }
 }
 
