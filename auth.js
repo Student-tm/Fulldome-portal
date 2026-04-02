@@ -191,9 +191,29 @@ async function loadEquipment(projectId) {
   return null;
 }
 
+async function ensureSheet(sheetName) {
+  const r = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets.properties.title`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const data = await r.json();
+  const exists = data.sheets && data.sheets.some(s => s.properties.title === sheetName);
+  if (!exists) {
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests: [{ addSheet: { properties: { title: sheetName } } }] })
+      }
+    );
+  }
+}
+
 async function saveEquipment(projectId, equipData) {
   const sheet = 'EQ_' + String(projectId).substring(0, 10);
   try {
+    await ensureSheet(sheet);
     await sheetsClear(`${sheet}!A:B`);
     await sheetsAppend(`${sheet}!A:B`, [
       ['savedAt', new Date().toLocaleString()],
