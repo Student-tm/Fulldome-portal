@@ -1,6 +1,6 @@
 const CLIENT_ID = '673039541518-jurnkvne074u3ib66u52skjoru204rn5.apps.googleusercontent.com';
 const SPREADSHEET_ID = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/drive';
 
 let tokenClient, accessToken = null;
 
@@ -344,11 +344,9 @@ async function saveBrief(projectId, rows) {
 
   rows.forEach(function(r) {
     if (r.field.endsWith('_c')) return;
-
     if (SECTION_HEADERS[r.field]) {
       vals.push([SECTION_HEADERS[r.field], '', '']);
     }
-
     var label = FIELD_LABELS[r.field] || r.field;
     var commentRow = rows.find(function(x) { return x.field === r.field + '_c'; });
     var comment = commentRow ? (commentRow.value || '') : '';
@@ -397,4 +395,48 @@ async function getBrief(projectId) {
       }));
     } catch(e2) { return []; }
   }
+}
+
+// ─── Google Drive ───────────────────────────────────────────────
+
+async function driveFind(name, parentId) {
+  var q = `name='${name.replace(/'/g,"\\'")}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  if (parentId) q += ` and '${parentId}' in parents`;
+  const r = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name,webViewLink)`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const data = await r.json();
+  return data.files && data.files.length > 0 ? data.files[0] : null;
+}
+
+async function driveCreateFolder(name, parentId) {
+  const meta = {
+    name: name,
+    mimeType: 'application/vnd.google-apps.folder',
+    parents: parentId ? [parentId] : []
+  };
+  const r = await fetch(
+    'https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink',
+    {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify(meta)
+    }
+  );
+  return r.json();
+}
+
+async function getOrCreateProjectFolder(projectName) {
+  // 1. Найти или создать Rental_portal
+  var root = await driveFind('Rental_portal', null);
+  if (!root) {
+    root = await driveCreateFolder('Rental_portal', null);
+  }
+  // 2. Найти или создать папку проекта внутри Rental_portal
+  var folder = await driveFind(projectName, root.id);
+  if (!folder) {
+    folder = await driveCreateFolder(projectName, root.id);
+  }
+  return folder;
 }

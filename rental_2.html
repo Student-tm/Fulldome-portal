@@ -68,6 +68,10 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
       <div class="abtn-icon">&#9634;</div>
       <div><div class="abtn-label">Equipment List</div><div class="abtn-sub">Packing list &amp; dome setup</div></div>
     </div>
+    <div class="abtn" id="docsBtn">
+      <div class="abtn-icon" style="color:#FBBC04">&#128193;</div>
+      <div><div class="abtn-label">Project Docs</div><div class="abtn-sub">Google Drive folder</div></div>
+    </div>
     <div class="abtn" id="tg1Btn">
       <div class="abtn-icon" style="color:#229ED9">&#9992;</div>
       <div><div class="abtn-label">US Projects</div><div class="abtn-sub">Telegram group</div></div>
@@ -165,9 +169,23 @@ var projectName = params.get('name') ? decodeURIComponent(params.get('name')) : 
 
 document.getElementById('pageTitle').textContent = projectName;
 
-// TG buttons — loaded from project data
 document.getElementById('equipBtn').onclick = function(){
   window.location.href = 'equipment.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
+};
+
+document.getElementById('docsBtn').onclick = function(){
+  var btn = document.getElementById('docsBtn');
+  var lbl = btn.querySelector('.abtn-sub');
+  lbl.textContent = 'Opening...';
+  getOrCreateProjectFolder(projectName).then(function(folder){
+    lbl.textContent = 'Google Drive folder';
+    if (folder && folder.webViewLink) {
+      window.open(folder.webViewLink, '_blank');
+    }
+  }).catch(function(e){
+    lbl.textContent = 'Error — try again';
+    console.error('Drive error', e);
+  });
 };
 
 requireAuth(function(){
@@ -181,11 +199,9 @@ function loadProjectTG(){
     if(!p) return;
     if(p.tg1){
       document.getElementById('tg1Btn').onclick = function(){ window.open(p.tg1, '_blank'); };
-      document.getElementById('tg1Btn').style.cursor = 'pointer';
     }
     if(p.tg2){
       document.getElementById('tg2Btn').onclick = function(){ window.open(p.tg2, '_blank'); };
-      document.getElementById('tg2Btn').style.cursor = 'pointer';
     }
   });
 }
