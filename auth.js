@@ -99,14 +99,13 @@ async function getProjects() {
   return rows.slice(1).filter(r => r[0] && r[1]).map(r => ({
     id: r[0] || '',
     name: r[1] || '',
-    client: r[2] || '',
-    event: r[3] || '',
-    address: r[4] || '',
-    start: r[5] || '',
-    end: r[6] || '',
-    telegram: r[7] || '',
-    created: r[8] ? parseInt(r[8]) : Date.now(),
-    status: r[9] || 'active'
+    address: r[2] || '',
+    start: r[3] || '',
+    end: r[4] || '',
+    tg1: r[5] || '',
+    tg2: r[6] || '',
+    created: r[7] ? parseInt(r[7]) : Date.now(),
+    status: r[8] || 'active'
   }));
 }
 
@@ -117,11 +116,11 @@ async function saveProject(p) {
   for (let i = 1; i < rows.length; i++) {
     if (rows[i][0] === String(p.id)) { rowIdx = i + 1; break; }
   }
-  const vals = [[p.id, p.name, p.client, p.event||'', p.address||'', p.start||'', p.end||'', p.telegram, p.created, p.status||'active']];
+  const vals = [[p.id, p.name, p.address||'', p.start||'', p.end||'', p.tg1||'', p.tg2||'', p.created, p.status||'active']];
   if (rowIdx > 0) {
-    await sheetsUpdate(`Projects!A${rowIdx}:J${rowIdx}`, vals);
+    await sheetsUpdate(`Projects!A${rowIdx}:I${rowIdx}`, vals);
   } else {
-    await sheetsAppend('Projects!A:J', vals);
+    await sheetsAppend('Projects!A:I', vals);
   }
 }
 
