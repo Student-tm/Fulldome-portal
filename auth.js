@@ -220,3 +220,45 @@ async function saveEquipment(projectId, equipData) {
   } catch(e) { console.error('saveEquipment error', e); throw e; }
 }
 
+
+async function getBrief(projectId) {
+  try {
+    const data = await sheetsGet('Briefs!A:D');
+    const rows = data.values || [];
+    return rows.filter(r => r[0] === String(projectId)).map(r => ({
+      field: r[1] || '',
+      value: r[2] || '',
+      comments: r[3] || ''
+    }));
+  } catch(e) { console.error('getBrief error', e); return []; }
+}
+
+async function saveBrief(projectId, rows) {
+  await ensureSheet('Briefs');
+  // Clear existing rows for this project
+  const data = await sheetsGet('Briefs!A:A');
+  const allRows = data.values || [];
+  const toDelete = [];
+  for (let i = allRows.length - 1; i >= 0; i--) {
+    if (allRows[i][0] === String(projectId)) toDelete.push(i);
+  }
+  if (toDelete.length > 0) {
+    const sheetId = await getSheetId('Briefs');
+    const requests = toDelete.map(idx => ({
+      deleteDimension: {
+        range: { sheetId, dimension: 'ROWS', startIndex: idx, endIndex: idx + 1 }
+      }
+    }));
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests })
+      }
+    );
+  }
+  // Append new rows
+  const vals = rows.map(r => [projectId, r.field, r.value || '', '']);
+  await sheetsAppend('Briefs!A:D', vals);
+}
