@@ -94,18 +94,17 @@ async function sheetsClear(range) {
 }
 
 async function getProjects() {
-  const data = await sheetsGet('Projects!A:J');
+  const data = await sheetsGet('Projects!A:I');
   const rows = data.values || [];
   return rows.slice(1).filter(r => r[0] && r[1]).map(r => ({
     id: r[0] || '',
     name: r[1] || '',
     address: r[2] || '',
     start: r[3] || '',
-    end: r[4] || '',
-    tg1: r[5] || '',
-    tg2: r[6] || '',
-    created: r[7] ? parseInt(r[7]) : Date.now(),
-    status: r[8] || 'active'
+    tg1: r[4] || '',
+    tg2: r[5] || '',
+    created: r[6] ? parseInt(r[6]) : Date.now(),
+    status: r[7] || 'active'
   }));
 }
 
@@ -116,11 +115,11 @@ async function saveProject(p) {
   for (let i = 1; i < rows.length; i++) {
     if (rows[i][0] === String(p.id)) { rowIdx = i + 1; break; }
   }
-  const vals = [[p.id, p.name, p.address||'', p.start||'', p.end||'', p.tg1||'', p.tg2||'', p.created, p.status||'active']];
+  const vals = [[p.id, p.name, p.address||'', p.start||'', p.tg1||'', p.tg2||'', p.created, p.status||'active']];
   if (rowIdx > 0) {
-    await sheetsUpdate(`Projects!A${rowIdx}:I${rowIdx}`, vals);
+    await sheetsUpdate(`Projects!A${rowIdx}:H${rowIdx}`, vals);
   } else {
-    await sheetsAppend('Projects!A:I', vals);
+    await sheetsAppend('Projects!A:H', vals);
   }
 }
 
@@ -221,81 +220,3 @@ async function saveEquipment(projectId, equipData) {
   } catch(e) { console.error('saveEquipment error', e); throw e; }
 }
 
-
-async function sheetsGet(range) {
-  const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}`,
-    { headers: { Authorization: 'Bearer ' + accessToken } }
-  );
-  if (r.status === 401) { sessionStorage.removeItem('gtoken'); accessToken = null; location.reload(); }
-  return r.json();
-}
-
-async function sheetsUpdate(range, values) {
-  return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
-    {
-      method: 'PUT',
-      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values })
-    }
-  );
-}
-
-async function sheetsAppend(range, values) {
-  return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
-    {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values })
-    }
-  );
-}
-
-async function sheetsClear(range) {
-  return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:clear`,
-    {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + accessToken }
-    }
-  );
-}
-
-
-
-async function getDomes() {
-  const data = await sheetsGet('DOMES!A:F');
-  const rows = data.values || [];
-  let id = 1;
-  return rows.slice(1).filter(r => r[1]).map(r => ({
-    id: id++,
-    size: r[1] || '',
-    serials: (r[2] || '').split('\n').map(s => s.trim()).filter(s => s),
-    ductSize: r[3] || '',
-    truss: r[4] || '',
-    drawing: r[5] || ''
-  }));
-}
-
-async function loadEquipment(projectId) {
-  const sheet = 'EQ_' + String(projectId).substring(0, 10);
-  try {
-    const data = await sheetsGet(`${sheet}!A:B`);
-    const rows = data.values || [];
-    for (const r of rows) {
-      if (r[0] === 'data') { try { return JSON.parse(r[1]); } catch(e) { return null; } }
-    }
-  } catch(e) {}
-  return null;
-}
-
-async function saveEquipment(projectId, equipData) {
-  const sheet = 'EQ_' + String(projectId).substring(0, 10);
-  await sheetsClear(`${sheet}!A:B`);
-  await sheetsAppend(`${sheet}!A:B`, [
-    ['savedAt', new Date().toLocaleString()],
-    ['data', JSON.stringify(equipData)]
-  ]);
-}
