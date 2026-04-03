@@ -103,6 +103,16 @@ const FIELD_LABELS = {
   packing_c: 'Packing — Comments'
 };
 
+const SECTION_HEADERS = {
+  client_name: 'INFORMATION ABOUT CLIENT AND VENUE',
+  dome_size: 'DOME DESCRIPTION',
+  server: 'PROJECTION SYSTEM DESCRIPTION',
+  content_list: 'CONTENT',
+  event_specifics: 'EVENT SPECIFICS',
+  construction_start: 'SETUP ON SITE',
+  certificates: 'ADDITIONAL INFO'
+};
+
 function initGoogleAuth(onReady) {
   const script = document.createElement('script');
   script.src = 'https://accounts.google.com/gsi/client';
@@ -320,25 +330,26 @@ async function saveEquipment(projectId, equipData) {
 }
 
 async function saveBrief(projectId, rows) {
-  // Получаем имя проекта
   const projects = await getProjects();
   const project = projects.find(p => p.id === String(projectId));
   const projectName = project ? project.name : String(projectId);
 
-  // Название листа по имени проекта
   const safeName = projectName.replace(/[\\\/\?\*\[\]\:]/g, '').substring(0, 50);
   const sheetName = 'Brief_' + safeName;
 
-  // Создаём лист если нет, или очищаем если есть
   await ensureSheet(sheetName);
   await sheetsClear(`${sheetName}!A:C`);
 
-  // Заголовки + данные
   const vals = [['Field', 'Specification', 'Comments']];
 
   rows.forEach(function(r) {
-    // Пропускаем поля комментариев — они идут парой с основным полем
     if (r.field.endsWith('_c')) return;
+
+    // Вставляем заголовок секции если нужно
+    if (SECTION_HEADERS[r.field]) {
+      vals.push([SECTION_HEADERS[r.field], '', '']);
+    }
+
     var label = FIELD_LABELS[r.field] || r.field;
     var commentRow = rows.find(function(x) { return x.field === r.field + '_c'; });
     var comment = commentRow ? (commentRow.value || '') : '';
@@ -359,15 +370,17 @@ async function getBrief(projectId) {
     const data = await sheetsGet(`${sheetName}!A:C`);
     const rows = data.values || [];
 
-    // Конвертируем читаемые названия обратно в data-field
     const reverseLabels = {};
     Object.keys(FIELD_LABELS).forEach(function(k) {
       reverseLabels[FIELD_LABELS[k]] = k;
     });
 
+    const sectionValues = Object.values(SECTION_HEADERS);
+
     const result = [];
     rows.slice(1).forEach(function(r) {
       var label = r[0] || '';
+      if (sectionValues.indexOf(label) !== -1) return;
       var field = reverseLabels[label];
       if (field) {
         result.push({ field: field, value: r[1] || '' });
@@ -376,7 +389,6 @@ async function getBrief(projectId) {
     });
     return result;
   } catch(e) {
-    // Fallback — старый лист Briefs
     try {
       const data = await sheetsGet('Briefs!A:D');
       const rows = data.values || [];
