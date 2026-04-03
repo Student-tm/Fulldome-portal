@@ -14,8 +14,6 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .main{flex:1;padding:32px;max-width:1100px;}
 .section-label{font-size:12px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;margin-top:32px;}
 .section-label:first-child{margin-top:0;}
-
-/* Quick actions */
 .actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
 .abtn{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;padding:12px 20px;cursor:pointer;transition:all 0.2s;text-decoration:none;font-family:Consolas,monospace;}
 .abtn:hover{background:#222;border-color:#CC0000;}
@@ -27,8 +25,6 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .abtn-red:hover .abtn-icon{color:#fff;}
 .abtn-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#fff;}
 .abtn-sub{font-size:11px;color:#555;margin-top:2px;}
-
-/* Brief table */
 .brief-wrap{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;overflow:hidden;}
 .brief-section{background:#CC0000;padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#fff;}
 .brief-row{display:grid;grid-template-columns:260px 1fr 1fr;border-bottom:1px solid #222;}
@@ -45,12 +41,10 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .brief-comment input::placeholder{color:#333;}
 .brief-header{display:grid;grid-template-columns:260px 1fr 1fr;background:#161616;border-bottom:1px solid #2a2a2a;}
 .brief-header div{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.15em;padding:6px 16px;}
-
 .save-bar{position:fixed;bottom:24px;right:32px;display:flex;gap:10px;align-items:center;}
 .save-btn{background:#CC0000;color:#fff;border:none;padding:10px 24px;font-family:Consolas,monospace;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;border-radius:3px;}
 .save-btn:hover{background:#aa0000;}
 .save-status{font-size:11px;color:#555;text-transform:uppercase;}
-
 footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;margin-top:80px;}
 .ft{font-size:12px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
 </style>
@@ -70,7 +64,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     </div>
     <div class="abtn" id="docsBtn">
       <div class="abtn-icon" style="color:#FBBC04">&#128193;</div>
-      <div><div class="abtn-label">Project Docs</div><div class="abtn-sub">Google Drive folder</div></div>
+      <div><div class="abtn-label">Project Docs</div><div class="abtn-sub" id="docsSubLabel">Google Drive folder</div></div>
     </div>
     <div class="abtn" id="tg1Btn">
       <div class="abtn-icon" style="color:#229ED9">&#9992;</div>
@@ -174,13 +168,18 @@ document.getElementById('equipBtn').onclick = function(){
 };
 
 document.getElementById('docsBtn').onclick = function(){
-  var btn = document.getElementById('docsBtn');
-  var lbl = btn.querySelector('.abtn-sub');
-  lbl.textContent = 'Opening...';
+  var lbl = document.getElementById('docsSubLabel');
+  lbl.textContent = 'Creating...';
   getOrCreateProjectFolder(projectName).then(function(folder){
     lbl.textContent = 'Google Drive folder';
     if (folder && folder.webViewLink) {
-      window.open(folder.webViewLink, '_blank');
+      var a = document.createElement('a');
+      a.href = folder.webViewLink;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   }).catch(function(e){
     lbl.textContent = 'Error — try again';
