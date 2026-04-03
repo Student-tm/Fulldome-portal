@@ -338,14 +338,13 @@ async function saveBrief(projectId, rows) {
   const sheetName = 'Brief_' + safeName;
 
   await ensureSheet(sheetName);
-  await sheetsClear(`${sheetName}!A:C`);
+  await sheetsClear(`${sheetName}!A1:C200`);
 
   const vals = [['Field', 'Specification', 'Comments']];
 
   rows.forEach(function(r) {
     if (r.field.endsWith('_c')) return;
 
-    // Вставляем заголовок секции если нужно
     if (SECTION_HEADERS[r.field]) {
       vals.push([SECTION_HEADERS[r.field], '', '']);
     }
@@ -356,7 +355,7 @@ async function saveBrief(projectId, rows) {
     vals.push([label, r.value || '', comment]);
   });
 
-  await sheetsAppend(`${sheetName}!A:C`, vals);
+  await sheetsUpdate(`${sheetName}!A1`, vals);
 }
 
 async function getBrief(projectId) {
