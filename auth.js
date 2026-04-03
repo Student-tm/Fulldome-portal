@@ -4,6 +4,105 @@ const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googlea
 
 let tokenClient, accessToken = null;
 
+const FIELD_LABELS = {
+  client_name: 'Company / Client name',
+  client_name_c: 'Company / Client name — Comments',
+  event_name: 'Event name',
+  event_name_c: 'Event name — Comments',
+  client_contact: 'Client contact',
+  client_contact_c: 'Client contact — Comments',
+  address: 'Address of installation / event',
+  address_c: 'Address — Comments',
+  install_start: 'Installation start time-date',
+  install_start_c: 'Installation start — Comments',
+  walkthrough: 'Client walk-through time',
+  walkthrough_c: 'Client walk-through — Comments',
+  breakdown: 'Event break-down time',
+  breakdown_c: 'Event break-down — Comments',
+  sale_rental: 'Sale or Rental',
+  sale_rental_c: 'Sale or Rental — Comments',
+  dome_size: 'Dome size',
+  dome_size_c: 'Dome size — Comments',
+  dome_origin: 'Dome origin',
+  dome_origin_c: 'Dome origin — Comments',
+  blackout: 'Blackout / Open dome',
+  blackout_c: 'Blackout — Comments',
+  indoor: 'Indoor / Outdoor',
+  indoor_c: 'Indoor / Outdoor — Comments',
+  outer_cover: 'Outer cover',
+  outer_cover_c: 'Outer cover — Comments',
+  screen_type: 'Screen type',
+  screen_type_c: 'Screen type — Comments',
+  decor_cover: 'Inflatable decor cover',
+  decor_cover_c: 'Inflatable decor cover — Comments',
+  fans: 'Are we shipping fans',
+  fans_c: 'Are we shipping fans — Comments',
+  duct_size: 'Duct size',
+  duct_size_c: 'Duct size — Comments',
+  assembly_link: 'Assembly scheme link',
+  assembly_link_c: 'Assembly scheme link — Comments',
+  truss_link: 'Truss drawing link',
+  truss_link_c: 'Truss drawing link — Comments',
+  server: 'Server',
+  server_c: 'Server — Comments',
+  capture_card: 'Capture card',
+  capture_card_c: 'Capture card — Comments',
+  server_location: 'Location of the server',
+  server_location_c: 'Location of the server — Comments',
+  projectors: 'Projectors, number and brand',
+  projectors_c: 'Projectors — Comments',
+  sound: 'Sound system brand',
+  sound_c: 'Sound system brand — Comments',
+  hvac: 'HVACs',
+  hvac_c: 'HVACs — Comments',
+  hvac_location: 'Location of HVACs',
+  hvac_location_c: 'Location of HVACs — Comments',
+  content_list: 'Content for the event list',
+  content_list_c: 'Content for the event list — Comments',
+  content_server: 'Content on the server',
+  content_server_c: 'Content on the server — Comments',
+  encoder: 'Encoder needed',
+  encoder_c: 'Encoder needed — Comments',
+  promo: 'Promo materials',
+  promo_c: 'Promo materials — Comments',
+  event_specifics: 'Any event specifics',
+  event_specifics_c: 'Any event specifics — Comments',
+  budget_shipping: 'Budget for shipping',
+  budget_shipping_c: 'Budget for shipping — Comments',
+  budget_travel: 'Budget for travelling expenses',
+  budget_travel_c: 'Budget for travelling expenses — Comments',
+  training: 'Training for local team',
+  training_c: 'Training for local team — Comments',
+  construction_start: 'Construction start time-date',
+  construction_start_c: 'Construction start — Comments',
+  setup_walkthrough: 'Client walk-through time (setup)',
+  setup_walkthrough_c: 'Client walk-through (setup) — Comments',
+  setup_breakdown: 'Event break-down time (setup)',
+  setup_breakdown_c: 'Event break-down (setup) — Comments',
+  ceiling: 'Ceiling height and obstructions',
+  ceiling_c: 'Ceiling — Comments',
+  crane: 'Crane, boom, etc.',
+  crane_c: 'Crane — Comments',
+  labour: 'Local labour / union, contact person',
+  labour_c: 'Local labour — Comments',
+  certificates: 'Certificates (fire)',
+  certificates_c: 'Certificates — Comments',
+  permits: 'Permits (we provide info only)',
+  permits_c: 'Permits — Comments',
+  coi: 'COI if needed',
+  coi_c: 'COI — Comments',
+  flooring: 'Flooring type',
+  flooring_c: 'Flooring — Comments',
+  furniture: 'Furniture (tables, chairs, bean bags)',
+  furniture_c: 'Furniture — Comments',
+  electricity: 'Electricity required',
+  electricity_c: 'Electricity — Comments',
+  safety: 'Safety signs (fire extinguisher, exit)',
+  safety_c: 'Safety — Comments',
+  packing: 'Packing / flight cases type',
+  packing_c: 'Packing — Comments'
+};
+
 function initGoogleAuth(onReady) {
   const script = document.createElement('script');
   script.src = 'https://accounts.google.com/gsi/client';
@@ -220,45 +319,71 @@ async function saveEquipment(projectId, equipData) {
   } catch(e) { console.error('saveEquipment error', e); throw e; }
 }
 
+async function saveBrief(projectId, rows) {
+  // Получаем имя проекта
+  const projects = await getProjects();
+  const project = projects.find(p => p.id === String(projectId));
+  const projectName = project ? project.name : String(projectId);
+
+  // Название листа по имени проекта
+  const safeName = projectName.replace(/[\\\/\?\*\[\]\:]/g, '').substring(0, 50);
+  const sheetName = 'Brief_' + safeName;
+
+  // Создаём лист если нет, или очищаем если есть
+  await ensureSheet(sheetName);
+  await sheetsClear(`${sheetName}!A:C`);
+
+  // Заголовки + данные
+  const vals = [['Field', 'Specification', 'Comments']];
+
+  rows.forEach(function(r) {
+    // Пропускаем поля комментариев — они идут парой с основным полем
+    if (r.field.endsWith('_c')) return;
+    var label = FIELD_LABELS[r.field] || r.field;
+    var commentRow = rows.find(function(x) { return x.field === r.field + '_c'; });
+    var comment = commentRow ? (commentRow.value || '') : '';
+    vals.push([label, r.value || '', comment]);
+  });
+
+  await sheetsAppend(`${sheetName}!A:C`, vals);
+}
 
 async function getBrief(projectId) {
   try {
-    const data = await sheetsGet('Briefs!A:D');
-    const rows = data.values || [];
-    return rows.filter(r => r[0] === String(projectId)).map(r => ({
-      field: r[1] || '',
-      value: r[2] || '',
-      comments: r[3] || ''
-    }));
-  } catch(e) { console.error('getBrief error', e); return []; }
-}
+    const projects = await getProjects();
+    const project = projects.find(p => p.id === String(projectId));
+    const projectName = project ? project.name : String(projectId);
+    const safeName = projectName.replace(/[\\\/\?\*\[\]\:]/g, '').substring(0, 50);
+    const sheetName = 'Brief_' + safeName;
 
-async function saveBrief(projectId, rows) {
-  await ensureSheet('Briefs');
-  // Clear existing rows for this project
-  const data = await sheetsGet('Briefs!A:A');
-  const allRows = data.values || [];
-  const toDelete = [];
-  for (let i = allRows.length - 1; i >= 0; i--) {
-    if (allRows[i][0] === String(projectId)) toDelete.push(i);
-  }
-  if (toDelete.length > 0) {
-    const sheetId = await getSheetId('Briefs');
-    const requests = toDelete.map(idx => ({
-      deleteDimension: {
-        range: { sheetId, dimension: 'ROWS', startIndex: idx, endIndex: idx + 1 }
+    const data = await sheetsGet(`${sheetName}!A:C`);
+    const rows = data.values || [];
+
+    // Конвертируем читаемые названия обратно в data-field
+    const reverseLabels = {};
+    Object.keys(FIELD_LABELS).forEach(function(k) {
+      reverseLabels[FIELD_LABELS[k]] = k;
+    });
+
+    const result = [];
+    rows.slice(1).forEach(function(r) {
+      var label = r[0] || '';
+      var field = reverseLabels[label];
+      if (field) {
+        result.push({ field: field, value: r[1] || '' });
+        result.push({ field: field + '_c', value: r[2] || '' });
       }
-    }));
-    await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requests })
-      }
-    );
+    });
+    return result;
+  } catch(e) {
+    // Fallback — старый лист Briefs
+    try {
+      const data = await sheetsGet('Briefs!A:D');
+      const rows = data.values || [];
+      return rows.filter(r => r[0] === String(projectId)).map(r => ({
+        field: r[1] || '',
+        value: r[2] || ''
+      }));
+    } catch(e2) { return []; }
   }
-  // Append new rows
-  const vals = rows.map(r => [projectId, r.field, r.value || '', '']);
-  await sheetsAppend('Briefs!A:D', vals);
 }
