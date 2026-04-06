@@ -318,37 +318,8 @@ async function ensureConfigSheet(sheetName) {
 }
 
 async function saveConfig(configId, type, projectId, projectName, components) {
-  await ensureConfigSheet('Configs');
-  // Delete existing rows for this configId
-  const data = await configsGet('Configs!A:A');
-  const rows = data.values || [];
-  const toDelete = [];
-  for (let i = rows.length - 1; i >= 1; i--) {
-    if (rows[i][0] === String(configId)) toDelete.push(i);
-  }
-  if (toDelete.length > 0) {
-    const r = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}?fields=sheets.properties`,
-      { headers: { Authorization: 'Bearer ' + accessToken } }
-    );
-    const d = await r.json();
-    const sheets = d.sheets || [];
-    const sheet = sheets.find(s => s.properties.title === 'Configs');
-    const sheetId = sheet ? sheet.properties.sheetId : 0;
-    const requests = toDelete.map(idx => ({
-      deleteDimension: { range: { sheetId, dimension: 'ROWS', startIndex: idx, endIndex: idx + 1 } }
-    }));
-    await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}:batchUpdate`,
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requests })
-      }
-    );
-  }
-  // Append new component rows
   if (!components || !components.length) return;
+  await ensureConfigSheet('Configs');
   const vals = components.map(c => [configId, type, projectId, projectName, c.component||'', c.value||'', c.price||'', c.link||'', c.status||'Not ordered']);
   await configsAppend('Configs!A:I', vals);
 }
