@@ -401,16 +401,14 @@ function onDistToggle(){
 }
 
 function loadConfig(){
-  var cfg=CONFIGS[currentKey];if(!cfg)return;
-  var variant=isLong?cfg.long:cfg.short;
+  // Show empty fields — user fills manually, then saves to database
   sel={};qtys={};deleted={};statuses={};extras=[];links={};
-  FIXED_CATS.forEach(function(cat){sel[cat]=variant.fixed[cat]||null;qtys[cat]=1;deleted[cat]=false;statuses[cat]='none';links[cat]='';});
-  (variant.extras||[]).forEach(function(e,i){extras.push({cat:e.cat,id:e.id,qty:e.qty,key:'e'+Date.now()+i,status:'none',link:''});});
+  FIXED_CATS.forEach(function(cat){sel[cat]=null;qtys[cat]=1;deleted[cat]=false;statuses[cat]='none';links[cat]='';});
   document.getElementById('projectBar').style.display='flex';
   document.getElementById('legend').style.display='flex';
   render();
+  document.getElementById('builderWrap').style.display='block';
 }
-
 function findPart(cat,id){if(!PARTS[cat]||!id)return null;return PARTS[cat].find(function(p){return p.id===id;})||null;}
 function calcTotal(){var t=0;FIXED_CATS.forEach(function(cat){if(deleted[cat])return;var p=findPart(cat,sel[cat]);if(p&&p.price)t+=p.price*(qtys[cat]||1);});extras.forEach(function(ex){var p=findPart(ex.cat,ex.id);if(p&&p.price)t+=p.price*ex.qty;});return t;}
 function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
