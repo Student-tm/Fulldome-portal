@@ -198,6 +198,8 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
     <div class="pfield pfield-sm"><label>FDPSN</label><input id="fdpsn" placeholder="#3055"/></div>
     <div class="total-badge"><div class="total-badge-label">Server Total</div><div class="total-badge-val" id="totalBadge">$0.00</div></div>
     <button onclick="openAddPartModal()" style="margin-left:16px;padding:8px 20px;background:transparent;border:1px solid #CC0000;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Data</button>
+    <button onclick="saveCurrentConfig()" style="padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">Save Config</button>
+    <span id="configSaveStatus" style="font-size:11px;color:#555;"></span>
   </div>
 
   <div class="legend" id="legend" style="display:none">
@@ -811,7 +813,9 @@ async function savePartToDb(){
 
 // Load parts from DB on page load
 requireAuth(function(){
-  loadPartsFromDb();
+  loadPartsFromDb().then(function(){
+    loadSavedConfig();
+  });
 });
 
 async function loadPartsFromDb(){
@@ -821,9 +825,65 @@ async function loadPartsFromDb(){
     rows.slice(1).forEach(function(r,i){
       if(!r[0]||!r[1]) return;
       if(!PARTS[r[0]]) PARTS[r[0]]=[];
-      PARTS[r[0]].push({id:'db'+i, name:r[1], price:parseFloat(r[2])||0, link:r[3]||''});
+      // avoid duplicates
+      if(!PARTS[r[0]].find(function(p){return p.name===r[1];}))
+        PARTS[r[0]].push({id:'db'+i, name:r[1], price:parseFloat(r[2])||0, link:r[3]||''});
     });
   } catch(e){ console.log('No parts DB yet'); }
+}
+
+async function loadSavedConfig(){
+  var urlParams = new URLSearchParams(window.location.search);
+  var pid = urlParams.get('project')||'';
+  if(!pid) return;
+  try {
+    var configs = await getProjectConfigs(pid);
+    if(!configs.length) return;
+    // Take the latest config
+    var cfg = configs[configs.length-1];
+    currentKey = cfg.type;
+    // Activate button
+    document.querySelectorAll('.cfg-btn').forEach(function(b){
+      b.classList.toggle('active', b.textContent===cfg.type);
+    });
+    sel={};qtys={};deleted={};statuses={};extras=[];links={};
+    FIXED_CATS.forEach(function(cat){sel[cat]=null;qtys[cat]=1;deleted[cat]=false;statuses[cat]='none';links[cat]='';});
+    cfg.components.forEach(function(c){
+      if(FIXED_CATS.indexOf(c.component)!==-1){
+        // Find part by name
+        var part = (PARTS[c.component]||[]).find(function(p){return p.name===c.value;});
+        sel[c.component] = part ? part.id : null;
+        statuses[c.component] = c.status==='In stock'?'arrived':c.status==='Ordered'?'ordered':'none';
+        links[c.component] = c.link||'';
+      }
+    });
+    document.getElementById('projectBar').style.display='flex';
+    document.getElementById('legend').style.display='flex';
+    render();
+  } catch(e){ console.error('loadSavedConfig error', e); }
+}
+
+async function saveCurrentConfig(){
+  var urlParams = new URLSearchParams(window.location.search);
+  var pid = urlParams.get('project')||'default';
+  var pname = document.getElementById('projName').value || (urlParams.get('name')?decodeURIComponent(urlParams.get('name')):'');
+  var type = currentKey||'CUSTOM';
+  var configId = type+'-'+pid.slice(-6);
+  var components = [];
+  FIXED_CATS.forEach(function(cat){
+    if(deleted[cat]) return;
+    var part = findPart(cat, sel[cat]);
+    var status = statuses[cat]==='arrived'?'In stock':statuses[cat]==='ordered'?'Ordered':'Not ordered';
+    components.push({component:cat, value:part?part.name:'', price:part?part.price:'', link:links[cat]||(part?part.link:''), status:status});
+  });
+  document.getElementById('configSaveStatus').textContent='Saving...';
+  try {
+    await saveConfig(configId, type, pid, pname, components);
+    document.getElementById('configSaveStatus').textContent='Saved ✓';
+    setTimeout(function(){document.getElementById('configSaveStatus').textContent='';},3000);
+  } catch(e){
+    document.getElementById('configSaveStatus').textContent='Error: '+e.message;
+  }
 }
 
 // Init from URL params
