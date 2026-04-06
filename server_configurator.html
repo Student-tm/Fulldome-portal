@@ -197,8 +197,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
     <div class="pfield"><label>Project Name</label><input id="projName" placeholder="e.g. 10m Dome — Dubai 2026"/></div>
     <div class="pfield pfield-sm"><label>FDPSN</label><input id="fdpsn" placeholder="#3055"/></div>
     <div class="total-badge"><div class="total-badge-label">Server Total</div><div class="total-badge-val" id="totalBadge">$0.00</div></div>
-    <button id="addToDbBtn" onclick="addConfigToDb()" style="margin-left:16px;padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Database</button>
-    <span id="dbSaveStatus" style="font-size:11px;color:#555;margin-left:8px;"></span>
+    <button onclick="openAddPartModal()" style="margin-left:16px;padding:8px 20px;background:transparent;border:1px solid #CC0000;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Data</button>
   </div>
 
   <div class="legend" id="legend" style="display:none">
@@ -209,14 +208,6 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
   </div>
 
   <div id="builderWrap"><div class="builder"><div class="empty-state">← Select a configuration above</div></div></div>
-
-  <!-- Saved configs -->
-  <div style="margin-top:40px;">
-    <div class="section-title">Saved Configurations</div>
-    <div id="savedConfigsList" style="display:flex;flex-direction:column;gap:8px;max-width:900px;">
-      <div style="font-size:11px;color:#333;text-transform:uppercase;letter-spacing:0.1em;padding:20px 0;">Loading...</div>
-    </div>
-  </div>
 
   <div class="divider"></div>
 
@@ -268,69 +259,8 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
 <script>
 // ═══ SERVER PARTS ═══════════════════════════════════
 var PARTS={
-  Motherboard:[
-    {id:'S003',name:'Gigabyte B760M Aorus Elite AX DDR5 LGA1700',price:213,link:''},
-    {id:'S003b',name:'Gigabyte B760M Aorus Elite AX DDR5 LGA1700 (alt)',price:240,link:''},
-    {id:'S014',name:'ASUS WS X299 SAGE',price:524,link:''},
-    {id:'S032',name:'ASUS Prime X299-A II ATX',price:245,link:''},
-  ],
-  CPU:[
-    {id:'S004',name:'Intel i5-13400F 10-Core',price:135,link:''},
-    {id:'S024',name:'Intel Core 13th Gen i7-13700F',price:175,link:''},
-    {id:'S013',name:'Intel Core i9-10920X',price:359,link:''},
-    {id:'S031',name:'Intel Core i9-10920X (alt)',price:356,link:''},
-  ],
-  RAM:[
-    {id:'S008',name:'Kingston FURY Beast DDR5 5600 32GB (2×16GB)',price:90,link:''},
-    {id:'S026',name:'Kingston FURY Beast DDR5 5600 32GB (alt)',price:279,link:''},
-    {id:'S016',name:'Gigastone Game PRO 32GB DDR4 3200MHz (4×8GB)',price:115,link:''},
-    {id:'S034',name:'Corsair Vengeance LPX DDR4 32GB (2×16GB)',price:79,link:''},
-  ],
-  GPU:[
-    {id:'S009',name:'PNY NVIDIA RTX A1000 8GB GDDR6',price:423,link:''},
-    {id:'S027',name:'PNY NVIDIA RTX A1000 8GB GDDR6 (alt)',price:426,link:''},
-    {id:'S017',name:'PNY NVIDIA RTX A4000 16GB',price:930,link:''},
-    {id:'S035',name:'PNY RTX 4000 Ada Generation 20GB DDR6',price:1350,link:''},
-  ],
-  Storage:[
-    {id:'ST001',name:'Samsung 870 EVO 2TB SSD',price:160,link:''},
-    {id:'ST002',name:'M.2 SSD 2TB',price:150,link:''},
-    {id:'ST003',name:'M.2 SSD 4TB',price:250,link:''},
-  ],
-  Cooling:[
-    {id:'S005',name:'Noctua NH-L9x65 Low-Profile Heat Sink',price:69,link:''},
-    {id:'S025',name:'Noctua NH-D9L CPU Cooler',price:69,link:''},
-    {id:'S015',name:'Thermalright SI-100 Black CPU Air Cooler',price:27,link:''},
-  ],
-  PSU:[
-    {id:'S002',name:'Cooler Master V850 SFX Gold',price:157,link:''},
-    {id:'S012',name:'Thermaltake GF1 2024 Fully Modular ATX 850W',price:104,link:''},
-    {id:'S022',name:'GAMEMAX SFX 750W Full Modular 80+ Gold',price:114,link:''},
-    {id:'S030',name:'1250W Power Supply',price:180,link:''},
-  ],
-  Case:[
-    {id:'S001',name:'CX2130a 2U Case for MicroATX / SFX',price:200,link:''},
-    {id:'S021',name:'Sliger CX4170a 4U Rackmount (standard)',price:189,link:''},
-    {id:'S011',name:'Sliger CX4170a 4U Rackmount (premium)',price:249,link:''},
-  ],
-  'Capture Card':[
-    {id:'S028',name:'Magewell 11120 Pro Capture HDMI 4K',price:535,link:''},
-    {id:'CC001',name:'Magewell 11150 Pro Capture HDMI 4K Plus',price:964,link:''},
-    {id:'CC002',name:'DATAPATH Dual-Channel DP 1.2 Ultra-HD',price:1100,link:''},
-  ],
-  'Quadro Sync':[{id:'S018',name:'Nvidia Quadro Sync II',price:545,link:''}],
-  Adapters:[
-    {id:'S010',name:'BENFEI MiniDisplayPort to HDMI Adapter 2 Pack',price:13,link:''},
-    {id:'S036',name:'DP 1.2 to HDMI 2.0 4K 60Hz',price:20,link:''},
-  ],
-  Fan:[
-    {id:'S019',name:'Noctua NF-A8 PWM 80mm',price:24,link:''},
-    {id:'S020',name:'ARCTIC P12 PWM PST 120mm (5 Pack)',price:10,link:''},
-  ],
-  Other:[
-    {id:'S006',name:'USB 2.0 to Motherboard 9 Pin Header Adapter',price:4.5,link:''},
-    {id:'S007',name:'SSD Bracket',price:2.5,link:''},
-  ],
+  Motherboard:[],CPU:[],RAM:[],GPU:[],Storage:[],Cooling:[],PSU:[],Case:[],
+  'Capture Card':[],'Quadro Sync':[],'Adapters':[],'Fan':[],'Other':[]
 };
 
 // ═══ CONFIGS ════════════════════════════════════════
@@ -389,7 +319,7 @@ LAYOUT.forEach(function(row){row.forEach(function(key){
     btn.className='cfg-btn';btn.textContent=key;
     btn.onclick=function(){
       document.querySelectorAll('.cfg-btn').forEach(function(b){b.classList.remove('active');});
-      btn.classList.add('active');currentKey=key;window.selectedCfg=key;loadConfig();
+      btn.classList.add('active');currentKey=key;loadConfig();
     };
   }
   grid.appendChild(btn);
@@ -401,14 +331,13 @@ function onDistToggle(){
 }
 
 function loadConfig(){
-  // Show empty fields — user fills manually, then saves to database
   sel={};qtys={};deleted={};statuses={};extras=[];links={};
   FIXED_CATS.forEach(function(cat){sel[cat]=null;qtys[cat]=1;deleted[cat]=false;statuses[cat]='none';links[cat]='';});
   document.getElementById('projectBar').style.display='flex';
   document.getElementById('legend').style.display='flex';
   render();
-  document.getElementById('builderWrap').style.display='block';
 }
+
 function findPart(cat,id){if(!PARTS[cat]||!id)return null;return PARTS[cat].find(function(p){return p.id===id;})||null;}
 function calcTotal(){var t=0;FIXED_CATS.forEach(function(cat){if(deleted[cat])return;var p=findPart(cat,sel[cat]);if(p&&p.price)t+=p.price*(qtys[cat]||1);});extras.forEach(function(ex){var p=findPart(ex.cat,ex.id);if(p&&p.price)t+=p.price*ex.qty;});return t;}
 function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -797,6 +726,106 @@ function signOutDrive(){
   setDriveStatus('');
 }
 
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var name = params.get('name') ? decodeURIComponent(params.get('name')) : '';
+  if(name){
+    var projNameEl = document.getElementById('projName');
+    if(projNameEl) projNameEl.value = name;
+    var folderEl = document.getElementById('driveFolderName');
+    if(folderEl && !folderEl.dataset.manual) folderEl.value = name + '_server';
+  }
+})();
+</script>
+<!-- Add Part Modal -->
+<div id="addPartOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;">
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-top:3px solid #CC0000;border-radius:3px;padding:28px;width:460px;max-width:95vw;">
+    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;">Add Part to Database</div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Category</div>
+      <select id="ap_cat" style="width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:10px 12px;outline:none;">
+        <option>Motherboard</option><option>CPU</option><option>RAM</option><option>GPU</option>
+        <option>Storage</option><option>Cooling</option><option>PSU</option><option>Case</option>
+        <option>Capture Card</option><option>Adapters</option><option>Fan</option><option>Other</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Part Name</div>
+      <input id="ap_name" placeholder="e.g. Gigabyte B760M Aorus Elite" style="width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:10px 12px;outline:none;"/>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Price ($)</div>
+      <input id="ap_price" type="number" placeholder="213" style="width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:10px 12px;outline:none;"/>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Buy Link</div>
+      <input id="ap_link" placeholder="https://amazon.com/..." style="width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:10px 12px;outline:none;"/>
+    </div>
+    <div style="font-size:10px;color:#555;margin-bottom:16px;" id="ap_status"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="closeAddPartModal()" style="padding:8px 20px;border-radius:2px;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;border:none;background:#2a2a2a;color:#888;">Cancel</button>
+      <button onclick="savePartToDb()" style="padding:8px 20px;border-radius:2px;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;border:none;background:#CC0000;color:#fff;">Save Part</button>
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+function openAddPartModal(){
+  document.getElementById('ap_name').value='';
+  document.getElementById('ap_price').value='';
+  document.getElementById('ap_link').value='';
+  document.getElementById('ap_status').textContent='';
+  document.getElementById('addPartOverlay').style.display='flex';
+  setTimeout(function(){document.getElementById('ap_name').focus();},100);
+}
+function closeAddPartModal(){
+  document.getElementById('addPartOverlay').style.display='none';
+}
+
+async function savePartToDb(){
+  var cat = document.getElementById('ap_cat').value;
+  var name = document.getElementById('ap_name').value.trim();
+  var price = document.getElementById('ap_price').value||'0';
+  var link = document.getElementById('ap_link').value.trim();
+  if(!name){ document.getElementById('ap_name').focus(); return; }
+  document.getElementById('ap_status').textContent='Saving...';
+  try {
+    await ensureConfigSheet('Parts');
+    var data = await configsGet('Parts!A1:D1');
+    var rows = data.values||[];
+    if(!rows.length || rows[0][0]!=='Category'){
+      await configsAppend('Parts!A:D',[['Category','Name','Price','Link']]);
+    }
+    await configsAppend('Parts!A:D',[[cat, name, price, link]]);
+    // Add to local PARTS
+    var newId = 'U'+Date.now();
+    if(!PARTS[cat]) PARTS[cat]=[];
+    PARTS[cat].push({id:newId, name:name, price:parseFloat(price)||0, link:link});
+    document.getElementById('ap_status').textContent='Saved ✓';
+    setTimeout(function(){ closeAddPartModal(); render(); }, 800);
+  } catch(e){
+    document.getElementById('ap_status').textContent='Error: '+e.message;
+  }
+}
+
+// Load parts from DB on page load
+requireAuth(function(){
+  loadPartsFromDb();
+});
+
+async function loadPartsFromDb(){
+  try {
+    var data = await configsGet('Parts!A:D');
+    var rows = data.values||[];
+    rows.slice(1).forEach(function(r,i){
+      if(!r[0]||!r[1]) return;
+      if(!PARTS[r[0]]) PARTS[r[0]]=[];
+      PARTS[r[0]].push({id:'db'+i, name:r[1], price:parseFloat(r[2])||0, link:r[3]||''});
+    });
+  } catch(e){ console.log('No parts DB yet'); }
+}
+
 // Init from URL params
 (function(){
   var params = new URLSearchParams(window.location.search);
@@ -807,87 +836,11 @@ function signOutDrive(){
     var folderEl = document.getElementById('driveFolderName');
     if(folderEl && !folderEl.dataset.manual) folderEl.value = name + '_server';
   }
-  // Load saved configs
-  if(typeof requireAuth !== 'undefined'){
-    requireAuth(function(){ loadSavedConfigs(); });
-  }
+  var p=new URLSearchParams(window.location.search);
+  document.getElementById('backToMap').onclick=function(){
+    window.location.href='project_map.html?project='+encodeURIComponent(p.get('project')||'')+'&name='+encodeURIComponent(p.get('name')||'');
+  };
 })();
-
-function getCurrentConfigData(){
-  var rows = document.querySelectorAll('.comp-row');
-  var components = [];
-  rows.forEach(function(row){
-    var cat = row.querySelector('select') ? row.querySelector('select').value : '';
-    var valEl = row.querySelector('.comp-select-wrap select:last-child') || row.querySelector('[data-comp]');
-    var val = valEl ? valEl.value : '';
-    var qty = row.querySelector('.qty-input') ? row.querySelector('.qty-input').value : '1';
-    var price = row.querySelector('.price-val') ? row.querySelector('.price-val').textContent.replace('$','').replace(',','') : '';
-    var link = row.querySelector('.link-input') ? row.querySelector('.link-input').value : '';
-    var status = row.querySelector('.status-dot') ? row.querySelector('.status-dot').dataset.status||'Not ordered' : 'Not ordered';
-    if(val) components.push({ component: cat+': '+val, value: val, price: price, link: link, status: status });
-  });
-  return components;
-}
-
-function addConfigToDb(){
-  var params = new URLSearchParams(window.location.search);
-  var projectId = params.get('project') || 'default';
-  var projectName = document.getElementById('projName').value || (params.get('name') ? decodeURIComponent(params.get('name')) : '');
-  var type = (window.selectedCfg || 'CUSTOM').toUpperCase();
-  var configId = type + '-' + Date.now().toString().slice(-6);
-  var components = getCurrentConfigData();
-
-  if(!components.length){
-    alert('Select a configuration and fill components first.');
-    return;
-  }
-
-  document.getElementById('dbSaveStatus').textContent = 'Saving...';
-  saveConfig({ id: configId, type: type, projectId: projectId, projectName: projectName, components: components }).then(function(){
-    document.getElementById('dbSaveStatus').textContent = 'Saved as ' + configId + ' ✓';
-    setTimeout(function(){ document.getElementById('dbSaveStatus').textContent = ''; }, 4000);
-    loadSavedConfigs();
-  }).catch(function(e){
-    document.getElementById('dbSaveStatus').textContent = 'Error: ' + e.message;
-  });
-}
-
-function loadSavedConfigs(){
-  var params = new URLSearchParams(window.location.search);
-  var projectId = params.get('project') || '';
-  var container = document.getElementById('savedConfigsList');
-
-  getConfigsByProject(projectId).then(function(configs){
-    container.innerHTML = '';
-    if(!configs.length){
-      container.innerHTML = '<div style="font-size:11px;color:#333;text-transform:uppercase;letter-spacing:0.1em;padding:20px 0;">No saved configurations yet</div>';
-      return;
-    }
-    configs.forEach(function(cfg){
-      var total = cfg.components.reduce(function(s,c){ return s + (parseFloat(c.price)||0); }, 0);
-      var card = document.createElement('div');
-      card.style.cssText = 'background:#1a1a1a;border:1px solid #2a2a2a;border-left:3px solid #CC0000;border-radius:2px;padding:12px 20px;';
-      card.innerHTML =
-        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">'+
-          '<span style="font-size:13px;font-weight:700;color:#fff;">'+cfg.id+'</span>'+
-          '<span style="font-size:11px;color:#CC0000;border:1px solid #CC0000;padding:1px 6px;border-radius:2px;">'+cfg.type+'</span>'+
-          '<span style="font-size:11px;color:#555;">'+cfg.projectName+'</span>'+
-          '<span style="margin-left:auto;font-size:13px;font-weight:700;color:#CC0000;">$'+total.toFixed(2)+'</span>'+
-          '<button onclick="deleteConfig(\''+cfg.id+'\').then(function(){loadSavedConfigs();})" style="background:transparent;border:1px solid #333;color:#555;font-family:Consolas,monospace;font-size:10px;padding:2px 8px;cursor:pointer;border-radius:2px;text-transform:uppercase;">Delete</button>'+
-        '</div>'+
-        '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+
-          cfg.components.map(function(c){
-            var dot = c.status==='In stock'?'#1D9E75':c.status==='Ordered'?'#f0a500':'#CC0000';
-            return '<span style="font-size:10px;color:#555;background:#111;padding:2px 8px;border-radius:2px;display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+dot+';display:inline-block;"></span>'+c.component+'</span>';
-          }).join('')+
-        '</div>';
-      container.appendChild(card);
-    });
-  }).catch(function(){
-    container.innerHTML = '<div style="font-size:11px;color:#555;padding:20px 0;">Connect to load configs</div>';
-  });
-}
 </script>
-<script src="auth.js"></script>
 </body>
 </html>
