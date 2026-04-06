@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fulldome.pro — Configurator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Consolas,"Courier New",monospace;background:#0d0d0d;color:#fff;min-height:100vh;}
+header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-items:center;gap:20px;background:#111;}
+.logo{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.2em;}
+.logo span{color:#CC0000;}
+.main{padding:32px;max-width:1400px;margin:0 auto;}
+.section-title{font-size:11px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #1e1e1e;}
+.divider{height:1px;background:#1e1e1e;margin:40px 0;}
+
+/* Config grid */
+.config-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;max-width:560px;}
+.cfg-btn{padding:10px 16px;border:1px solid #2a2a2a;border-radius:2px;background:#1a1a1a;color:#555;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:all 0.15s;text-align:center;}
+.cfg-btn:hover{border-color:#CC0000;color:#CC0000;}
+.cfg-btn.active{border-color:#CC0000;background:#CC0000;color:#fff;}
+.cfg-btn.empty{background:transparent;border:1px dashed #1a1a1a;cursor:default;pointer-events:none;}
+
+/* Long distance toggle */
+.dist-toggle{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:10px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;max-width:560px;}
+.dist-toggle-label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;user-select:none;flex:1;}
+.dist-toggle-label span{color:#f0a500;}
+.dist-info{font-size:10px;color:#333;}
+.toggle-switch{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#2a2a2a;border-radius:20px;cursor:pointer;transition:0.2s;}
+.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#555;border-radius:50%;transition:0.2s;}
+.toggle-switch input:checked+.toggle-slider{background:#f0a500;}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff;}
+
+/* Project bar */
+.project-bar{display:flex;gap:16px;margin-bottom:16px;align-items:flex-end;flex-wrap:wrap;}
+.pfield{display:flex;flex-direction:column;gap:5px;}
+.pfield label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.15em;}
+.pfield input{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:8px 12px;outline:none;width:280px;}
+.pfield input:focus{border-color:#CC0000;}
+.pfield input::placeholder{color:#333;}
+.pfield-sm input{width:140px;}
+.total-badge{margin-left:auto;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:8px 20px;text-align:right;}
+.total-badge-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;}
+.total-badge-val{font-size:18px;font-weight:700;color:#CC0000;}
+
+/* Legend */
+.legend{display:flex;gap:16px;margin-bottom:12px;align-items:center;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:#555;}
+.legend-dot{width:10px;height:10px;border-radius:2px;}
+.legend-dot.red{background:#CC0000;}
+.legend-dot.yellow{background:#f0a500;}
+.legend-dot.green{background:#1D9E75;}
+
+/* Builder */
+.builder{background:#111;border:1px solid #1e1e1e;border-radius:3px;overflow:visible;}
+.builder-header{display:grid;grid-template-columns:110px 1fr 55px 90px 90px 90px 36px;background:#161616;border-bottom:1px solid #2a2a2a;padding:7px 14px;gap:10px;}
+.builder-header div{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:0.12em;}
+.part-row{display:grid;grid-template-columns:110px 1fr 55px 90px 90px 90px 36px;padding:6px 14px;gap:10px;border-bottom:1px solid #161616;align-items:center;transition:background 0.1s;}
+.part-row:hover{background:#131313;}
+.part-row.deleted{background:#0a0a0a;}
+
+/* Status badge */
+.cat-badge{font-size:9px;font-weight:700;padding:4px 0;border-radius:2px;text-align:center;white-space:nowrap;width:100%;display:block;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;user-select:none;transition:all 0.2s;border:1px solid;}
+.cat-badge.status-none{color:#CC0000;border-color:#CC000055;background:transparent;}
+.cat-badge.status-ordered{color:#111;border-color:#f0a500;background:#f0a500;}
+.cat-badge.status-arrived{color:#fff;border-color:#1D9E75;background:#1D9E75;}
+.restore-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 12px;background:transparent;border:1px dashed #2a2a2a;border-radius:2px;color:#333;font-family:Consolas,monospace;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;transition:all 0.15s;grid-column:2/-1;}
+.restore-btn:hover{border-color:#CC0000;color:#CC0000;}
+
+/* Dropdown */
+.sel-wrap{position:relative;width:100%;}
+.sel-display{width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:2px;color:#ccc;font-family:Consolas,monospace;font-size:11px;padding:5px 24px 5px 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;position:relative;}
+.sel-display:hover{border-color:#444;}
+.sel-display.has-val{border-color:#333;color:#fff;}
+.sel-arrow{position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:9px;color:#444;pointer-events:none;}
+.sel-dropdown{display:none;position:absolute;top:calc(100% + 2px);left:0;background:#1a1a1a;border:1px solid #333;border-top:2px solid #CC0000;border-radius:2px;z-index:999;max-height:260px;overflow-y:auto;min-width:320px;}
+.sel-dropdown.open{display:block;}
+.sel-search{width:100%;background:#111;border:none;border-bottom:1px solid #222;color:#fff;font-family:Consolas,monospace;font-size:11px;padding:7px 10px;outline:none;}
+.sel-search::placeholder{color:#444;}
+.sel-opt{padding:7px 10px;cursor:pointer;font-size:11px;color:#aaa;border-bottom:1px solid #161616;display:flex;align-items:center;gap:8px;}
+.sel-opt:hover{background:#222;color:#fff;}
+.sel-opt.selected{color:#CC0000;}
+.sel-opt-price{color:#555;font-size:10px;margin-left:auto;white-space:nowrap;}
+.sel-custom{padding:7px 10px;border-top:1px solid #222;}
+.sel-custom input{width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;padding:4px 8px;outline:none;}
+.sel-custom input::placeholder{color:#444;}
+
+/* Link cell */
+.link-cell{display:flex;align-items:center;gap:4px;}
+.link-inp{background:#0d0d0d;border:1px dashed #2a2a2a;border-radius:2px;color:#4a90d9;font-family:Consolas,monospace;font-size:10px;padding:3px 6px;outline:none;width:100%;}
+.link-inp:focus{border-color:#4a90d9;border-style:solid;}
+.link-inp::placeholder{color:#2a2a2a;}
+.link-btn{font-size:10px;color:#4a90d9;text-decoration:none;border:1px solid #4a90d922;padding:2px 8px;border-radius:2px;white-space:nowrap;display:inline-block;}
+.link-btn:hover{border-color:#4a90d9;}
+.link-edit{font-size:9px;color:#2a2a2a;cursor:pointer;background:none;border:none;padding:2px;flex-shrink:0;}
+.link-edit:hover{color:#4a90d9;}
+
+.qty-input{width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:5px 6px;outline:none;text-align:center;}
+.qty-input:focus{border-color:#CC0000;}
+.price-cell{font-size:12px;color:#888;text-align:right;}
+.total-cell{font-size:12px;font-weight:700;color:#CC0000;text-align:right;}
+.rem-btn{background:transparent;border:none;color:#2a2a2a;cursor:pointer;font-size:16px;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;transition:color 0.15s;}
+.rem-btn:hover{color:#CC0000;}
+.add-section{border-top:1px solid #1e1e1e;padding:10px 14px;display:flex;align-items:center;gap:10px;}
+.add-section-label{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
+.add-btn{display:flex;align-items:center;gap:6px;padding:5px 14px;background:transparent;border:1px dashed #2a2a2a;border-radius:2px;color:#555;font-family:Consolas,monospace;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.15s;}
+.add-btn:hover{border-color:#CC0000;color:#CC0000;}
+.total-bar{display:flex;justify-content:flex-end;align-items:center;gap:20px;padding:12px 16px;border-top:2px solid #CC0000;background:#161616;}
+.total-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.1em;}
+.total-val{font-size:22px;font-weight:700;color:#CC0000;}
+.empty-state{padding:60px;text-align:center;color:#333;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;}
+
+/* Rack */
+.rack-topbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.rack-total-badge{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:8px 20px;text-align:right;margin-left:auto;}
+.rack-total-badge-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;}
+.rack-total-badge-val{font-size:18px;font-weight:700;color:#CC0000;}
+.add-db-btn{display:flex;align-items:center;gap:8px;padding:8px 18px;background:transparent;border:1px solid #2a2a2a;border-radius:2px;color:#555;font-family:Consolas,monospace;font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.15s;}
+.add-db-btn:hover{border-color:#4a90d9;color:#4a90d9;}
+.rack-builder{background:#111;border:1px solid #1e1e1e;border-radius:3px;overflow:visible;}
+.rack-header{display:grid;grid-template-columns:130px 1fr 55px 90px 90px 90px 36px;background:#161616;border-bottom:1px solid #2a2a2a;padding:7px 14px;gap:10px;}
+.rack-header div{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:0.12em;}
+.rack-row{display:grid;grid-template-columns:130px 1fr 55px 90px 90px 90px 36px;padding:6px 14px;gap:10px;border-bottom:1px solid #161616;align-items:center;transition:background 0.1s;}
+.rack-row:hover{background:#131313;}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#161616;border:1px solid #2a2a2a;border-top:3px solid #4a90d9;border-radius:3px;padding:28px 32px;width:480px;max-width:95vw;}
+.modal-title{font-size:11px;font-weight:700;color:#4a90d9;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:20px;}
+.modal-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.modal-field label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.15em;}
+.modal-field input,.modal-field select{background:#0d0d0d;border:1px solid #2a2a2a;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:8px 10px;outline:none;width:100%;}
+.modal-field input:focus,.modal-field select:focus{border-color:#4a90d9;}
+.modal-field input::placeholder{color:#333;}
+.modal-field select option{background:#1a1a1a;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.modal-save{flex:1;padding:9px;background:#4a90d9;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;}
+.modal-save:hover{background:#3a80c9;}
+.modal-cancel{padding:9px 20px;background:transparent;border:1px solid #2a2a2a;border-radius:2px;color:#555;font-family:Consolas,monospace;font-size:11px;cursor:pointer;}
+.modal-cancel:hover{border-color:#CC0000;color:#CC0000;}
+.modal-success{font-size:10px;color:#1D9E75;margin-top:8px;display:none;}
+
+footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
+.ft{font-size:10px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Fulldome<span>.pro</span></div>
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;">System Configurator</div>
+  <div style="font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.1em;margin-left:auto;">Server · Rack · BOM · Order Tracking</div>
+
+  <!-- Drive folder button -->
+  <div id="driveArea" style="display:flex;align-items:center;gap:10px;margin-left:24px;">
+    <button id="driveAuthBtn" onclick="initDriveAuth()" style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:transparent;border:1px solid #2a2a2a;border-radius:2px;color:#555;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:all 0.15s;">
+      <span style="font-size:14px">📁</span> Project Folder
+    </button>
+  </div>
+</header>
+
+<!-- Drive panel -->
+<div id="drivePanel" style="display:none;background:#161616;border-bottom:1px solid #2a2a2a;padding:12px 32px;">
+  <div style="display:flex;align-items:center;gap:12px;max-width:1400px;margin:0 auto;flex-wrap:wrap;">
+    <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.15em;">Project Folder</div>
+    <input id="driveFolderName" placeholder="Folder name (auto from Project Name)" style="background:#0d0d0d;border:1px solid #2a2a2a;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:6px 12px;outline:none;width:280px;"/>
+    <button onclick="createDriveFolder()" style="padding:6px 16px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;">Create Folder</button>
+    <span id="driveStatus" style="font-size:10px;color:#555;"></span>
+    <a id="driveFolderLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:10px;color:#4a90d9;border:1px solid #4a90d944;padding:6px 14px;border-radius:2px;text-decoration:none;">Open in Drive ↗</a>
+    <button id="driveSignOut" onclick="signOutDrive()" style="display:none;margin-left:auto;padding:4px 10px;background:transparent;border:1px solid #2a2a2a;border-radius:2px;color:#444;font-family:Consolas,monospace;font-size:9px;cursor:pointer;text-transform:uppercase;">Sign Out</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- SERVER -->
+  <div class="section-title">Server Configuration</div>
+
+  <div class="config-grid" id="configGrid"></div>
+
+  <!-- Unified long distance toggle — always visible -->
+  <div class="dist-toggle">
+    <label class="toggle-switch">
+      <input type="checkbox" id="longDistCheck" onchange="onDistToggle()"/>
+      <span class="toggle-slider"></span>
+    </label>
+    <label class="dist-toggle-label" for="longDistCheck">
+      Long Distance Run <span>&gt; 100 ft</span>
+    </label>
+    <span class="dist-info">switches GPU, motherboard & CPU to long-run config</span>
+  </div>
+
+  <div class="project-bar" id="projectBar" style="display:none">
+    <div class="pfield"><label>Project Name</label><input id="projName" placeholder="e.g. 10m Dome — Dubai 2026"/></div>
+    <div class="pfield pfield-sm"><label>FDPSN</label><input id="fdpsn" placeholder="#3055"/></div>
+    <div class="total-badge"><div class="total-badge-label">Server Total</div><div class="total-badge-val" id="totalBadge">$0.00</div></div>
+  </div>
+
+  <div class="legend" id="legend" style="display:none">
+    <span style="font-size:9px;color:#333;text-transform:uppercase;letter-spacing:0.1em;">Status:</span>
+    <div class="legend-item"><div class="legend-dot red"></div>Not ordered</div>
+    <div class="legend-item"><div class="legend-dot yellow"></div>Ordered</div>
+    <div class="legend-item"><div class="legend-dot green"></div>In stock</div>
+  </div>
+
+  <div id="builderWrap"><div class="builder"><div class="empty-state">← Select a configuration above</div></div></div>
+
+  <div class="divider"></div>
+
+  <!-- RACK -->
+  <div class="section-title">Rack Configuration</div>
+  <div class="rack-topbar">
+    <button class="add-db-btn" onclick="openModal()">＋ Add to Database</button>
+    <div class="rack-total-badge">
+      <div class="rack-total-badge-label">Rack Total</div>
+      <div class="rack-total-badge-val" id="rackTotalBadge">$0.00</div>
+    </div>
+  </div>
+  <div class="rack-builder">
+    <div class="rack-header">
+      <div>Category</div><div>Equipment</div><div>Qty</div>
+      <div style="text-align:right">Unit $</div><div style="text-align:right">Total $</div>
+      <div>Buy Link</div><div></div>
+    </div>
+    <div id="rackRows"></div>
+    <div class="add-section">
+      <span class="add-section-label">Rack Equipment</span>
+      <button class="add-btn" onclick="addRackRow()"><span style="font-size:14px;line-height:1">+</span> Add Item</button>
+    </div>
+    <div class="total-bar">
+      <span class="total-label">Total Rack Cost</span>
+      <span class="total-val" id="rackTotal">$0.00</span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">＋ Add to Database</div>
+    <div class="modal-field"><label>Category</label><select id="dbCat"></select></div>
+    <div class="modal-field"><label>Name</label><input id="dbName" placeholder="e.g. TP-Link TL-SG1016 16 Port Gigabit Switch"/></div>
+    <div class="modal-field"><label>Price (USD)</label><input id="dbPrice" type="number" placeholder="0.00"/></div>
+    <div class="modal-field"><label>Buy Link</label><input id="dbLink" placeholder="https://amazon.com/..."/></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" onclick="saveToDb()">Save to Database</button>
+    </div>
+    <div class="modal-success" id="modalSuccess">✓ Added successfully!</div>
+  </div>
+</div>
+
+<footer><span class="ft">Fulldome.pro © 2026 — Internal use only</span></footer>
+
+<script>
+// ═══ SERVER PARTS ═══════════════════════════════════
+var PARTS={
+  Motherboard:[
+    {id:'S003',name:'Gigabyte B760M Aorus Elite AX DDR5 LGA1700',price:213,link:''},
+    {id:'S003b',name:'Gigabyte B760M Aorus Elite AX DDR5 LGA1700 (alt)',price:240,link:''},
+    {id:'S014',name:'ASUS WS X299 SAGE',price:524,link:''},
+    {id:'S032',name:'ASUS Prime X299-A II ATX',price:245,link:''},
+  ],
+  CPU:[
+    {id:'S004',name:'Intel i5-13400F 10-Core',price:135,link:''},
+    {id:'S024',name:'Intel Core 13th Gen i7-13700F',price:175,link:''},
+    {id:'S013',name:'Intel Core i9-10920X',price:359,link:''},
+    {id:'S031',name:'Intel Core i9-10920X (alt)',price:356,link:''},
+  ],
+  RAM:[
+    {id:'S008',name:'Kingston FURY Beast DDR5 5600 32GB (2×16GB)',price:90,link:''},
+    {id:'S026',name:'Kingston FURY Beast DDR5 5600 32GB (alt)',price:279,link:''},
+    {id:'S016',name:'Gigastone Game PRO 32GB DDR4 3200MHz (4×8GB)',price:115,link:''},
+    {id:'S034',name:'Corsair Vengeance LPX DDR4 32GB (2×16GB)',price:79,link:''},
+  ],
+  GPU:[
+    {id:'S009',name:'PNY NVIDIA RTX A1000 8GB GDDR6',price:423,link:''},
+    {id:'S027',name:'PNY NVIDIA RTX A1000 8GB GDDR6 (alt)',price:426,link:''},
+    {id:'S017',name:'PNY NVIDIA RTX A4000 16GB',price:930,link:''},
+    {id:'S035',name:'PNY RTX 4000 Ada Generation 20GB DDR6',price:1350,link:''},
+  ],
+  Storage:[
+    {id:'ST001',name:'Samsung 870 EVO 2TB SSD',price:160,link:''},
+    {id:'ST002',name:'M.2 SSD 2TB',price:150,link:''},
+    {id:'ST003',name:'M.2 SSD 4TB',price:250,link:''},
+  ],
+  Cooling:[
+    {id:'S005',name:'Noctua NH-L9x65 Low-Profile Heat Sink',price:69,link:''},
+    {id:'S025',name:'Noctua NH-D9L CPU Cooler',price:69,link:''},
+    {id:'S015',name:'Thermalright SI-100 Black CPU Air Cooler',price:27,link:''},
+  ],
+  PSU:[
+    {id:'S002',name:'Cooler Master V850 SFX Gold',price:157,link:''},
+    {id:'S012',name:'Thermaltake GF1 2024 Fully Modular ATX 850W',price:104,link:''},
+    {id:'S022',name:'GAMEMAX SFX 750W Full Modular 80+ Gold',price:114,link:''},
+    {id:'S030',name:'1250W Power Supply',price:180,link:''},
+  ],
+  Case:[
+    {id:'S001',name:'CX2130a 2U Case for MicroATX / SFX',price:200,link:''},
+    {id:'S021',name:'Sliger CX4170a 4U Rackmount (standard)',price:189,link:''},
+    {id:'S011',name:'Sliger CX4170a 4U Rackmount (premium)',price:249,link:''},
+  ],
+  'Capture Card':[
+    {id:'S028',name:'Magewell 11120 Pro Capture HDMI 4K',price:535,link:''},
+    {id:'CC001',name:'Magewell 11150 Pro Capture HDMI 4K Plus',price:964,link:''},
+    {id:'CC002',name:'DATAPATH Dual-Channel DP 1.2 Ultra-HD',price:1100,link:''},
+  ],
+  'Quadro Sync':[{id:'S018',name:'Nvidia Quadro Sync II',price:545,link:''}],
+  Adapters:[
+    {id:'S010',name:'BENFEI MiniDisplayPort to HDMI Adapter 2 Pack',price:13,link:''},
+    {id:'S036',name:'DP 1.2 to HDMI 2.0 4K 60Hz',price:20,link:''},
+  ],
+  Fan:[
+    {id:'S019',name:'Noctua NF-A8 PWM 80mm',price:24,link:''},
+    {id:'S020',name:'ARCTIC P12 PWM PST 120mm (5 Pack)',price:10,link:''},
+  ],
+  Other:[
+    {id:'S006',name:'USB 2.0 to Motherboard 9 Pin Header Adapter',price:4.5,link:''},
+    {id:'S007',name:'SSD Bracket',price:2.5,link:''},
+  ],
+};
+
+// ═══ CONFIGS ════════════════════════════════════════
+// Each config has: short (< 100ft) and long (> 100ft) versions
+// long overrides specific categories
+var BASE_SHORT={Case:'S001',PSU:'S002',Motherboard:'S003',CPU:'S004',Cooling:'S005',RAM:'S008',GPU:'S009',Storage:'ST001'};
+var BASE_LONG ={Case:'S011',PSU:'S012',Motherboard:'S014',CPU:'S013',Cooling:'S015',RAM:'S016',GPU:'S017',Storage:'ST001'};
+
+var CONFIGS={
+  'HDx4':{
+    short:{fixed:BASE_SHORT, extras:[{cat:'Adapters',id:'S010',qty:2}]},
+    long: {fixed:BASE_LONG,  extras:[{cat:'Adapters',id:'S010',qty:2}]},
+  },
+  'HDx6':{
+    short:{fixed:BASE_SHORT, extras:[{cat:'Adapters',id:'S010',qty:2}]},
+    long: {fixed:BASE_LONG,  extras:[{cat:'Adapters',id:'S010',qty:2}]},
+  },
+  'HDx8':{
+    short:{fixed:BASE_SHORT, extras:[{cat:'Capture Card',id:'S028',qty:1},{cat:'Adapters',id:'S010',qty:2}]},
+    long: {fixed:BASE_LONG,  extras:[{cat:'Capture Card',id:'S028',qty:1},{cat:'Adapters',id:'S010',qty:2}]},
+  },
+  'UHDx4':{
+    short:{fixed:BASE_SHORT, extras:[{cat:'Adapters',id:'S010',qty:2}]},
+    long: {fixed:BASE_LONG,  extras:[{cat:'Adapters',id:'S010',qty:2}]},
+  },
+  'UHDx6':{
+    short:{fixed:{Case:'S021',PSU:'S022',Motherboard:'S003b',CPU:'S024',Cooling:'S025',RAM:'S026',GPU:'S027',Storage:'ST001'}, extras:[{cat:'Capture Card',id:'S028',qty:1}]},
+    long: {fixed:BASE_LONG,  extras:[{cat:'Quadro Sync',id:'S018',qty:1},{cat:'Fan',id:'S019',qty:2},{cat:'Fan',id:'S020',qty:3}]},
+  },
+  'UHDx8':{
+    short:{fixed:{Case:'S011',PSU:'S030',Motherboard:'S032',CPU:'S031',Cooling:'S015',RAM:'S034',GPU:'S035',Storage:'ST002'}, extras:[{cat:'Quadro Sync',id:'S018',qty:1},{cat:'Adapters',id:'S036',qty:9},{cat:'Fan',id:'S020',qty:3}]},
+    long: {fixed:{Case:'S011',PSU:'S030',Motherboard:'S014',CPU:'S013',Cooling:'S015',RAM:'S034',GPU:'S035',Storage:'ST002'}, extras:[{cat:'Quadro Sync',id:'S018',qty:1},{cat:'Adapters',id:'S036',qty:9},{cat:'Fan',id:'S020',qty:3}]},
+  },
+  'HDx12':{
+    short:{fixed:BASE_SHORT, extras:[{cat:'Capture Card',id:'CC001',qty:1},{cat:'Adapters',id:'S010',qty:2}]},
+    long: {fixed:BASE_LONG,  extras:[{cat:'Capture Card',id:'CC001',qty:1},{cat:'Adapters',id:'S010',qty:2}]},
+  },
+  'VJ Server':{
+    short:{fixed:{Case:'S011',PSU:'S030',Motherboard:'S014',CPU:'S013',Cooling:'S005',RAM:'S016',GPU:'S017',Storage:'ST003'}, extras:[{cat:'Fan',id:'S019',qty:2}]},
+    long: {fixed:{Case:'S011',PSU:'S030',Motherboard:'S014',CPU:'S013',Cooling:'S005',RAM:'S016',GPU:'S017',Storage:'ST003'}, extras:[{cat:'Fan',id:'S019',qty:2}]},
+  },
+};
+
+var FIXED_CATS=['Motherboard','CPU','RAM','GPU','Storage','Cooling','PSU','Case'];
+var EXTRA_CATS=['Capture Card','Quadro Sync','Adapters','Fan','Other'];
+var STATUS_CYCLE=['none','ordered','arrived'];
+var sel={},qtys={},deleted={},statuses={},extras=[],links={},currentKey=null,isLong=false;
+
+// Build config grid
+var LAYOUT=[['HDx4','HDx6','HDx8'],['UHDx4','UHDx6','UHDx8'],['HDx12','VJ Server','']];
+var grid=document.getElementById('configGrid');
+LAYOUT.forEach(function(row){row.forEach(function(key){
+  var btn=document.createElement('button');
+  if(!key){btn.className='cfg-btn empty';btn.textContent=' ';}
+  else{
+    btn.className='cfg-btn';btn.textContent=key;
+    btn.onclick=function(){
+      document.querySelectorAll('.cfg-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');currentKey=key;loadConfig();
+    };
+  }
+  grid.appendChild(btn);
+});});
+
+function onDistToggle(){
+  isLong=document.getElementById('longDistCheck').checked;
+  if(currentKey)loadConfig();
+}
+
+function loadConfig(){
+  var cfg=CONFIGS[currentKey];if(!cfg)return;
+  var variant=isLong?cfg.long:cfg.short;
+  sel={};qtys={};deleted={};statuses={};extras=[];links={};
+  FIXED_CATS.forEach(function(cat){sel[cat]=variant.fixed[cat]||null;qtys[cat]=1;deleted[cat]=false;statuses[cat]='none';links[cat]='';});
+  (variant.extras||[]).forEach(function(e,i){extras.push({cat:e.cat,id:e.id,qty:e.qty,key:'e'+Date.now()+i,status:'none',link:''});});
+  document.getElementById('projectBar').style.display='flex';
+  document.getElementById('legend').style.display='flex';
+  render();
+}
+
+function findPart(cat,id){if(!PARTS[cat]||!id)return null;return PARTS[cat].find(function(p){return p.id===id;})||null;}
+function calcTotal(){var t=0;FIXED_CATS.forEach(function(cat){if(deleted[cat])return;var p=findPart(cat,sel[cat]);if(p&&p.price)t+=p.price*(qtys[cat]||1);});extras.forEach(function(ex){var p=findPart(ex.cat,ex.id);if(p&&p.price)t+=p.price*ex.qty;});return t;}
+function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function cycleStatus(cat,isExtra,idx){
+  if(isExtra){var c=extras[idx].status||'none';extras[idx].status=STATUS_CYCLE[(STATUS_CYCLE.indexOf(c)+1)%3];}
+  else{var c=statuses[cat]||'none';statuses[cat]=STATUS_CYCLE[(STATUS_CYCLE.indexOf(c)+1)%3];}
+  render();
+}
+
+function render(){
+  var wrap=document.getElementById('builderWrap');wrap.innerHTML='';
+  var b=document.createElement('div');b.className='builder';
+  var hdr=document.createElement('div');hdr.className='builder-header';
+  hdr.innerHTML='<div>Category</div><div>Component</div><div>Qty</div><div style="text-align:right">Unit $</div><div style="text-align:right">Total $</div><div>Buy Link</div><div></div>';
+  b.appendChild(hdr);
+  FIXED_CATS.forEach(function(cat){b.appendChild(makeFixedRow(cat));});
+  var as=document.createElement('div');as.className='add-section';as.innerHTML='<span class="add-section-label">Additional Components</span>';
+  var ab=document.createElement('button');ab.className='add-btn';ab.innerHTML='<span style="font-size:14px">+</span> Add Component';
+  ab.onclick=function(){extras.push({cat:'Capture Card',id:null,qty:1,key:'e'+Date.now(),status:'none',link:''});render();};
+  as.appendChild(ab);b.appendChild(as);
+  extras.forEach(function(ex,idx){b.appendChild(makeExtraRow(ex,idx));});
+  var t=calcTotal();
+  var tb=document.createElement('div');tb.className='total-bar';tb.innerHTML='<span class="total-label">Total Build Cost</span><span class="total-val">$'+fmt(t)+'</span>';
+  b.appendChild(tb);wrap.appendChild(b);
+  document.getElementById('totalBadge').textContent='$'+fmt(t);
+}
+
+function makeBadge(label,status,onclick){
+  var badge=document.createElement('button');badge.className='cat-badge status-'+status;badge.textContent=label;
+  badge.title=status==='none'?'→ Ordered':status==='ordered'?'→ In Stock':'→ Reset';badge.onclick=onclick;return badge;
+}
+
+function makeLinkCell(currentLink,onSave){
+  var cell=document.createElement('div');cell.className='link-cell';
+  if(currentLink){
+    var a=document.createElement('a');a.className='link-btn';a.href=currentLink;a.target='_blank';a.rel='noopener';a.textContent='Buy ↗';
+    var ed=document.createElement('button');ed.className='link-edit';ed.textContent='✎';ed.onclick=function(e){e.preventDefault();e.stopPropagation();onSave('');};
+    cell.appendChild(a);cell.appendChild(ed);
+  } else {
+    var inp=document.createElement('input');inp.className='link-inp';inp.placeholder='Paste link...';
+    inp.onkeydown=function(e){if(e.key==='Enter'&&this.value.trim())onSave(this.value.trim());};
+    inp.onblur=function(){if(this.value.trim())onSave(this.value.trim());};
+    cell.appendChild(inp);
+  }
+  return cell;
+}
+
+function makeFixedRow(cat){
+  var row=document.createElement('div');var isDel=deleted[cat];row.className='part-row'+(isDel?' deleted':'');
+  var bd=document.createElement('div');
+  if(isDel){bd.innerHTML='<span class="cat-badge status-none" style="opacity:0.2">'+cat+'</span>';}
+  else{bd.appendChild(makeBadge(cat,statuses[cat]||'none',function(){cycleStatus(cat,false,null);}));}
+  row.appendChild(bd);
+  if(isDel){
+    var rb=document.createElement('button');rb.className='restore-btn';rb.innerHTML='<span style="font-size:14px">+</span> Add '+cat;
+    rb.onclick=function(){deleted[cat]=false;render();};row.appendChild(rb);
+  } else {
+    row.appendChild(makeDropdown(cat,sel[cat],PARTS,function(id){sel[cat]=id;render();}));
+    var qd=document.createElement('div');var qi=document.createElement('input');qi.className='qty-input';qi.type='number';qi.min='1';qi.value=qtys[cat]||1;
+    qi.onchange=function(){qtys[cat]=parseInt(this.value)||1;render();};qd.appendChild(qi);row.appendChild(qd);
+    var p=findPart(cat,sel[cat]);
+    var pd=document.createElement('div');pd.className='price-cell';pd.textContent=p&&p.price?'$'+fmt(p.price):'—';
+    var td=document.createElement('div');td.className='total-cell';td.textContent=(p&&p.price)?'$'+fmt(p.price*(qtys[cat]||1)):'—';
+    var sl=links[cat]||(p?p.link:'')||'';
+    var ld=makeLinkCell(sl,function(nl){links[cat]=nl;render();});
+    var rmd=document.createElement('div');var rmb=document.createElement('button');rmb.className='rem-btn';rmb.innerHTML='✕';
+    rmb.onclick=function(){deleted[cat]=true;render();};rmd.appendChild(rmb);
+    row.appendChild(pd);row.appendChild(td);row.appendChild(ld);row.appendChild(rmd);
+  }
+  return row;
+}
+
+function makeExtraRow(ex,idx){
+  var row=document.createElement('div');row.className='part-row';
+  var cd=document.createElement('div');
+  var cs=document.createElement('select');
+  cs.style.cssText='width:100%;background:#0d0d0d;border:1px solid #CC000055;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:9px;font-weight:700;padding:3px 6px;outline:none;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;';
+  EXTRA_CATS.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;if(c===ex.cat)o.selected=true;cs.appendChild(o);});
+  cs.onchange=function(){extras[idx].cat=this.value;extras[idx].id=null;render();};cd.appendChild(cs);row.appendChild(cd);
+  row.appendChild(makeDropdown(ex.cat,ex.id,PARTS,function(id){extras[idx].id=id;render();}));
+  var qd=document.createElement('div');var qi=document.createElement('input');qi.className='qty-input';qi.type='number';qi.min='1';qi.value=ex.qty;
+  qi.onchange=function(){extras[idx].qty=parseInt(this.value)||1;render();};qd.appendChild(qi);row.appendChild(qd);
+  var p=findPart(ex.cat,ex.id);
+  var pd=document.createElement('div');pd.className='price-cell';pd.textContent=p&&p.price?'$'+fmt(p.price):'—';
+  var td=document.createElement('div');td.className='total-cell';td.textContent=(p&&p.price)?'$'+fmt(p.price*ex.qty):'—';
+  var sl=ex.link||(p?p.link:'')||'';
+  var ld=makeLinkCell(sl,function(nl){extras[idx].link=nl;render();});
+  var rmd=document.createElement('div');var rmb=document.createElement('button');rmb.className='rem-btn';rmb.innerHTML='✕';
+  rmb.onclick=function(){extras.splice(idx,1);render();};rmd.appendChild(rmb);
+  row.appendChild(pd);row.appendChild(td);row.appendChild(ld);row.appendChild(rmd);return row;
+}
+
+// ═══ RACK ════════════════════════════════════════════
+var RACK_PARTS={
+  'Rack Case':[
+    {id:'R002',name:'16U Rack Flight Case with Wheels',price:400,link:'https://www.ebay.com/itm/364360379129'},
+    {id:'R016',name:'18U Space Amp Rack Mount ATA Flight Case',price:450,link:'https://www.proxdirect.com/products/view/18U-Space-Amp-Rack-Mount-ATA-Flight-Case-19-Inch-Depth-W-Casters-T-18RSS'},
+    {id:'R032',name:'SKB 1SKB-R8SW 8U rSeries',price:340,link:'https://www.ebay.com/itm/286328266194'},
+    {id:'R058',name:'Sound Town 10U Rack/Road Case with Casters',price:284,link:''},
+  ],
+  'Router / WiFi':[
+    {id:'R003',name:'TP-Link AX6000 WiFi 6 Router',price:143,link:'https://www.amazon.com/dp/B07L56SN8M'},
+    {id:'R017',name:'TP-Link AX3000 WiFi 6 Router',price:72,link:'https://www.amazon.com/TP-Link-WiFi-AX3000-Smart-Router/dp/B09G5W9R6R/'},
+    {id:'R067',name:'TP-Link ER605 V2 Router',price:50,link:'https://www.amazon.com/dp/B08QTXNWZ1'},
+    {id:'R069',name:'AX1800 WiFi AP',price:80,link:'https://www.amazon.com/dp/B0BW52D9FZ'},
+  ],
+  'Switch':[
+    {id:'R024',name:'TP-Link TL-SG1016 16 Port Gigabit Switch',price:67,link:'https://www.amazon.com/dp/B002HAJQGA'},
+    {id:'R068',name:'TP-Link 8 Port Gigabit PoE Switch',price:108,link:'https://www.amazon.com/dp/B07TX5CX37'},
+  ],
+  'Rack Shelf':[
+    {id:'R004',name:'NavePoint Shelf Rack Mount 19 Inch 1U 10"',price:36,link:'https://www.amazon.com/NavePoint-Cantilever-Server-Vented-Shelves/dp/B008LUW49G/'},
+    {id:'R019',name:'19" 10" Deep 1U Universal Shelf',price:23,link:'https://www.amazon.com/dp/B0CPFVXJ1H'},
+    {id:'R070',name:'Tecmojo 1U Rack Shelf 19 inch 6 inch',price:34,link:'https://www.amazon.com/dp/B0D7VPJC59'},
+  ],
+  'Rack Drawer':[
+    {id:'R008',name:'Tecmojo 3U Rack Drawer for 19in',price:73,link:'https://www.amazon.com/dp/B0BLWJNJ6F'},
+    {id:'R046',name:'Tecmojo 2U Rack Drawer',price:60,link:'https://www.amazon.com/dp/B0BLWGR381'},
+  ],
+  'PDU / Power':[
+    {id:'R006',name:'Tripp Lite 12-Outlet Rackmount PDU',price:80,link:'https://www.amazon.com/Tripp-Lite-Network-Grade-Wide-Spaced-RS1215-RA/dp/B00006B834/'},
+    {id:'R023',name:'1U Rack Mount PDU Power Strip 8 Outlet',price:25,link:'https://www.amazon.com/dp/B09W8KKBRT'},
+    {id:'R048',name:'12-Outlet Rackmount PDU',price:65,link:'https://www.amazon.com/gp/product/B0CHCBX5X9'},
+    {id:'R064',name:'UltraPoE 10-Outlet 1U PDU 100-240V/15A',price:60,link:'https://www.amazon.com/dp/B0B7GD22Y2'},
+    {id:'R071',name:'Tecmojo 1U Rackmount PDU Power Strip 12',price:65,link:'https://www.amazon.com/dp/B0CHCBX5X9'},
+  ],
+  'Audio Interface':[
+    {id:'R005',name:'Behringer U-Phoria UMC1820 + Power',price:139,link:'https://www.amazon.com/Behringer-UMC1820-Audiophile-Interface-Preamplifiers/dp/B01EXI8Y9S/'},
+    {id:'R063',name:'Behringer UMC1820 Audiophile',price:229,link:''},
+  ],
+  'Audio Cable':[
+    {id:'R007',name:'SAXT-8x5M 8 Channel Snake Cable',price:55,link:'https://www.amazon.com/Seismic-Audio-SAXT-8x5M-Channel-Snake/dp/B0053HEHM2/'},
+  ],
+  'Cable Management':[
+    {id:'R009',name:'Metal 1U 19 Inch Cable Manager',price:13,link:'https://www.amazon.com/dp/B087Q741Z3'},
+    {id:'R014',name:'1U Rack Mountable Cable Lacing Bar',price:24,link:'https://www.amazon.com/dp/B0CKZ8HP9L'},
+    {id:'R025',name:'1U Cable Management D-Ring Hooks',price:17,link:'https://www.amazon.com/dp/B0B1DMNDCN'},
+    {id:'R026',name:'NavePoint 1U Horizontal 19-Inch Rack Wire',price:33,link:'https://www.amazon.com/Navepoint-Horizontal-19-Inch-Management-Raceway/dp/B0060RUU4I/'},
+    {id:'R034',name:'1U Brush Panel',price:13,link:'https://www.amazon.com/dp/B09V1V224Q'},
+  ],
+  'Blank Panel':[
+    {id:'R010',name:'4U Blank Rack Mount Panel Spacer',price:21,link:'https://www.amazon.com/gp/product/B00BTRCWKY'},
+    {id:'R011',name:'RackPath 4U Blank Rack Mount Panel Spacer',price:15,link:'https://www.amazon.com/dp/B09FJD2JWM'},
+    {id:'R012',name:'RackPath 1U Blank Rack Mount Panel Spacer',price:10,link:'https://www.amazon.com/dp/B09FJHTMT2'},
+    {id:'R039',name:'RackPath 2U Blank Rack Mount Panel Spacer',price:11,link:'https://www.amazon.com/dp/B09FJCR8Z7'},
+  ],
+  'Video Extender':[
+    {id:'R013',name:'BIT-MSE-4K60-104PRO',price:1100,link:'https://bitvisus.com/products/bit-mse-104pro-4k-60hz-multi-screen-high-resolution-expander-video-wall-controller'},
+    {id:'R021',name:'HDBaseT Extender 18Gbps EHB100AUE (8 pcs)',price:3272,link:''},
+    {id:'R042',name:'HDBT Module Bitvisus',price:1900,link:''},
+    {id:'R049',name:'BIT-MSE-HDBT-208',price:1780,link:'https://www.amazon.com/dp/B087Q741Z3'},
+  ],
+  'DP Adapter':[
+    {id:'R022',name:'3ft Gold-Plated DP to HDMI Cable',price:15,link:'https://www.amazon.com/dp/B01672IOKW'},
+    {id:'R037',name:'CalDigit DisplayPort to HDMI Active 4K 60Hz',price:120,link:'https://www.amazon.com/dp/B07HF9WC35'},
+    {id:'R051',name:'BENFEI MiniDisplayPort to HDMI Adapter 2 Pack',price:13,link:''},
+    {id:'R053',name:'BENFEI Mini DisplayPort to HDMI Adapter',price:15,link:'https://www.amazon.com/dp/B07CMZLP7Z'},
+    {id:'R065',name:'CalDigit DP 2.0 to HDMI 2.1 Active 8K 60Hz',price:30,link:'https://www.amazon.com/dp/B0BY3SW376'},
+  ],
+  'Network Cable':[{id:'R018',name:'Cat 6 Ethernet Cable 10-Pack 1.5 Feet',price:22,link:''}],
+  'Rack Rails':[{id:'R044',name:'1U Universal Rack Mount Rails 4-Post',price:36,link:''}],
+  'KVM / USB Ext':[
+    {id:'R060',name:'8 Port USB to Serial RS232 Adapter',price:173,link:'https://www.amazon.com/StarTech-com-USB-Serial-Adapter-Hub/dp/B009AT5TB2/'},
+    {id:'R061',name:'J-Tech USB Over Ethernet Extender Cat6 99m',price:214,link:'https://www.amazon.com/J-Tech-Digital-Controller-Supported-JTECH-BE100/dp/B08VCVCFYG/'},
+    {id:'R062',name:'AV Access 4K HDMI USB KVM Extender 120M',price:181,link:'https://www.amazon.com/dp/B07N2M5YYR'},
+  ],
+};
+var RACK_CATS=Object.keys(RACK_PARTS);
+var rackRows=[],rackIdCounter=500;
+
+// Populate modal category
+var dbCatSel=document.getElementById('dbCat');
+RACK_CATS.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;dbCatSel.appendChild(o);});
+
+function openModal(){document.getElementById('modalOverlay').classList.add('open');document.getElementById('dbName').focus();document.getElementById('modalSuccess').style.display='none';}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+function saveToDb(){
+  var cat=document.getElementById('dbCat').value;
+  var name=document.getElementById('dbName').value.trim();
+  var price=parseFloat(document.getElementById('dbPrice').value)||0;
+  var link=document.getElementById('dbLink').value.trim();
+  if(!name){document.getElementById('dbName').focus();return;}
+  rackIdCounter++;
+  if(!RACK_PARTS[cat])RACK_PARTS[cat]=[];
+  RACK_PARTS[cat].push({id:'U'+rackIdCounter,name:name,price:price,link:link});
+  document.getElementById('modalSuccess').style.display='block';
+  document.getElementById('dbName').value='';document.getElementById('dbPrice').value='';document.getElementById('dbLink').value='';
+  setTimeout(function(){closeModal();},700);
+}
+
+function addRackRow(cat){rackRows.push({cat:cat||RACK_CATS[0],id:null,qty:1,link:'',key:'r'+Date.now()+Math.random()});renderRack();}
+function findRackPart(cat,id){if(!RACK_PARTS[cat]||!id)return null;return RACK_PARTS[cat].find(function(p){return p.id===id;})||null;}
+function calcRackTotal(){var t=0;rackRows.forEach(function(r){var p=findRackPart(r.cat,r.id);if(p&&p.price)t+=p.price*r.qty;});return t;}
+
+function renderRack(){
+  var container=document.getElementById('rackRows');container.innerHTML='';
+  rackRows.forEach(function(r,idx){
+    var row=document.createElement('div');row.className='rack-row';
+    var cd=document.createElement('div');
+    var cs=document.createElement('select');
+    cs.style.cssText='width:100%;background:#0d0d0d;border:1px solid #4a90d944;border-radius:2px;color:#4a90d9;font-family:Consolas,monospace;font-size:9px;font-weight:700;padding:3px 6px;outline:none;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;';
+    RACK_CATS.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;if(c===r.cat)o.selected=true;cs.appendChild(o);});
+    cs.onchange=function(){rackRows[idx].cat=this.value;rackRows[idx].id=null;renderRack();};cd.appendChild(cs);row.appendChild(cd);
+    row.appendChild(makeDropdown(r.cat,r.id,RACK_PARTS,function(id){rackRows[idx].id=id;renderRack();}));
+    var qd=document.createElement('div');var qi=document.createElement('input');qi.className='qty-input';qi.type='number';qi.min='1';qi.value=r.qty;
+    qi.onchange=function(){rackRows[idx].qty=parseInt(this.value)||1;renderRack();};qd.appendChild(qi);row.appendChild(qd);
+    var p=findRackPart(r.cat,r.id);
+    var pd=document.createElement('div');pd.className='price-cell';pd.textContent=p&&p.price?'$'+fmt(p.price):'—';
+    var td=document.createElement('div');td.className='total-cell';td.textContent=(p&&p.price)?'$'+fmt(p.price*r.qty):'—';
+    var sl=r.link||(p?p.link:'')||'';
+    var ld=makeLinkCell(sl,function(nl){rackRows[idx].link=nl;renderRack();});
+    var rmd=document.createElement('div');var rmb=document.createElement('button');rmb.className='rem-btn';rmb.innerHTML='✕';
+    rmb.onclick=function(){rackRows.splice(idx,1);renderRack();};rmd.appendChild(rmb);
+    row.appendChild(pd);row.appendChild(td);row.appendChild(ld);row.appendChild(rmd);
+    container.appendChild(row);
+  });
+  var t=calcRackTotal();
+  document.getElementById('rackTotal').textContent='$'+fmt(t);
+  document.getElementById('rackTotalBadge').textContent='$'+fmt(t);
+}
+
+// Shared dropdown
+function makeDropdown(cat,selectedId,db,onChange){
+  var wrap=document.createElement('div');wrap.className='sel-wrap';
+  var part=(db[cat]||[]).find(function(p){return p.id===selectedId;})||null;
+  var display=document.createElement('div');display.className='sel-display'+(part?' has-val':'');
+  display.textContent=part?part.name:'— Select equipment';
+  var arrow=document.createElement('span');arrow.className='sel-arrow';arrow.textContent='▾';display.appendChild(arrow);
+  var dd=document.createElement('div');dd.className='sel-dropdown';
+  var srch=document.createElement('input');srch.className='sel-search';srch.placeholder='Search...';dd.appendChild(srch);
+  function fillOpts(q){
+    dd.querySelectorAll('.sel-opt').forEach(function(o){o.remove();});
+    var items=(db[cat]||[]).filter(function(p){return !q||p.name.toLowerCase().includes(q.toLowerCase());});
+    var custDiv=dd.querySelector('.sel-custom');
+    items.forEach(function(p){
+      var o=document.createElement('div');o.className='sel-opt'+(selectedId===p.id?' selected':'');
+      o.innerHTML='<span>'+p.name+'</span><span class="sel-opt-price">'+(p.price?'$'+p.price:'—')+'</span>';
+      o.onclick=function(){dd.classList.remove('open');onChange(p.id);};dd.insertBefore(o,custDiv);
+    });
+  }
+  var custDiv=document.createElement('div');custDiv.className='sel-custom';
+  var custInp=document.createElement('input');custInp.placeholder='Custom name + Enter';
+  custInp.onkeydown=function(e){if(e.key==='Enter'&&this.value.trim()){display.textContent=this.value.trim();display.classList.add('has-val');dd.classList.remove('open');}};
+  custDiv.appendChild(custInp);dd.appendChild(custDiv);fillOpts('');srch.oninput=function(){fillOpts(this.value);};
+  display.onclick=function(e){e.stopPropagation();document.querySelectorAll('.sel-dropdown.open').forEach(function(d){d.classList.remove('open');});dd.classList.toggle('open');srch.value='';fillOpts('');setTimeout(function(){srch.focus();},50);};
+  wrap.appendChild(display);wrap.appendChild(dd);return wrap;
+}
+
+// Init rack
+['Rack Case','Router / WiFi','Switch','PDU / Power','Audio Interface'].forEach(function(c){addRackRow(c);});
+
+document.addEventListener('click',function(){document.querySelectorAll('.sel-dropdown.open').forEach(function(d){d.classList.remove('open');});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+
+// ═══ GOOGLE DRIVE ════════════════════════════════════
+var DRIVE_CLIENT_ID='673039541518-jurnkvne074u3ib66u52skjoru204rn5.apps.googleusercontent.com';
+var DRIVE_SCOPE='https://www.googleapis.com/auth/drive';
+var driveToken=null,driveTokenClient=null;
+
+// Sync folder name from project name field
+document.getElementById('projName').addEventListener('input',function(){
+  var fn=document.getElementById('driveFolderName');
+  if(!fn.dataset.manual) fn.value=this.value;
+});
+document.getElementById('driveFolderName').addEventListener('input',function(){
+  this.dataset.manual=this.value?'1':'';
+});
+
+function initDriveAuth(){
+  var saved=localStorage.getItem('drive_token');
+  var savedTime=localStorage.getItem('drive_token_time');
+  var expired=!savedTime||(Date.now()-parseInt(savedTime))>3500000;
+  if(saved&&!expired){
+    driveToken=saved;
+    showDrivePanel();
+    return;
+  }
+  // Load Google Identity Services
+  if(typeof google==='undefined'){
+    var s=document.createElement('script');
+    s.src='https://accounts.google.com/gsi/client';
+    s.onload=function(){startDriveAuth();};
+    document.head.appendChild(s);
+  } else {
+    startDriveAuth();
+  }
+}
+
+function startDriveAuth(){
+  driveTokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:DRIVE_CLIENT_ID,
+    scope:DRIVE_SCOPE,
+    callback:function(resp){
+      if(resp.error){console.error(resp);setDriveStatus('Auth error: '+resp.error);return;}
+      driveToken=resp.access_token;
+      localStorage.setItem('drive_token',driveToken);
+      localStorage.setItem('drive_token_time',Date.now());
+      showDrivePanel();
+    }
+  });
+  localStorage.removeItem('drive_token');
+  localStorage.removeItem('drive_token_time');
+  driveTokenClient.requestAccessToken();
+}
+
+function showDrivePanel(){
+  document.getElementById('drivePanel').style.display='block';
+  document.getElementById('driveAuthBtn').style.borderColor='#CC0000';
+  document.getElementById('driveAuthBtn').style.color='#CC0000';
+  document.getElementById('driveSignOut').style.display='block';
+  // Pre-fill folder name from project name
+  var pn=document.getElementById('projName').value;
+  var fn=document.getElementById('driveFolderName');
+  if(pn&&!fn.dataset.manual) fn.value=pn;
+  setDriveStatus('Authenticated ✓');
+}
+
+function setDriveStatus(msg){
+  document.getElementById('driveStatus').textContent=msg;
+}
+
+async function driveFetch(url,opts){
+  var headers=Object.assign({'Authorization':'Bearer '+driveToken},opts&&opts.headers||{});
+  var r=await fetch(url,Object.assign({},opts,{headers:headers}));
+  if(r.status===401){
+    driveToken=null;localStorage.removeItem('drive_token');localStorage.removeItem('drive_token_time');
+    setDriveStatus('Session expired — please sign in again');
+    document.getElementById('driveAuthBtn').style.borderColor='#2a2a2a';
+    document.getElementById('driveAuthBtn').style.color='#555';
+    document.getElementById('drivePanel').style.display='none';
+  }
+  return r;
+}
+
+async function findFolder(name,parentId){
+  var q="name='"+name.replace(/'/g,"\\'")+"' and mimeType='application/vnd.google-apps.folder' and trashed=false";
+  if(parentId) q+=" and '"+parentId+"' in parents";
+  var r=await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,name,webViewLink)');
+  var d=await r.json();
+  return d.files&&d.files.length>0?d.files[0]:null;
+}
+
+async function createFolder(name,parentId){
+  var meta={name:name,mimeType:'application/vnd.google-apps.folder'};
+  if(parentId) meta.parents=[parentId];
+  var r=await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink',{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(meta)
+  });
+  return r.json();
+}
+
+async function createDriveFolder(){
+  if(!driveToken){setDriveStatus('Not authenticated');return;}
+  var name=document.getElementById('driveFolderName').value.trim();
+  if(!name){document.getElementById('driveFolderName').focus();return;}
+  setDriveStatus('Creating...');
+  try{
+    // Get or create Rental_portal root
+    var root=await findFolder('Rental_portal',null);
+    if(!root) root=await createFolder('Rental_portal',null);
+    // Get or create project folder
+    var folder=await findFolder(name,root.id);
+    if(!folder) folder=await createFolder(name,root.id);
+    setDriveStatus('Folder ready ✓');
+    var link=document.getElementById('driveFolderLink');
+    link.href=folder.webViewLink;link.style.display='inline-block';
+    // Open folder
+    var a=document.createElement('a');a.href=folder.webViewLink;a.target='_blank';a.rel='noopener';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+  } catch(e){
+    setDriveStatus('Error: '+e.message);console.error(e);
+  }
+}
+
+function signOutDrive(){
+  driveToken=null;
+  localStorage.removeItem('drive_token');
+  localStorage.removeItem('drive_token_time');
+  document.getElementById('drivePanel').style.display='none';
+  document.getElementById('driveAuthBtn').style.borderColor='#2a2a2a';
+  document.getElementById('driveAuthBtn').style.color='#555';
+  document.getElementById('driveFolderLink').style.display='none';
+  document.getElementById('driveSignOut').style.display='none';
+  setDriveStatus('');
+}
+</script>
+</body>
+</html>
