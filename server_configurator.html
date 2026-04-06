@@ -149,8 +149,9 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
 </head>
 <body>
 <header>
-  <div class="logo">Fulldome<span>.pro</span></div>
-  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;">System Configurator</div>
+  <div id="backToMap" style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;margin-right:16px;" onclick="var p=new URLSearchParams(window.location.search);window.location.href='project_map.html?project='+encodeURIComponent(p.get('project')||'')+'&name='+encodeURIComponent(p.get('name')||'');">&#8592; Project Map</div>
+  <img src="logo.png" style="height:36px" alt="Fulldome.pro"/>
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;margin-left:16px;">System Configurator</div>
   <div style="font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.1em;margin-left:auto;">Server · Rack · BOM · Order Tracking</div>
 
   <!-- Drive folder button -->
@@ -787,6 +788,18 @@ function signOutDrive(){
   document.getElementById('driveSignOut').style.display='none';
   setDriveStatus('');
 }
+
+// Init from URL params
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var name = params.get('name') ? decodeURIComponent(params.get('name')) : '';
+  if(name){
+    var projNameEl = document.getElementById('projName');
+    if(projNameEl) projNameEl.value = name;
+    var folderEl = document.getElementById('driveFolderName');
+    if(folderEl && !folderEl.dataset.manual) folderEl.value = name + '_server';
+  }
+})();
 </script>
 </body>
 </html>

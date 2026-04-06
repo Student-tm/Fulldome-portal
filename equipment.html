@@ -201,7 +201,8 @@ document.getElementById('confirmYes').onclick=function(){
 };
 
 document.getElementById('backBtn').onclick=function(){
-  window.location.href='rental.html';
+  var p=new URLSearchParams(window.location.search);
+  window.location.href='project_map.html?project='+encodeURIComponent(p.get('project')||'')+'&name='+encodeURIComponent(p.get('name')||'');
 };
 document.getElementById('resetBtn').onclick=function(){selDome=null;domeSer='';domeUsed='';renderDome();updateSum();};
 document.getElementById('selDomeBtn').onclick=function(){document.getElementById('dSrch').value='';renderDomeList();document.getElementById('domeModal').classList.add('open');};
