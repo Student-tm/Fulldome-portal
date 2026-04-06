@@ -877,8 +877,13 @@ async function saveCurrentConfig(){
   FIXED_CATS.forEach(function(cat){
     if(deleted[cat]) return;
     var part = findPart(cat, sel[cat]);
-    var status = statuses[cat]==='arrived'?'In stock':statuses[cat]==='ordered'?'Ordered':'Not ordered';
-    components.push({component:cat, value:part?part.name:'', price:part?part.price:'', link:links[cat]||(part?part.link:''), status:status});
+    var status = (statuses[cat]||'')  ==='arrived'?'In stock':(statuses[cat]||'')==='ordered'?'Ordered':'Not ordered';
+    components.push({component:cat, value:part?part.name:'', price:part?String(part.price):'', link:(links[cat]||'')+(part&&part.link?part.link:''), status:status});
+  });
+  extras.forEach(function(ex){
+    var part = findPart(ex.cat, ex.id);
+    var status = (ex.status||'')==='arrived'?'In stock':(ex.status||'')==='ordered'?'Ordered':'Not ordered';
+    components.push({component:ex.cat, value:part?part.name:'', price:part?String(part.price*ex.qty):'', link:ex.link||(part?part.link:''), status:status});
   });
   document.getElementById('configSaveStatus').textContent='Saving...';
   try {
