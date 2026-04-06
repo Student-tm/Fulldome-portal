@@ -300,6 +300,10 @@ var CONFIGS={
     short:{fixed:BASE_SHORT, extras:[{cat:'Capture Card',id:'CC001',qty:1},{cat:'Adapters',id:'S010',qty:2}]},
     long: {fixed:BASE_LONG,  extras:[{cat:'Capture Card',id:'CC001',qty:1},{cat:'Adapters',id:'S010',qty:2}]},
   },
+  'UHDx12':{
+    short:{fixed:BASE_SHORT, extras:[]},
+    long: {fixed:BASE_LONG,  extras:[]},
+  },
   'VJ Server':{
     short:{fixed:{Case:'S011',PSU:'S030',Motherboard:'S014',CPU:'S013',Cooling:'S005',RAM:'S016',GPU:'S017',Storage:'ST003'}, extras:[{cat:'Fan',id:'S019',qty:2}]},
     long: {fixed:{Case:'S011',PSU:'S030',Motherboard:'S014',CPU:'S013',Cooling:'S005',RAM:'S016',GPU:'S017',Storage:'ST003'}, extras:[{cat:'Fan',id:'S019',qty:2}]},
@@ -312,7 +316,7 @@ var STATUS_CYCLE=['none','ordered','arrived'];
 var sel={},qtys={},deleted={},statuses={},extras=[],links={},currentKey=null,isLong=false;
 
 // Build config grid
-var LAYOUT=[['HDx4','HDx6','HDx8'],['UHDx4','UHDx6','UHDx8'],['HDx12','VJ Server','']];
+var LAYOUT=[['HDx4','HDx6','HDx8'],['UHDx4','UHDx6','UHDx8'],['HDx12','UHDx12','']];
 var grid=document.getElementById('configGrid');
 LAYOUT.forEach(function(row){row.forEach(function(key){
   var btn=document.createElement('button');
