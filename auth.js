@@ -1,117 +1,8 @@
 const CLIENT_ID = '673039541518-jurnkvne074u3ib66u52skjoru204rn5.apps.googleusercontent.com';
 const SPREADSHEET_ID = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/drive';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar';
 
 let tokenClient, accessToken = null;
-
-const FIELD_LABELS = {
-  client_name: 'Company / Client name',
-  client_name_c: 'Company / Client name — Comments',
-  event_name: 'Event name',
-  event_name_c: 'Event name — Comments',
-  client_contact: 'Client contact',
-  client_contact_c: 'Client contact — Comments',
-  address: 'Address of installation / event',
-  address_c: 'Address — Comments',
-  install_start: 'Installation start time-date',
-  install_start_c: 'Installation start — Comments',
-  walkthrough: 'Client walk-through time',
-  walkthrough_c: 'Client walk-through — Comments',
-  breakdown: 'Event break-down time',
-  breakdown_c: 'Event break-down — Comments',
-  sale_rental: 'Sale or Rental',
-  sale_rental_c: 'Sale or Rental — Comments',
-  dome_size: 'Dome size',
-  dome_size_c: 'Dome size — Comments',
-  dome_origin: 'Dome origin',
-  dome_origin_c: 'Dome origin — Comments',
-  blackout: 'Blackout / Open dome',
-  blackout_c: 'Blackout — Comments',
-  indoor: 'Indoor / Outdoor',
-  indoor_c: 'Indoor / Outdoor — Comments',
-  outer_cover: 'Outer cover',
-  outer_cover_c: 'Outer cover — Comments',
-  screen_type: 'Screen type',
-  screen_type_c: 'Screen type — Comments',
-  decor_cover: 'Inflatable decor cover',
-  decor_cover_c: 'Inflatable decor cover — Comments',
-  fans: 'Are we shipping fans',
-  fans_c: 'Are we shipping fans — Comments',
-  duct_size: 'Duct size',
-  duct_size_c: 'Duct size — Comments',
-  assembly_link: 'Assembly scheme link',
-  assembly_link_c: 'Assembly scheme link — Comments',
-  truss_link: 'Truss drawing link',
-  truss_link_c: 'Truss drawing link — Comments',
-  server: 'Server',
-  server_c: 'Server — Comments',
-  capture_card: 'Capture card',
-  capture_card_c: 'Capture card — Comments',
-  server_location: 'Location of the server',
-  server_location_c: 'Location of the server — Comments',
-  projectors: 'Projectors, number and brand',
-  projectors_c: 'Projectors — Comments',
-  sound: 'Sound system brand',
-  sound_c: 'Sound system brand — Comments',
-  hvac: 'HVACs',
-  hvac_c: 'HVACs — Comments',
-  hvac_location: 'Location of HVACs',
-  hvac_location_c: 'Location of HVACs — Comments',
-  content_list: 'Content for the event list',
-  content_list_c: 'Content for the event list — Comments',
-  content_server: 'Content on the server',
-  content_server_c: 'Content on the server — Comments',
-  encoder: 'Encoder needed',
-  encoder_c: 'Encoder needed — Comments',
-  promo: 'Promo materials',
-  promo_c: 'Promo materials — Comments',
-  event_specifics: 'Any event specifics',
-  event_specifics_c: 'Any event specifics — Comments',
-  budget_shipping: 'Budget for shipping',
-  budget_shipping_c: 'Budget for shipping — Comments',
-  budget_travel: 'Budget for travelling expenses',
-  budget_travel_c: 'Budget for travelling expenses — Comments',
-  training: 'Training for local team',
-  training_c: 'Training for local team — Comments',
-  construction_start: 'Construction start time-date',
-  construction_start_c: 'Construction start — Comments',
-  setup_walkthrough: 'Client walk-through time (setup)',
-  setup_walkthrough_c: 'Client walk-through (setup) — Comments',
-  setup_breakdown: 'Event break-down time (setup)',
-  setup_breakdown_c: 'Event break-down (setup) — Comments',
-  ceiling: 'Ceiling height and obstructions',
-  ceiling_c: 'Ceiling — Comments',
-  crane: 'Crane, boom, etc.',
-  crane_c: 'Crane — Comments',
-  labour: 'Local labour / union, contact person',
-  labour_c: 'Local labour — Comments',
-  certificates: 'Certificates (fire)',
-  certificates_c: 'Certificates — Comments',
-  permits: 'Permits (we provide info only)',
-  permits_c: 'Permits — Comments',
-  coi: 'COI if needed',
-  coi_c: 'COI — Comments',
-  flooring: 'Flooring type',
-  flooring_c: 'Flooring — Comments',
-  furniture: 'Furniture (tables, chairs, bean bags)',
-  furniture_c: 'Furniture — Comments',
-  electricity: 'Electricity required',
-  electricity_c: 'Electricity — Comments',
-  safety: 'Safety signs (fire extinguisher, exit)',
-  safety_c: 'Safety — Comments',
-  packing: 'Packing / flight cases type',
-  packing_c: 'Packing — Comments'
-};
-
-const SECTION_HEADERS = {
-  client_name: 'INFORMATION ABOUT CLIENT AND VENUE',
-  dome_size: 'DOME DESCRIPTION',
-  server: 'PROJECTION SYSTEM DESCRIPTION',
-  content_list: 'CONTENT',
-  event_specifics: 'EVENT SPECIFICS',
-  construction_start: 'SETUP ON SITE',
-  certificates: 'ADDITIONAL INFO'
-};
 
 function initGoogleAuth(onReady) {
   const script = document.createElement('script');
@@ -329,114 +220,263 @@ async function saveEquipment(projectId, equipData) {
   } catch(e) { console.error('saveEquipment error', e); throw e; }
 }
 
-async function saveBrief(projectId, rows) {
-  const projects = await getProjects();
-  const project = projects.find(p => p.id === String(projectId));
-  const projectName = project ? project.name : String(projectId);
-
-  const safeName = projectName.replace(/[\\\/\?\*\[\]\:]/g, '').substring(0, 50);
-  const sheetName = 'Brief_' + safeName;
-
-  await ensureSheet(sheetName);
-  await sheetsClear(`${sheetName}!A1:C200`);
-
-  const vals = [['Field', 'Specification', 'Comments']];
-
-  rows.forEach(function(r) {
-    if (r.field.endsWith('_c')) return;
-    if (SECTION_HEADERS[r.field]) {
-      vals.push([SECTION_HEADERS[r.field], '', '']);
-    }
-    var label = FIELD_LABELS[r.field] || r.field;
-    var commentRow = rows.find(function(x) { return x.field === r.field + '_c'; });
-    var comment = commentRow ? (commentRow.value || '') : '';
-    vals.push([label, r.value || '', comment]);
-  });
-
-  await sheetsUpdate(`${sheetName}!A1`, vals);
-}
 
 async function getBrief(projectId) {
   try {
-    const projects = await getProjects();
-    const project = projects.find(p => p.id === String(projectId));
-    const projectName = project ? project.name : String(projectId);
-    const safeName = projectName.replace(/[\\\/\?\*\[\]\:]/g, '').substring(0, 50);
-    const sheetName = 'Brief_' + safeName;
-
-    const data = await sheetsGet(`${sheetName}!A:C`);
+    const data = await sheetsGet('Briefs!A:D');
     const rows = data.values || [];
+    return rows.filter(r => r[0] === String(projectId)).map(r => ({
+      field: r[1] || '',
+      value: r[2] || '',
+      comments: r[3] || ''
+    }));
+  } catch(e) { console.error('getBrief error', e); return []; }
+}
 
-    const reverseLabels = {};
-    Object.keys(FIELD_LABELS).forEach(function(k) {
-      reverseLabels[FIELD_LABELS[k]] = k;
-    });
-
-    const sectionValues = Object.values(SECTION_HEADERS);
-
-    const result = [];
-    rows.slice(1).forEach(function(r) {
-      var label = r[0] || '';
-      if (sectionValues.indexOf(label) !== -1) return;
-      var field = reverseLabels[label];
-      if (field) {
-        result.push({ field: field, value: r[1] || '' });
-        result.push({ field: field + '_c', value: r[2] || '' });
-      }
-    });
-    return result;
-  } catch(e) {
-    try {
-      const data = await sheetsGet('Briefs!A:D');
-      const rows = data.values || [];
-      return rows.filter(r => r[0] === String(projectId)).map(r => ({
-        field: r[1] || '',
-        value: r[2] || ''
-      }));
-    } catch(e2) { return []; }
+async function saveBrief(projectId, rows) {
+  await ensureSheet('Briefs');
+  // Clear existing rows for this project
+  const data = await sheetsGet('Briefs!A:A');
+  const allRows = data.values || [];
+  const toDelete = [];
+  for (let i = allRows.length - 1; i >= 0; i--) {
+    if (allRows[i][0] === String(projectId)) toDelete.push(i);
   }
+  if (toDelete.length > 0) {
+    const sheetId = await getSheetId('Briefs');
+    const requests = toDelete.map(idx => ({
+      deleteDimension: {
+        range: { sheetId, dimension: 'ROWS', startIndex: idx, endIndex: idx + 1 }
+      }
+    }));
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests })
+      }
+    );
+  }
+  // Append new rows
+  const vals = rows.map(r => [projectId, r.field, r.value || '', r.comment || '']);
+  await sheetsAppend('Briefs!A:D', vals);
 }
 
-// ─── Google Drive ───────────────────────────────────────────────
+// ═══ SERVER CONFIG DATABASE ═══════════════════════════════
+const CONFIG_SPREADSHEET_ID = '1ArIPwqEmma1GqwZZXgaMiq4b1ZqfBx4ocB-9Bra4o8Q';
 
-async function driveFind(name, parentId) {
-  var q = `name='${name.replace(/'/g,"\\'")}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-  if (parentId) q += ` and '${parentId}' in parents`;
+async function configsGet(range) {
   const r = await fetch(
-    `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name,webViewLink)`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}/values/${encodeURIComponent(range)}`,
     { headers: { Authorization: 'Bearer ' + accessToken } }
-  );
-  const data = await r.json();
-  return data.files && data.files.length > 0 ? data.files[0] : null;
-}
-
-async function driveCreateFolder(name, parentId) {
-  const meta = {
-    name: name,
-    mimeType: 'application/vnd.google-apps.folder',
-    parents: parentId ? [parentId] : []
-  };
-  const r = await fetch(
-    'https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink',
-    {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify(meta)
-    }
   );
   return r.json();
 }
 
-async function getOrCreateProjectFolder(projectName) {
-  // 1. Найти или создать Rental_portal
-  var root = await driveFind('Rental_portal', null);
-  if (!root) {
-    root = await driveCreateFolder('Rental_portal', null);
+async function configsAppend(range, values) {
+  return fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values })
+    }
+  );
+}
+
+async function configsUpdate(range, values) {
+  return fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
+    {
+      method: 'PUT',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values })
+    }
+  );
+}
+
+async function ensureConfigSheet(sheetName) {
+  const r = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}?fields=sheets.properties.title`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const data = await r.json();
+  const exists = data.sheets && data.sheets.some(s => s.properties.title === sheetName);
+  if (!exists) {
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests: [{ addSheet: { properties: { title: sheetName } } }] })
+      }
+    );
+    // Add headers
+    await configsAppend('Configs!A:I', [['ID','Type','ProjectID','ProjectName','Component','Value','Price','Link','Status']]);
   }
-  // 2. Найти или создать папку проекта внутри Rental_portal
-  var folder = await driveFind(projectName, root.id);
-  if (!folder) {
-    folder = await driveCreateFolder(projectName, root.id);
+}
+
+async function saveConfig(configId, type, projectId, projectName, components) {
+  await ensureConfigSheet('Configs');
+  // Delete existing rows for this configId
+  const data = await configsGet('Configs!A:A');
+  const rows = data.values || [];
+  const toDelete = [];
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (rows[i][0] === String(configId)) toDelete.push(i);
   }
-  return folder;
+  if (toDelete.length > 0) {
+    const r = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}?fields=sheets.properties`,
+      { headers: { Authorization: 'Bearer ' + accessToken } }
+    );
+    const d = await r.json();
+    const sheet = d.sheets.find(s => s.properties.title === 'Configs');
+    const sheetId = sheet ? sheet.properties.sheetId : 0;
+    const requests = toDelete.map(idx => ({
+      deleteDimension: { range: { sheetId, dimension: 'ROWS', startIndex: idx, endIndex: idx + 1 } }
+    }));
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG_SPREADSHEET_ID}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests })
+      }
+    );
+  }
+  // Append new component rows
+  const vals = components.map(c => [configId, type, projectId, projectName, c.component, c.value||'', c.price||'', c.link||'', c.status||'Not ordered']);
+  await configsAppend('Configs!A:I', vals);
+}
+
+async function getConfigs(type) {
+  await ensureConfigSheet('Configs');
+  const data = await configsGet('Configs!A:I');
+  const rows = data.values || [];
+  // Group by configId
+  const configs = {};
+  rows.slice(1).forEach(r => {
+    if (!r[0] || (type && r[1] !== type)) return;
+    if (!configs[r[0]]) configs[r[0]] = { id: r[0], type: r[1], projectId: r[2], projectName: r[3], components: [] };
+    configs[r[0]].components.push({ component: r[4]||'', value: r[5]||'', price: r[6]||'', link: r[7]||'', status: r[8]||'' });
+  });
+  return Object.values(configs);
+}
+
+async function getProjectConfigs(projectId) {
+  await ensureConfigSheet('Configs');
+  const data = await configsGet('Configs!A:I');
+  const rows = data.values || [];
+  const configs = {};
+  rows.slice(1).forEach(r => {
+    if (!r[0] || r[2] !== String(projectId)) return;
+    if (!configs[r[0]]) configs[r[0]] = { id: r[0], type: r[1], projectId: r[2], projectName: r[3], components: [] };
+    configs[r[0]].components.push({ component: r[4]||'', value: r[5]||'', price: r[6]||'', link: r[7]||'', status: r[8]||'' });
+  });
+  return Object.values(configs);
+}
+
+// ═══ SERVER CONFIGS ════════════════════════════════════
+const CONFIGS_SPREADSHEET_ID = '1ArIPwqEmma1GqwZZXgaMiq4b1ZqfBx4ocB-9Bra4o8Q';
+
+async function configsGet(range) {
+  const r = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}/values/${encodeURIComponent(range)}`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  return r.json();
+}
+
+async function configsAppend(range, values) {
+  return fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values })
+    }
+  );
+}
+
+async function configsUpdate(range, values) {
+  return fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
+    {
+      method: 'PUT',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values })
+    }
+  );
+}
+
+async function ensureConfigsSheet(sheetName) {
+  const r = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}?fields=sheets.properties.title`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const data = await r.json();
+  const exists = data.sheets && data.sheets.some(s => s.properties.title === sheetName);
+  if (!exists) {
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests: [{ addSheet: { properties: { title: sheetName } } }] })
+      }
+    );
+    // Add headers
+    await configsAppend('Configs!A:I', [['ID','Type','ProjectID','ProjectName','Component','Value','Price','Link','Status']]);
+  }
+}
+
+async function saveConfig(config) {
+  await ensureConfigsSheet('Configs');
+  const rows = config.components.map(c => [
+    config.id, config.type, config.projectId, config.projectName,
+    c.component, c.value, c.price||'', c.link||'', c.status||'Not ordered'
+  ]);
+  await configsAppend('Configs!A:I', rows);
+}
+
+async function getConfigsByProject(projectId) {
+  await ensureConfigsSheet('Configs');
+  const data = await configsGet('Configs!A:I');
+  const rows = data.values || [];
+  if (rows.length < 2) return [];
+  const configs = {};
+  rows.slice(1).forEach(r => {
+    if (r[2] !== String(projectId)) return;
+    const id = r[0];
+    if (!configs[id]) configs[id] = { id, type: r[1], projectId: r[2], projectName: r[3], components: [] };
+    configs[id].components.push({ component: r[4], value: r[5], price: r[6], link: r[7], status: r[8] });
+  });
+  return Object.values(configs);
+}
+
+async function deleteConfig(configId) {
+  const data = await configsGet('Configs!A:A');
+  const rows = data.values || [];
+  const toDelete = [];
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (rows[i][0] === String(configId)) toDelete.push(i);
+  }
+  if (!toDelete.length) return;
+  const r = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}?fields=sheets.properties`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const d = await r.json();
+  const sheet = d.sheets.find(s => s.properties.title === 'Configs');
+  const sheetId = sheet ? sheet.properties.sheetId : 0;
+  await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}:batchUpdate`,
+    {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requests: toDelete.map(idx => ({ deleteDimension: { range: { sheetId, dimension: 'ROWS', startIndex: idx, endIndex: idx+1 } } })) })
+    }
+  );
 }

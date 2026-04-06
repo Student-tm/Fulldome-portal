@@ -197,6 +197,8 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
     <div class="pfield"><label>Project Name</label><input id="projName" placeholder="e.g. 10m Dome — Dubai 2026"/></div>
     <div class="pfield pfield-sm"><label>FDPSN</label><input id="fdpsn" placeholder="#3055"/></div>
     <div class="total-badge"><div class="total-badge-label">Server Total</div><div class="total-badge-val" id="totalBadge">$0.00</div></div>
+    <button id="addToDbBtn" onclick="addConfigToDb()" style="margin-left:16px;padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Database</button>
+    <span id="dbSaveStatus" style="font-size:11px;color:#555;margin-left:8px;"></span>
   </div>
 
   <div class="legend" id="legend" style="display:none">
@@ -207,6 +209,14 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
   </div>
 
   <div id="builderWrap"><div class="builder"><div class="empty-state">← Select a configuration above</div></div></div>
+
+  <!-- Saved configs -->
+  <div style="margin-top:40px;">
+    <div class="section-title">Saved Configurations</div>
+    <div id="savedConfigsList" style="display:flex;flex-direction:column;gap:8px;max-width:900px;">
+      <div style="font-size:11px;color:#333;text-transform:uppercase;letter-spacing:0.1em;padding:20px 0;">Loading...</div>
+    </div>
+  </div>
 
   <div class="divider"></div>
 
@@ -379,7 +389,7 @@ LAYOUT.forEach(function(row){row.forEach(function(key){
     btn.className='cfg-btn';btn.textContent=key;
     btn.onclick=function(){
       document.querySelectorAll('.cfg-btn').forEach(function(b){b.classList.remove('active');});
-      btn.classList.add('active');currentKey=key;loadConfig();
+      btn.classList.add('active');currentKey=key;window.selectedCfg=key;loadConfig();
     };
   }
   grid.appendChild(btn);
@@ -799,7 +809,87 @@ function signOutDrive(){
     var folderEl = document.getElementById('driveFolderName');
     if(folderEl && !folderEl.dataset.manual) folderEl.value = name + '_server';
   }
+  // Load saved configs
+  if(typeof requireAuth !== 'undefined'){
+    requireAuth(function(){ loadSavedConfigs(); });
+  }
 })();
+
+function getCurrentConfigData(){
+  var rows = document.querySelectorAll('.comp-row');
+  var components = [];
+  rows.forEach(function(row){
+    var cat = row.querySelector('select') ? row.querySelector('select').value : '';
+    var valEl = row.querySelector('.comp-select-wrap select:last-child') || row.querySelector('[data-comp]');
+    var val = valEl ? valEl.value : '';
+    var qty = row.querySelector('.qty-input') ? row.querySelector('.qty-input').value : '1';
+    var price = row.querySelector('.price-val') ? row.querySelector('.price-val').textContent.replace('$','').replace(',','') : '';
+    var link = row.querySelector('.link-input') ? row.querySelector('.link-input').value : '';
+    var status = row.querySelector('.status-dot') ? row.querySelector('.status-dot').dataset.status||'Not ordered' : 'Not ordered';
+    if(val) components.push({ component: cat+': '+val, value: val, price: price, link: link, status: status });
+  });
+  return components;
+}
+
+function addConfigToDb(){
+  var params = new URLSearchParams(window.location.search);
+  var projectId = params.get('project') || 'default';
+  var projectName = document.getElementById('projName').value || (params.get('name') ? decodeURIComponent(params.get('name')) : '');
+  var type = (window.selectedCfg || 'CUSTOM').toUpperCase();
+  var configId = type + '-' + Date.now().toString().slice(-6);
+  var components = getCurrentConfigData();
+
+  if(!components.length){
+    alert('Select a configuration and fill components first.');
+    return;
+  }
+
+  document.getElementById('dbSaveStatus').textContent = 'Saving...';
+  saveConfig({ id: configId, type: type, projectId: projectId, projectName: projectName, components: components }).then(function(){
+    document.getElementById('dbSaveStatus').textContent = 'Saved as ' + configId + ' ✓';
+    setTimeout(function(){ document.getElementById('dbSaveStatus').textContent = ''; }, 4000);
+    loadSavedConfigs();
+  }).catch(function(e){
+    document.getElementById('dbSaveStatus').textContent = 'Error: ' + e.message;
+  });
+}
+
+function loadSavedConfigs(){
+  var params = new URLSearchParams(window.location.search);
+  var projectId = params.get('project') || '';
+  var container = document.getElementById('savedConfigsList');
+
+  getConfigsByProject(projectId).then(function(configs){
+    container.innerHTML = '';
+    if(!configs.length){
+      container.innerHTML = '<div style="font-size:11px;color:#333;text-transform:uppercase;letter-spacing:0.1em;padding:20px 0;">No saved configurations yet</div>';
+      return;
+    }
+    configs.forEach(function(cfg){
+      var total = cfg.components.reduce(function(s,c){ return s + (parseFloat(c.price)||0); }, 0);
+      var card = document.createElement('div');
+      card.style.cssText = 'background:#1a1a1a;border:1px solid #2a2a2a;border-left:3px solid #CC0000;border-radius:2px;padding:12px 20px;';
+      card.innerHTML =
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">'+
+          '<span style="font-size:13px;font-weight:700;color:#fff;">'+cfg.id+'</span>'+
+          '<span style="font-size:11px;color:#CC0000;border:1px solid #CC0000;padding:1px 6px;border-radius:2px;">'+cfg.type+'</span>'+
+          '<span style="font-size:11px;color:#555;">'+cfg.projectName+'</span>'+
+          '<span style="margin-left:auto;font-size:13px;font-weight:700;color:#CC0000;">$'+total.toFixed(2)+'</span>'+
+          '<button onclick="deleteConfig(\''+cfg.id+'\').then(function(){loadSavedConfigs();})" style="background:transparent;border:1px solid #333;color:#555;font-family:Consolas,monospace;font-size:10px;padding:2px 8px;cursor:pointer;border-radius:2px;text-transform:uppercase;">Delete</button>'+
+        '</div>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+
+          cfg.components.map(function(c){
+            var dot = c.status==='In stock'?'#1D9E75':c.status==='Ordered'?'#f0a500':'#CC0000';
+            return '<span style="font-size:10px;color:#555;background:#111;padding:2px 8px;border-radius:2px;display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:'+dot+';display:inline-block;"></span>'+c.component+'</span>';
+          }).join('')+
+        '</div>';
+      container.appendChild(card);
+    });
+  }).catch(function(){
+    container.innerHTML = '<div style="font-size:11px;color:#555;padding:20px 0;">Connect to load configs</div>';
+  });
+}
 </script>
+<script src="auth.js"></script>
 </body>
 </html>
