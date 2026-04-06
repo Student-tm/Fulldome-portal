@@ -886,6 +886,7 @@ async function saveCurrentConfig(){
     components.push({component:ex.cat, value:part?part.name:'', price:part?String(part.price*ex.qty):'', link:ex.link||(part?part.link:''), status:status});
   });
   document.getElementById('configSaveStatus').textContent='Saving...';
+  console.log('configId:', configId, 'type:', type, 'pid:', pid, 'components:', components);
   try {
     await saveConfig(configId, type, pid, pname, components);
     document.getElementById('configSaveStatus').textContent='Saved ✓';
