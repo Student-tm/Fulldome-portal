@@ -332,7 +332,8 @@ async function saveConfig(configId, type, projectId, projectName, components) {
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
     const d = await r.json();
-    const sheet = d.sheets.find(s => s.properties.title === 'Configs');
+    const sheets = d.sheets || [];
+    const sheet = sheets.find(s => s.properties.title === 'Configs');
     const sheetId = sheet ? sheet.properties.sheetId : 0;
     const requests = toDelete.map(idx => ({
       deleteDimension: { range: { sheetId, dimension: 'ROWS', startIndex: idx, endIndex: idx + 1 } }
@@ -347,7 +348,8 @@ async function saveConfig(configId, type, projectId, projectName, components) {
     );
   }
   // Append new component rows
-  const vals = components.map(c => [configId, type, projectId, projectName, c.component, c.value||'', c.price||'', c.link||'', c.status||'Not ordered']);
+  if (!components || !components.length) return;
+  const vals = components.map(c => [configId, type, projectId, projectName, c.component||'', c.value||'', c.price||'', c.link||'', c.status||'Not ordered']);
   await configsAppend('Configs!A:I', vals);
 }
 
