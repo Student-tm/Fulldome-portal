@@ -405,14 +405,6 @@ async function ensureConfigsSheet(sheetName) {
   }
 }
 
-async function saveConfig(config) {
-  await ensureConfigsSheet('Configs');
-  const rows = config.components.map(c => [
-    config.id, config.type, config.projectId, config.projectName,
-    c.component, c.value, c.price||'', c.link||'', c.status||'Not ordered'
-  ]);
-  await configsAppend('Configs!A:I', rows);
-}
 
 async function getConfigsByProject(projectId) {
   await ensureConfigsSheet('Configs');
