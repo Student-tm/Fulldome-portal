@@ -222,6 +222,12 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
     <button onclick="saveCurrentRackConfig()" style="padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">Save Config</button>
     <span id="rackSaveStatus" style="font-size:11px;color:#555;"></span>
   </div>
+  <div class="legend">
+    <span style="font-size:9px;color:#333;text-transform:uppercase;letter-spacing:0.1em;">Status:</span>
+    <div class="legend-item"><div class="legend-dot red"></div>Not ordered</div>
+    <div class="legend-item"><div class="legend-dot yellow"></div>Ordered</div>
+    <div class="legend-item"><div class="legend-dot green"></div>In stock</div>
+  </div>
   <div class="rack-builder">
     <div class="rack-header">
       <div>Category</div><div>Equipment</div><div>Qty</div>
@@ -316,7 +322,7 @@ var STATUS_CYCLE=['none','ordered','arrived'];
 var sel={},qtys={},deleted={},statuses={},extras=[],links={},currentKey=null,isLong=false;
 
 // Build config grid
-var LAYOUT=[['HDx4','HDx6','HDx8','HDx12','VJ Server'],['UHDx4','UHDx6','UHDx8','UHDx12','']];
+var LAYOUT=[['HDx4','HDx6','HDx8','HDx12',''],['UHDx4','UHDx6','UHDx8','UHDx12','']];
 var grid=document.getElementById('configGrid');
 LAYOUT.forEach(function(row){row.forEach(function(key){
   var btn=document.createElement('button');
@@ -343,6 +349,9 @@ function loadConfig(){
   document.getElementById('legend').style.display='flex';
   render();
 }
+
+// Show empty builder immediately
+loadConfig();
 
 function findPart(cat,id){if(!PARTS[cat]||!id)return null;return PARTS[cat].find(function(p){return p.id===id;})||null;}
 function calcTotal(){var t=0;FIXED_CATS.forEach(function(cat){if(deleted[cat])return;var p=findPart(cat,sel[cat]);if(p&&p.price)t+=p.price*(qtys[cat]||1);});extras.forEach(function(ex){var p=findPart(ex.cat,ex.id);if(p&&p.price)t+=p.price*ex.qty;});return t;}
@@ -388,11 +397,18 @@ function makeLinkCell(currentLink, onSave){
       a.className = 'link-btn'; a.href = savedLink; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Buy ↗';
       a.onclick = function(e){ e.stopPropagation(); };
       var ed = document.createElement('button');
-      ed.className = 'link-edit'; ed.title = 'Edit link'; ed.textContent = '✎';
+      ed.className = 'link-edit'; ed.innerHTML = '✎'; ed.title = 'Edit link';
       ed.onclick = function(e){ e.preventDefault(); e.stopPropagation(); showEdit(); };
       cell.appendChild(a); cell.appendChild(ed);
     } else {
-      showEdit();
+      // No link — show pencil only
+      var ed = document.createElement('button');
+      ed.className = 'link-edit'; ed.innerHTML = '✎'; ed.title = 'Add link';
+      ed.style.cssText = 'font-size:14px;color:#333;cursor:pointer;background:none;border:none;padding:2px 6px;';
+      ed.onmouseover = function(){ this.style.color='#4a90d9'; };
+      ed.onmouseout  = function(){ this.style.color='#333'; };
+      ed.onclick = function(e){ e.preventDefault(); e.stopPropagation(); showEdit(); };
+      cell.appendChild(ed);
     }
   }
 
@@ -400,20 +416,16 @@ function makeLinkCell(currentLink, onSave){
     cell.innerHTML = '';
     var inp = document.createElement('input');
     inp.className = 'link-inp'; inp.placeholder = 'Paste link + Enter'; inp.value = savedLink;
+    inp.style.width = '100%';
     inp.onclick = function(e){ e.stopPropagation(); };
     inp.onkeydown = function(e){
       if(e.key === 'Enter'){
         e.preventDefault();
-        var v = inp.value.trim();
-        savedLink = v;
-        onSave(v);
-        // onSave triggers render() which replaces the DOM — nothing else needed
+        savedLink = inp.value.trim();
+        onSave(savedLink);
       }
-      if(e.key === 'Escape'){
-        showView(); // cancel — just go back to view without saving
-      }
+      if(e.key === 'Escape'){ showView(); }
     };
-    // No onblur to avoid triggering render mid-type
     cell.appendChild(inp);
     setTimeout(function(){ inp.focus(); inp.select(); }, 20);
   }
@@ -551,7 +563,7 @@ RACK_CATS.forEach(function(c){var o=document.createElement('option');o.value=c;o
 function openModal(){document.getElementById('modalOverlay').classList.add('open');document.getElementById('dbName').focus();document.getElementById('modalSuccess').style.display='none';}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
 function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
-function saveToDb(){
+async function saveToDb(){
   var cat=document.getElementById('dbCat').value;
   var name=document.getElementById('dbName').value.trim();
   var price=parseFloat(document.getElementById('dbPrice').value)||0;
@@ -814,7 +826,7 @@ function signOutDrive(){
   </div>
 </div>
 
-<script src="auth.js?v=202604070215"></script>
+<script src="auth.js?v=20260407024706"></script>
 <script>
 function openAddPartModal(){
   document.getElementById('ap_name').value='';
@@ -865,14 +877,23 @@ async function loadPartsFromDb(){
   try {
     var data = await configsGet('Parts!A:D');
     var rows = data.values||[];
+    if(rows.length < 2){ console.log('Parts sheet empty or no data rows'); return; }
     rows.slice(1).forEach(function(r,i){
-      if(!r[0]||!r[1]) return;
-      if(!PARTS[r[0]]) PARTS[r[0]]=[];
-      // avoid duplicates
-      if(!PARTS[r[0]].find(function(p){return p.name===r[1];}))
-        PARTS[r[0]].push({id:'db'+i, name:r[1], price:parseFloat(r[2])||0, link:r[3]||''});
+      var cat = (r[0]||'').trim();
+      var name = (r[1]||'').trim();
+      var price = parseFloat(r[2])||0;
+      var link = (r[3]||'').trim();
+      if(!cat||!name) return;
+      if(!PARTS[cat]) PARTS[cat]=[];
+      if(!PARTS[cat].find(function(p){return p.name===name;}))
+        PARTS[cat].push({id:'db'+i, name:name, price:price, link:link});
     });
-  } catch(e){ console.log('No parts DB yet'); }
+    console.log('Parts loaded from DB:', rows.length-1, 'items');
+  } catch(e){
+    console.error('loadPartsFromDb error:', e);
+    var sb = document.getElementById('configSaveStatus');
+    if(sb) sb.textContent = 'DB load error: '+e.message;
+  }
 }
 
 async function loadSavedConfig(){
