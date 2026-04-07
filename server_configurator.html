@@ -4,13 +4,15 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407030320";
+  var V="20260407031355";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
+
 
 <meta charset="UTF-8"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
@@ -946,10 +948,9 @@ async function saveCurrentConfig(){
   var configId = type+'-'+pid.slice(-6);
   var components = [];
   FIXED_CATS.forEach(function(cat){
-    if(deleted[cat]) return;
-    var part = findPart(cat, sel[cat]);
-    var status = (statuses[cat]||'')==='arrived'?'In stock':(statuses[cat]||'')==='ordered'?'Ordered':'Not ordered';
-    components.push({component:cat, value:part?part.name:'', price:part?String(part.price):'', link:(links[cat]||'')+(part&&part.link?part.link:''), status:status});
+    var part = deleted[cat] ? null : findPart(cat, sel[cat]);
+    var status = deleted[cat] ? 'Not ordered' : ((statuses[cat]||'')==='arrived'?'In stock':(statuses[cat]||'')==='ordered'?'Ordered':'Not ordered');
+    components.push({component:cat, value:part?part.name:'', price:part?String(part.price):'', link:deleted[cat]?'':(links[cat]||'')+(part&&part.link?part.link:''), status:status});
   });
   extras.forEach(function(ex){
     var part = findPart(ex.cat, ex.id);
@@ -960,6 +961,7 @@ async function saveCurrentConfig(){
   try {
     await deleteConfig(configId);
     await saveConfig(configId, type, pid, pname, components);
+    await configsAppend('Configs!A:I', [['','','','','','','','',''],['','','','','','','','','']]);
     document.getElementById('configSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('configSaveStatus').textContent='';},3000);
   } catch(e){
@@ -982,6 +984,7 @@ async function saveCurrentRackConfig(){
   try {
     await deleteConfig(configId);
     await saveConfig(configId, 'RACK', pid, pname, components);
+    await configsAppend('Configs!A:I', [['','','','','','','','',''],['','','','','','','','','']]);
     document.getElementById('rackSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('rackSaveStatus').textContent='';},3000);
   } catch(e){
