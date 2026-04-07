@@ -4,13 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407032846";
+  var V="20260407033452";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
 
 
 
@@ -930,11 +931,28 @@ async function loadSavedConfig(){
     FIXED_CATS.forEach(function(cat){sel[cat]=null;qtys[cat]=1;deleted[cat]=false;statuses[cat]='none';links[cat]='';});
     cfg.components.forEach(function(c){
       if(FIXED_CATS.indexOf(c.component)!==-1){
-        // Find part by name
+        // Fixed component
         var part = (PARTS[c.component]||[]).find(function(p){return p.name===c.value;});
         sel[c.component] = part ? part.id : null;
         statuses[c.component] = c.status==='In stock'?'arrived':c.status==='Ordered'?'ordered':'none';
         links[c.component] = c.link||'';
+        // If value is empty - mark as deleted
+        if(!c.value) deleted[c.component] = true;
+      } else if(c.component && c.component!=='---'){
+        // Extra component - restore it
+        var cat = c.component;
+        var part = (PARTS[cat]||[]).find(function(p){return p.name===c.value;});
+        var unitPrice = part ? part.price : 0;
+        var totalPrice = parseFloat(c.price)||0;
+        var qty = (unitPrice > 0 && totalPrice > 0) ? Math.round(totalPrice/unitPrice) : 1;
+        extras.push({
+          cat: cat,
+          id: part ? part.id : null,
+          qty: qty || 1,
+          status: c.status==='In stock'?'arrived':c.status==='Ordered'?'ordered':'none',
+          link: c.link||'',
+          key: 'e'+Date.now()+Math.random()
+        });
       }
     });
     document.getElementById('projectBar').style.display='flex';
