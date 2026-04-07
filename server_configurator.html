@@ -97,8 +97,8 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .link-inp::placeholder{color:#2a2a2a;}
 .link-btn{font-size:10px;color:#4a90d9;text-decoration:none;border:1px solid #4a90d922;padding:2px 8px;border-radius:2px;white-space:nowrap;display:inline-block;}
 .link-btn:hover{border-color:#4a90d9;}
-.link-edit{font-size:9px;color:#2a2a2a;cursor:pointer;background:none;border:none;padding:2px;flex-shrink:0;}
-.link-edit:hover{color:#4a90d9;}
+.link-edit{font-size:12px;color:#4a90d9;cursor:pointer;background:none;border:none;padding:2px 4px;flex-shrink:0;opacity:0.6;}
+.link-edit:hover{opacity:1;}
 
 .qty-input{width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:5px 6px;outline:none;text-align:center;}
 .qty-input:focus{border-color:#CC0000;}
@@ -123,9 +123,9 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .add-db-btn{display:flex;align-items:center;gap:8px;padding:8px 18px;background:transparent;border:1px solid #2a2a2a;border-radius:2px;color:#555;font-family:Consolas,monospace;font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.15s;}
 .add-db-btn:hover{border-color:#4a90d9;color:#4a90d9;}
 .rack-builder{background:#111;border:1px solid #1e1e1e;border-radius:3px;overflow:visible;}
-.rack-header{display:grid;grid-template-columns:130px 1fr 55px 90px 90px 90px 36px;background:#161616;border-bottom:1px solid #2a2a2a;padding:7px 14px;gap:10px;}
+.rack-header{display:grid;grid-template-columns:130px 1fr 55px 90px 90px 90px 90px 36px;background:#161616;border-bottom:1px solid #2a2a2a;padding:7px 14px;gap:10px;}
 .rack-header div{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:0.12em;}
-.rack-row{display:grid;grid-template-columns:130px 1fr 55px 90px 90px 90px 36px;padding:6px 14px;gap:10px;border-bottom:1px solid #161616;align-items:center;transition:background 0.1s;}
+.rack-row{display:grid;grid-template-columns:130px 1fr 55px 90px 90px 90px 90px 36px;padding:6px 14px;gap:10px;border-bottom:1px solid #161616;align-items:center;transition:background 0.1s;}
 .rack-row:hover{background:#131313;}
 
 /* Modal */
@@ -199,7 +199,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
   <div class="project-bar" id="projectBar" style="display:none">
     <div class="pfield"><label>Project Name</label><input id="projName" placeholder="e.g. 10m Dome — Dubai 2026"/></div>
     <div class="pfield pfield-sm"><label>FDPSN</label><input id="fdpsn" placeholder="#3055"/></div>
-    <button onclick="openAddPartModal()" style="margin-left:auto;padding:8px 20px;background:transparent;border:1px solid #CC0000;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Data</button>
+    <button onclick="openAddPartModal()" style="margin-left:auto;padding:8px 20px;background:transparent;border:1px solid #CC0000;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Database</button>
     <button onclick="saveCurrentConfig()" style="padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">Save Config</button>
     <span id="configSaveStatus" style="font-size:11px;color:#555;"></span>
   </div>
@@ -218,15 +218,15 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
   <!-- RACK -->
   <div class="section-title">Rack Configuration</div>
   <div class="rack-topbar">
-    <button class="add-db-btn" onclick="openModal()">＋ Add to Database</button>
-    <button onclick="saveCurrentRackConfig()" style="padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">Save Rack Config</button>
+    <button onclick="openModal()" style="padding:8px 20px;background:transparent;border:1px solid #CC0000;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;margin-left:auto;">+ Add to Database</button>
+    <button onclick="saveCurrentRackConfig()" style="padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">Save Config</button>
     <span id="rackSaveStatus" style="font-size:11px;color:#555;"></span>
   </div>
   <div class="rack-builder">
     <div class="rack-header">
       <div>Category</div><div>Equipment</div><div>Qty</div>
       <div style="text-align:right">Unit $</div><div style="text-align:right">Total $</div>
-      <div>Buy Link</div><div></div>
+      <div>Buy Link</div><div>Status</div><div></div>
     </div>
     <div id="rackRows"></div>
     <div class="add-section">
@@ -376,33 +376,51 @@ function makeBadge(label,status,onclick){
   badge.title=status==='none'?'→ Ordered':status==='ordered'?'→ In Stock':'→ Reset';badge.onclick=onclick;return badge;
 }
 
-function makeLinkCell(currentLink,onSave){
-  var cell=document.createElement('div');cell.className='link-cell';
-  function showLink(){
-    cell.innerHTML='';
-    if(currentLink){
-      var a=document.createElement('a');a.className='link-btn';a.href=currentLink;a.target='_blank';a.rel='noopener';a.textContent='Buy ↗';
-      var ed=document.createElement('button');ed.className='link-edit';ed.textContent='✎';
-      ed.onclick=function(e){e.preventDefault();e.stopPropagation();showInput(currentLink);};
-      cell.appendChild(a);cell.appendChild(ed);
+function makeLinkCell(currentLink, onSave){
+  var cell = document.createElement('div');
+  cell.className = 'link-cell';
+  var savedLink = currentLink || '';
+
+  function showView(){
+    cell.innerHTML = '';
+    if(savedLink){
+      var a = document.createElement('a');
+      a.className = 'link-btn'; a.href = savedLink; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Buy ↗';
+      a.onclick = function(e){ e.stopPropagation(); };
+      var ed = document.createElement('button');
+      ed.className = 'link-edit'; ed.title = 'Edit link'; ed.textContent = '✎';
+      ed.onclick = function(e){ e.preventDefault(); e.stopPropagation(); showEdit(); };
+      cell.appendChild(a); cell.appendChild(ed);
     } else {
-      showInput('');
+      showEdit();
     }
   }
-  function showInput(val){
-    cell.innerHTML='';
-    var inp=document.createElement('input');inp.className='link-inp';inp.placeholder='Paste link...';inp.value=val||'';
-    inp.onclick=function(e){e.stopPropagation();};
-    function commit(){var v=inp.value.trim();currentLink=v;onSave(v);showLink();}
-    inp.onkeydown=function(e){if(e.key==='Enter')commit();if(e.key==='Escape'){currentLink=val;showLink();}};
-    inp.onblur=function(){commit();};
+
+  function showEdit(){
+    cell.innerHTML = '';
+    var inp = document.createElement('input');
+    inp.className = 'link-inp'; inp.placeholder = 'Paste link + Enter'; inp.value = savedLink;
+    inp.onclick = function(e){ e.stopPropagation(); };
+    inp.onkeydown = function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        var v = inp.value.trim();
+        savedLink = v;
+        onSave(v);
+        // onSave triggers render() which replaces the DOM — nothing else needed
+      }
+      if(e.key === 'Escape'){
+        showView(); // cancel — just go back to view without saving
+      }
+    };
+    // No onblur to avoid triggering render mid-type
     cell.appendChild(inp);
-    setTimeout(function(){inp.focus();inp.select();},30);
+    setTimeout(function(){ inp.focus(); inp.select(); }, 20);
   }
-  showLink();
+
+  showView();
   return cell;
 }
-
 function makeFixedRow(cat){
   var row=document.createElement('div');var isDel=deleted[cat];row.className='part-row'+(isDel?' deleted':'');
   var bd=document.createElement('div');
@@ -547,7 +565,7 @@ function saveToDb(){
   setTimeout(function(){closeModal();},700);
 }
 
-function addRackRow(cat){rackRows.push({cat:cat||RACK_CATS[0],id:null,qty:1,link:'',key:'r'+Date.now()+Math.random()});renderRack();}
+function addRackRow(cat){rackRows.push({cat:cat||RACK_CATS[0],id:null,qty:1,link:'',status:'none',key:'r'+Date.now()+Math.random()});renderRack();}
 function findRackPart(cat,id){if(!RACK_PARTS[cat]||!id)return null;return RACK_PARTS[cat].find(function(p){return p.id===id;})||null;}
 function calcRackTotal(){var t=0;rackRows.forEach(function(r){var p=findRackPart(r.cat,r.id);if(p&&p.price)t+=p.price*r.qty;});return t;}
 
@@ -570,7 +588,18 @@ function renderRack(){
     var ld=makeLinkCell(sl,function(nl){rackRows[idx].link=nl;renderRack();});
     var rmd=document.createElement('div');var rmb=document.createElement('button');rmb.className='rem-btn';rmb.innerHTML='✕';
     rmb.onclick=function(){rackRows.splice(idx,1);renderRack();};rmd.appendChild(rmb);
-    row.appendChild(pd);row.appendChild(td);row.appendChild(ld);row.appendChild(rmd);
+    // Status badge — same cycle as server
+    var sd=document.createElement('div');
+    (function(i){
+      var st=rackRows[i].status||'none';
+      var sb=document.createElement('button');
+      sb.className='cat-badge status-'+st;
+      sb.textContent=st==='none'?'Not ordered':st==='ordered'?'Ordered':'In stock';
+      sb.title=st==='none'?'→ Ordered':st==='ordered'?'→ In Stock':'→ Reset';
+      sb.onclick=function(){rackRows[i].status=STATUS_CYCLE[(STATUS_CYCLE.indexOf(rackRows[i].status||'none')+1)%3];renderRack();};
+      sd.appendChild(sb);
+    })(idx);
+    row.appendChild(pd);row.appendChild(td);row.appendChild(ld);row.appendChild(sd);row.appendChild(rmd);
     container.appendChild(row);
   });
   var t=calcRackTotal();
@@ -785,7 +814,7 @@ function signOutDrive(){
   </div>
 </div>
 
-<script src="auth.js?v=202604070200"></script>
+<script src="auth.js?v=202604070215"></script>
 <script>
 function openAddPartModal(){
   document.getElementById('ap_name').value='';
