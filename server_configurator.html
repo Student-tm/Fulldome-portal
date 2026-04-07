@@ -4,13 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407032602";
+  var V="20260407032846";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
 
 
 
@@ -943,28 +944,31 @@ async function loadSavedConfig(){
 }
 
 async function appendBlankRows(n){
-  try {
-    // Get Configs sheet id
-    var r = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/'+CONFIGS_SPREADSHEET_ID+'?fields=sheets.properties',
-      {headers:{Authorization:'Bearer '+accessToken}}
-    );
-    var d = await r.json();
-    var sheet = d.sheets.find(function(s){return s.properties.title==='Configs';});
-    var sheetId = sheet ? sheet.properties.sheetId : 0;
-    // Get current last row
-    var data = await configsGet('Configs!A:A');
-    var rowCount = (data.values||[]).length;
-    // Insert n blank rows at end
-    await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/'+CONFIGS_SPREADSHEET_ID+':batchUpdate',
-      {
-        method:'POST',
-        headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
-        body:JSON.stringify({requests:[{insertDimension:{range:{sheetId:sheetId,dimension:'ROWS',startIndex:rowCount,endIndex:rowCount+n},inheritFromBefore:false}}]})
-      }
-    );
-  } catch(e){ console.warn('appendBlankRows error:', e); }
+  // Get Configs sheet id
+  var r1 = await fetch(
+    'https://sheets.googleapis.com/v4/spreadsheets/'+CONFIGS_SPREADSHEET_ID+'?fields=sheets.properties',
+    {headers:{Authorization:'Bearer '+accessToken}}
+  );
+  var d1 = await r1.json();
+  if(!r1.ok) throw new Error('getSheetId failed: '+JSON.stringify(d1));
+  var sheet = d1.sheets.find(function(s){return s.properties.title==='Configs';});
+  var sheetId = sheet ? sheet.properties.sheetId : 0;
+
+  // Get current last row
+  var data = await configsGet('Configs!A:A');
+  var rowCount = (data.values||[]).length;
+
+  // Insert n blank rows at end
+  var r2 = await fetch(
+    'https://sheets.googleapis.com/v4/spreadsheets/'+CONFIGS_SPREADSHEET_ID+':batchUpdate',
+    {
+      method:'POST',
+      headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
+      body:JSON.stringify({requests:[{insertDimension:{range:{sheetId:sheetId,dimension:'ROWS',startIndex:rowCount,endIndex:rowCount+n},inheritFromBefore:false}}]})
+    }
+  );
+  var d2 = await r2.json();
+  if(!r2.ok) throw new Error('insertDimension failed: '+JSON.stringify(d2));
 }
 
 async function saveCurrentConfig(){
