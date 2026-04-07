@@ -15,14 +15,14 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .divider{height:1px;background:#1e1e1e;margin:40px 0;}
 
 /* Config grid */
-.config-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;max-width:560px;}
+.config-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;max-width:900px;}
 .cfg-btn{padding:10px 16px;border:1px solid #2a2a2a;border-radius:2px;background:#1a1a1a;color:#555;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:all 0.15s;text-align:center;}
 .cfg-btn:hover{border-color:#CC0000;color:#CC0000;}
 .cfg-btn.active{border-color:#CC0000;background:#CC0000;color:#fff;}
 .cfg-btn.empty{background:transparent;border:1px dashed #1a1a1a;cursor:default;pointer-events:none;}
 
 /* Long distance toggle */
-.dist-toggle{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:10px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;max-width:560px;}
+.dist-toggle{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:10px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;max-width:900px;}
 .dist-toggle-label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;user-select:none;flex:1;}
 .dist-toggle-label span{color:#f0a500;}
 .dist-info{font-size:10px;color:#333;}
@@ -196,8 +196,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
   <div class="project-bar" id="projectBar" style="display:none">
     <div class="pfield"><label>Project Name</label><input id="projName" placeholder="e.g. 10m Dome — Dubai 2026"/></div>
     <div class="pfield pfield-sm"><label>FDPSN</label><input id="fdpsn" placeholder="#3055"/></div>
-    <div class="total-badge"><div class="total-badge-label">Server Total</div><div class="total-badge-val" id="totalBadge">$0.00</div></div>
-    <button onclick="openAddPartModal()" style="margin-left:16px;padding:8px 20px;background:transparent;border:1px solid #CC0000;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Data</button>
+    <button onclick="openAddPartModal()" style="margin-left:auto;padding:8px 20px;background:transparent;border:1px solid #CC0000;border-radius:2px;color:#CC0000;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">+ Add to Data</button>
     <button onclick="saveCurrentConfig()" style="padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">Save Config</button>
     <span id="configSaveStatus" style="font-size:11px;color:#555;"></span>
   </div>
@@ -217,10 +216,8 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
   <div class="section-title">Rack Configuration</div>
   <div class="rack-topbar">
     <button class="add-db-btn" onclick="openModal()">＋ Add to Database</button>
-    <div class="rack-total-badge">
-      <div class="rack-total-badge-label">Rack Total</div>
-      <div class="rack-total-badge-val" id="rackTotalBadge">$0.00</div>
-    </div>
+    <button onclick="saveCurrentRackConfig()" style="padding:8px 20px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.1em;">Save Rack Config</button>
+    <span id="rackSaveStatus" style="font-size:11px;color:#555;"></span>
   </div>
   <div class="rack-builder">
     <div class="rack-header">
@@ -316,7 +313,7 @@ var STATUS_CYCLE=['none','ordered','arrived'];
 var sel={},qtys={},deleted={},statuses={},extras=[],links={},currentKey=null,isLong=false;
 
 // Build config grid
-var LAYOUT=[['HDx4','HDx6','HDx8'],['UHDx4','UHDx6','UHDx8'],['HDx12','UHDx12','']];
+var LAYOUT=[['HDx4','HDx6','HDx8','HDx12','VJ Server'],['UHDx4','UHDx6','UHDx8','UHDx12','']];
 var grid=document.getElementById('configGrid');
 LAYOUT.forEach(function(row){row.forEach(function(key){
   var btn=document.createElement('button');
@@ -369,7 +366,6 @@ function render(){
   var t=calcTotal();
   var tb=document.createElement('div');tb.className='total-bar';tb.innerHTML='<span class="total-label">Total Build Cost</span><span class="total-val">$'+fmt(t)+'</span>';
   b.appendChild(tb);wrap.appendChild(b);
-  document.getElementById('totalBadge').textContent='$'+fmt(t);
 }
 
 function makeBadge(label,status,onclick){
@@ -379,16 +375,28 @@ function makeBadge(label,status,onclick){
 
 function makeLinkCell(currentLink,onSave){
   var cell=document.createElement('div');cell.className='link-cell';
-  if(currentLink){
-    var a=document.createElement('a');a.className='link-btn';a.href=currentLink;a.target='_blank';a.rel='noopener';a.textContent='Buy ↗';
-    var ed=document.createElement('button');ed.className='link-edit';ed.textContent='✎';ed.onclick=function(e){e.preventDefault();e.stopPropagation();onSave('');};
-    cell.appendChild(a);cell.appendChild(ed);
-  } else {
-    var inp=document.createElement('input');inp.className='link-inp';inp.placeholder='Paste link...';
-    inp.onkeydown=function(e){if(e.key==='Enter'&&this.value.trim())onSave(this.value.trim());};
-    inp.onblur=function(){if(this.value.trim())onSave(this.value.trim());};
-    cell.appendChild(inp);
+  function showLink(){
+    cell.innerHTML='';
+    if(currentLink){
+      var a=document.createElement('a');a.className='link-btn';a.href=currentLink;a.target='_blank';a.rel='noopener';a.textContent='Buy ↗';
+      var ed=document.createElement('button');ed.className='link-edit';ed.textContent='✎';
+      ed.onclick=function(e){e.preventDefault();e.stopPropagation();showInput(currentLink);};
+      cell.appendChild(a);cell.appendChild(ed);
+    } else {
+      showInput('');
+    }
   }
+  function showInput(val){
+    cell.innerHTML='';
+    var inp=document.createElement('input');inp.className='link-inp';inp.placeholder='Paste link...';inp.value=val||'';
+    inp.onclick=function(e){e.stopPropagation();};
+    function commit(){var v=inp.value.trim();currentLink=v;onSave(v);showLink();}
+    inp.onkeydown=function(e){if(e.key==='Enter')commit();if(e.key==='Escape'){currentLink=val;showLink();}};
+    inp.onblur=function(){commit();};
+    cell.appendChild(inp);
+    setTimeout(function(){inp.focus();inp.select();},30);
+  }
+  showLink();
   return cell;
 }
 
@@ -564,7 +572,6 @@ function renderRack(){
   });
   var t=calcRackTotal();
   document.getElementById('rackTotal').textContent='$'+fmt(t);
-  document.getElementById('rackTotalBadge').textContent='$'+fmt(t);
 }
 
 // Shared dropdown
@@ -896,7 +903,26 @@ async function saveCurrentConfig(){
   }
 }
 
-// Init from URL params
+async function saveCurrentRackConfig(){
+  var urlParams = new URLSearchParams(window.location.search);
+  var pid = urlParams.get('project')||'default';
+  var pname = document.getElementById('projName').value || (urlParams.get('name')?decodeURIComponent(urlParams.get('name')):'');
+  var configId = 'RACK-'+pid.slice(-6);
+  var components = [];
+  rackRows.forEach(function(r){
+    var p=findRackPart(r.cat,r.id);
+    components.push({component:r.cat, value:p?p.name:'', price:p?String(p.price*r.qty):'', link:r.link||(p?p.link:''), status:'Not ordered'});
+  });
+  document.getElementById('rackSaveStatus').textContent='Saving...';
+  try {
+    await saveConfig(configId, 'RACK', pid, pname, components);
+    document.getElementById('rackSaveStatus').textContent='Saved ✓';
+    setTimeout(function(){document.getElementById('rackSaveStatus').textContent='';},3000);
+  } catch(e){
+    document.getElementById('rackSaveStatus').textContent='Error: '+e.message;
+  }
+}
+
 (function(){
   var params = new URLSearchParams(window.location.search);
   var name = params.get('name') ? decodeURIComponent(params.get('name')) : '';
