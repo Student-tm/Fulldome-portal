@@ -4,13 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407025108";
+  var V="20260407030320";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
 <meta charset="UTF-8"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta http-equiv="Pragma" content="no-cache"/>
@@ -947,7 +948,7 @@ async function saveCurrentConfig(){
   FIXED_CATS.forEach(function(cat){
     if(deleted[cat]) return;
     var part = findPart(cat, sel[cat]);
-    var status = (statuses[cat]||'')  ==='arrived'?'In stock':(statuses[cat]||'')==='ordered'?'Ordered':'Not ordered';
+    var status = (statuses[cat]||'')==='arrived'?'In stock':(statuses[cat]||'')==='ordered'?'Ordered':'Not ordered';
     components.push({component:cat, value:part?part.name:'', price:part?String(part.price):'', link:(links[cat]||'')+(part&&part.link?part.link:''), status:status});
   });
   extras.forEach(function(ex){
@@ -956,8 +957,8 @@ async function saveCurrentConfig(){
     components.push({component:ex.cat, value:part?part.name:'', price:part?String(part.price*ex.qty):'', link:ex.link||(part?part.link:''), status:status});
   });
   document.getElementById('configSaveStatus').textContent='Saving...';
-  console.log('configId:', configId, 'type:', type, 'pid:', pid, 'components:', components);
   try {
+    await deleteConfig(configId);
     await saveConfig(configId, type, pid, pname, components);
     document.getElementById('configSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('configSaveStatus').textContent='';},3000);
@@ -974,10 +975,12 @@ async function saveCurrentRackConfig(){
   var components = [];
   rackRows.forEach(function(r){
     var p=findRackPart(r.cat,r.id);
-    components.push({component:r.cat, value:p?p.name:'', price:p?String(p.price*r.qty):'', link:r.link||(p?p.link:''), status:'Not ordered'});
+    var status=(r.status||'')==='arrived'?'In stock':(r.status||'')==='ordered'?'Ordered':'Not ordered';
+    components.push({component:r.cat, value:p?p.name:'', price:p?String(p.price*r.qty):'', link:r.link||(p?p.link:''), status:status});
   });
   document.getElementById('rackSaveStatus').textContent='Saving...';
   try {
+    await deleteConfig(configId);
     await saveConfig(configId, 'RACK', pid, pname, components);
     document.getElementById('rackSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('rackSaveStatus').textContent='';},3000);
