@@ -4,13 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407031355";
+  var V="20260407032156";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
 
 
 
@@ -961,7 +962,7 @@ async function saveCurrentConfig(){
   try {
     await deleteConfig(configId);
     await saveConfig(configId, type, pid, pname, components);
-    await configsAppend('Configs!A:I', [['','','','','','','','',''],['','','','','','','','','']]);
+    await configsAppend('Configs!A:I', [['---','','','','','','','',''],['---','','','','','','','','']]);
     document.getElementById('configSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('configSaveStatus').textContent='';},3000);
   } catch(e){
@@ -984,7 +985,7 @@ async function saveCurrentRackConfig(){
   try {
     await deleteConfig(configId);
     await saveConfig(configId, 'RACK', pid, pname, components);
-    await configsAppend('Configs!A:I', [['','','','','','','','',''],['','','','','','','','','']]);
+    await configsAppend('Configs!A:I', [['---','','','','','','','',''],['---','','','','','','','','']]);
     document.getElementById('rackSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('rackSaveStatus').textContent='';},3000);
   } catch(e){
