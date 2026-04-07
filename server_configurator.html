@@ -4,13 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407032156";
+  var V="20260407032602";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
 
 
 
@@ -941,6 +942,31 @@ async function loadSavedConfig(){
   } catch(e){ console.error('loadSavedConfig error', e); }
 }
 
+async function appendBlankRows(n){
+  try {
+    // Get Configs sheet id
+    var r = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/'+CONFIGS_SPREADSHEET_ID+'?fields=sheets.properties',
+      {headers:{Authorization:'Bearer '+accessToken}}
+    );
+    var d = await r.json();
+    var sheet = d.sheets.find(function(s){return s.properties.title==='Configs';});
+    var sheetId = sheet ? sheet.properties.sheetId : 0;
+    // Get current last row
+    var data = await configsGet('Configs!A:A');
+    var rowCount = (data.values||[]).length;
+    // Insert n blank rows at end
+    await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/'+CONFIGS_SPREADSHEET_ID+':batchUpdate',
+      {
+        method:'POST',
+        headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
+        body:JSON.stringify({requests:[{insertDimension:{range:{sheetId:sheetId,dimension:'ROWS',startIndex:rowCount,endIndex:rowCount+n},inheritFromBefore:false}}]})
+      }
+    );
+  } catch(e){ console.warn('appendBlankRows error:', e); }
+}
+
 async function saveCurrentConfig(){
   var urlParams = new URLSearchParams(window.location.search);
   var pid = urlParams.get('project')||'default';
@@ -962,7 +988,7 @@ async function saveCurrentConfig(){
   try {
     await deleteConfig(configId);
     await saveConfig(configId, type, pid, pname, components);
-    await configsAppend('Configs!A:I', [['---','','','','','','','',''],['---','','','','','','','','']]);
+    await appendBlankRows(2);
     document.getElementById('configSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('configSaveStatus').textContent='';},3000);
   } catch(e){
@@ -985,7 +1011,7 @@ async function saveCurrentRackConfig(){
   try {
     await deleteConfig(configId);
     await saveConfig(configId, 'RACK', pid, pname, components);
-    await configsAppend('Configs!A:I', [['---','','','','','','','',''],['---','','','','','','','','']]);
+    await appendBlankRows(2);
     document.getElementById('rackSaveStatus').textContent='Saved ✓';
     setTimeout(function(){document.getElementById('rackSaveStatus').textContent='';},3000);
   } catch(e){
