@@ -4,13 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407033452";
+  var V="20260407033831";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
 
 
 
@@ -453,7 +454,7 @@ function makeLinkCell(currentLink, onSave){
 function makeFixedRow(cat){
   var row=document.createElement('div');var isDel=deleted[cat];row.className='part-row'+(isDel?' deleted':'');
   var bd=document.createElement('div');
-  if(isDel){bd.innerHTML='<span class="cat-badge status-none" style="opacity:0.2">'+cat+'</span>';}
+  if(isDel){bd.innerHTML='<span class="cat-badge status-none">'+cat+'</span>';}
   else{bd.appendChild(makeBadge(cat,statuses[cat]||'none',function(){cycleStatus(cat,false,null);}));}
   row.appendChild(bd);
   if(isDel){
