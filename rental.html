@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408020405";
+  var V="20260408020659";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -181,7 +182,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408020405"></script>
+<script src="auth.js?v=20260408020659"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -391,6 +392,18 @@ document.addEventListener('click', function(e){
   if(!e.target.closest('.ship-wrap')){
     document.querySelectorAll('.ship-picker.open').forEach(function(el){ el.classList.remove('open'); });
   }
+  // Save shipping
+  if(e.target.classList.contains('ship-save-btn')){
+    e.stopPropagation();
+    var pid = e.target.dataset.pid;
+    var proj = projects.find(function(x){ return x.id===pid; });
+    if(proj) saveShipping(pid, proj.name);
+  }
+  // Cancel
+  if(e.target.classList.contains('ship-cancel-btn')){
+    e.stopPropagation();
+    closeShipPicker(e.target.dataset.pid);
+  }
 });
 
 function render(){
@@ -430,8 +443,8 @@ function render(){
           '<div class="ship-picker" id="sp-'+p.id+'">'+
             '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Shipping Date</div>'+
             '<input type="date" id="sd-'+p.id+'" value="'+(shippingData[p.id]?shippingData[p.id].date:'')+'"/>'+
-            '<button class="ship-save-btn" onclick="saveShipping(\'' + p.id + '\',\'' + p.name.replace(/\'/g,\'\\\'\')+'\')">Save & Add to Calendar</button>'+
-            '<button class="ship-cancel-btn" onclick="closeShipPicker(\'' + p.id + '\')">Cancel</button>'+
+            '<button class="ship-save-btn" data-pid="'+p.id+'">Save &amp; Add to Calendar</button>'+
+            '<button class="ship-cancel-btn" data-pid="'+p.id+'">Cancel</button>'+
           '</div>'+
         '</span>'+
         tgBtn(p.tg1,'US Projects')+
