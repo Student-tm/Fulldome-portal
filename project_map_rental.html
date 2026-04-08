@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408033239";
+  var V="20260408033722";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -24,17 +25,15 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .section-label:first-child{margin-top:0;}
 
 /* Quick actions */
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
-.abtn{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;padding:12px 20px;cursor:pointer;transition:all 0.2s;text-decoration:none;font-family:Consolas,monospace;}
-.abtn:hover{background:#222;border-color:#CC0000;}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;align-items:stretch;}
+.abtn{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;text-decoration:none;font-family:Consolas,monospace;}
+.abtn:hover{border-color:#CC0000;}
 .abtn-red{border-color:#CC0000;}
 .abtn-red:hover{background:#CC0000;}
 .abtn-red:hover .abtn-label{color:#fff;}
-.abtn-red:hover .abtn-sub{color:rgba(255,255,255,0.7);}
-.abtn-icon{font-size:16px;color:#CC0000;}
+.abtn-icon{font-size:14px;color:#CC0000;}
 .abtn-red:hover .abtn-icon{color:#fff;}
-.abtn-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#fff;}
-.abtn-sub{font-size:11px;color:#555;margin-top:2px;}
+.abtn-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fff;}
 
 /* Brief table */
 .brief-wrap{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;overflow:hidden;}
@@ -54,7 +53,7 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .brief-header{display:grid;grid-template-columns:260px 1fr 1fr;background:#161616;border-bottom:1px solid #2a2a2a;}
 .brief-header div{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.15em;padding:6px 16px;}
 
-.tg-action{text-decoration:none;display:flex;align-items:center;gap:6px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;}
+.tg-action{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;text-decoration:none;}
 .tg-action:hover{border-color:#4a90d9;}
 .tg-action-icon{font-size:14px;color:#4a90d9;}
 .tg-action-label{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;}
@@ -78,11 +77,11 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <div class="actions">
     <div class="abtn abtn-red" id="equipBtn">
       <div class="abtn-icon">&#9634;</div>
-      <div><div class="abtn-label">Equipment List</div><div class="abtn-sub">Packing list &amp; dome setup</div></div>
+      <div><div class="abtn-label">Equipment List</div></div>
     </div>
     <div class="abtn" id="serverBtn">
       <div class="abtn-icon" style="color:#CC0000">&#9881;</div>
-      <div><div class="abtn-label">Server Config</div><div class="abtn-sub">Projection system setup</div></div>
+      <div><div class="abtn-label">Server Config</div></div>
     </div>
     <div class="tg-action" id="tg1Btn">
       <span class="tg-action-icon">✈</span>
@@ -173,7 +172,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260408033239"></script>
+<script src="auth.js?v=20260408033722"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
