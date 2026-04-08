@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408022655";
+  var V="20260408023341";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -203,7 +205,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408022655"></script>
+<script src="auth.js?v=20260408023341"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -395,7 +397,14 @@ async function saveShipping(pid, projectName){
 function openShipPicker(pid){
   document.querySelectorAll('.ship-picker.open').forEach(function(el){ el.classList.remove('open'); });
   var picker = document.getElementById('sp-'+pid);
-  if(picker){ picker.classList.add('open'); }
+  if(picker){
+    picker.classList.add('open');
+    // Auto-open native date picker
+    setTimeout(function(){
+      var inp = document.getElementById('sd-'+pid);
+      if(inp) inp.showPicker ? inp.showPicker() : inp.click();
+    }, 50);
+  }
 }
 
 function closeShipPicker(pid){
@@ -442,13 +451,18 @@ function render(){
     card.className='pcard';
     if(isDone) card.style.opacity='0.6';
 
-    var statusBtn='<button class="pstatus-btn" style="font-size:12px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:2px;border:1px solid '+(isDone?'#555':'#1D9E75')+';background:'+(isDone?'#2a2a2a':'#0f2a1e')+';color:'+(isDone?'#555':'#1D9E75')+';cursor:pointer;font-family:Consolas,monospace;flex-shrink:0">'+(isDone?'Done':'Active')+'</button>';
+    var btnStyle = 'font-size:12px;font-weight:700;text-transform:uppercase;padding:3px 12px;border-radius:2px;cursor:pointer;font-family:Consolas,monospace;width:80px;text-align:center;';
+    var statusBtn='<button class="pstatus-btn" style="'+btnStyle+'border:1px solid '+(isDone?'#555':'#1D9E75')+';background:'+(isDone?'#2a2a2a':'#0f2a1e')+';color:'+(isDone?'#555':'#1D9E75')+';">'+(isDone?'Done':'Active')+'</button>';
+    var delBtn='<button class="pdel" style="'+btnStyle+'border:1px solid #2a2a2a;background:transparent;color:#444;">Delete</button>';
 
      card.innerHTML=
        '<div class="pcard-name">'+
          '<span>'+p.name+'</span>'+
-         statusBtn+
          '<button class="pedit" title="Edit">&#9998;</button>'+
+         '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">'+
+           statusBtn+
+           delBtn+
+         '</div>'+
        '</div>'+
        '<div class="pcard-body">'+
          (p.address?'<span class="ptag-wrap"><span class="ptag-label">LOCATION</span><span class="ptag">'+p.address+'</span></span>':'')+
@@ -456,7 +470,6 @@ function render(){
          tgBtn(p.tg1,'US Projects')+
          tgBtn(p.tg2,'Production')+
          '<span style="flex:1"></span>'+
-         '<button class="pdel">Delete</button>'+
          '<div class="parrow">&#8594;</div>'+
        '</div>';
 
@@ -510,16 +523,13 @@ function render(){
       e.stopPropagation(); openShipPicker(p.id);
     };
     shipBlock.onclick = function(e){
-      e.stopPropagation();
-      window.open('https://calendar.google.com', '_blank');
+      e.stopPropagation(); openShipPicker(p.id);
     };
 
     var row = document.createElement('div');
     row.className = 'card-row';
     row.appendChild(card);
-    var spacer = document.createElement('div');
-    spacer.style.cssText = 'flex:0 0 45%;'; // pushes ship-block to the right
-    row.appendChild(spacer);
+    shipBlock.style.marginLeft = '60px';
     row.appendChild(shipBlock);
     return row;
   }
