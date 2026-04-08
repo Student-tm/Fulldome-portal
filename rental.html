@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408024559";
+  var V="20260408024845";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -209,7 +210,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408024559"></script>
+<script src="auth.js?v=20260408024845"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -442,27 +443,6 @@ document.addEventListener('click', function(e){
   }
   // Outside — close all
   document.querySelectorAll('.ship-picker.open').forEach(function(el){ el.classList.remove('open'); });
-});
-  } else if(!e.target.closest('.ship-picker') && !e.target.classList.contains('ship-save-btn') && !e.target.classList.contains('ship-cancel-btn')){
-    var pid = shipWrap.dataset.shipid;
-    if(pid) openShipPicker(pid);
-  }
-  // Save shipping
-  var saveBtn = e.target.closest('.ship-save-btn');
-  if(saveBtn){
-    e.stopPropagation();
-    var pid = saveBtn.dataset.pid;
-    var proj = projects.find(function(x){ return x.id===pid; });
-    if(proj) saveShipping(pid, proj.name);
-    return;
-  }
-  // Cancel
-  var cancelBtn = e.target.closest('.ship-cancel-btn');
-  if(cancelBtn){
-    e.stopPropagation();
-    closeShipPicker(cancelBtn.dataset.pid);
-    return;
-  }
 });
 
 function render(){
