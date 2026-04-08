@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408025939";
+  var V="20260408030355";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -78,12 +79,12 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .pcard:hover{background:#222;border-color:#CC0000;}
 .pcard-name{font-size:15px;font-weight:700;color:#fff;padding:8px 20px;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;}
 .pcard-name span{flex:1;}
-.pcard-body{padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.pcard-body{padding:8px 20px;align-items:center;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .ptag-wrap{display:flex;flex-direction:column;gap:2px;}.ptag{font-size:13px;color:#111;background:#f0a500;border-radius:2px;padding:2px 8px;white-space:nowrap;font-weight:700;}.ptag-label{font-size:9px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.1em;}
 .pdate{font-size:13px;color:#111;background:#f0a500;border-radius:2px;padding:2px 8px;white-space:nowrap;font-weight:700;}
 .pedit{font-size:13px;color:#444;background:transparent;border:none;cursor:pointer;padding:2px 4px;flex-shrink:0;}
 .pedit:hover{color:#CC0000;}
-.pdel{font-size:12px;color:#444;padding:7px 12px;border:1px solid #2a2a2a;border-radius:2px;cursor:pointer;background:transparent;font-family:Consolas,monospace;text-transform:uppercase;flex-shrink:0;}
+.pdel{font-size:12px;color:#444;padding:7px 12px;border:1px solid #2a2a2a;border-radius:4px;cursor:pointer;background:transparent;font-family:Consolas,monospace;text-transform:uppercase;flex-shrink:0;}
 .pdel:hover{color:#CC0000;border-color:#CC0000;}
 .ship-wrap{display:flex;flex-direction:column;gap:4px;padding:8px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;min-width:160px;transition:border-color 0.15s;}
 .ship-wrap:hover{border-color:#f0a500;}
@@ -214,7 +215,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408025939"></script>
+<script src="auth.js?v=20260408030355"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -475,7 +476,7 @@ function render(){
 
     var btnStyle = 'font-size:12px;font-weight:700;text-transform:uppercase;padding:3px 12px;border-radius:2px;cursor:pointer;font-family:Consolas,monospace;width:80px;text-align:center;';
     var statusBtn='<button class="pstatus-btn" style="'+btnStyle+'border:1px solid '+(isDone?'#555':'#1D9E75')+';background:'+(isDone?'#2a2a2a':'#0f2a1e')+';color:'+(isDone?'#555':'#1D9E75')+';">'+(isDone?'Done':'Active')+'</button>';
-    var delBtn='<button class="pdel" style="'+btnStyle+'border:1px solid #2a2a2a;background:transparent;color:#444;align-self:stretch;height:auto;">Delete</button>';
+    var delBtn='<button class="pdel">Delete</button>';
 
      card.innerHTML=
        '<div class="pcard-name">'+
