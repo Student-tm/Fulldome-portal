@@ -4,13 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408013114";
+  var V="20260408014119";
   if(localStorage.getItem("_fv")!==V){
     localStorage.setItem("_fv",V);
     if(performance.navigation.type!==1) location.reload(true);
   }
 })();
 </script>
+
 
 <meta charset="UTF-8"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
@@ -27,6 +28,13 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .header-title{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
 .main{flex:1;padding:32px;}
 .section-label{font-size:12px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;}
+.section-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;margin-bottom:16px;}
+.section-toggle:hover .section-label{color:#ff2222;}
+.toggle-arrow{font-size:10px;color:#CC0000;transition:transform 0.2s;display:inline-block;}
+.toggle-arrow.collapsed{transform:rotate(-90deg);}
+.section-count{font-size:10px;color:#444;font-weight:400;letter-spacing:0.05em;}
+.collapsible{overflow:hidden;transition:max-height 0.25s ease;}
+.collapsible.collapsed{max-height:0!important;}
 .new-btn{display:flex;align-items:center;gap:12px;background:#1a1a1a;border:1px dashed #CC0000;border-radius:3px;padding:18px 24px;cursor:pointer;width:100%;max-width:500px;transition:all 0.2s;margin-bottom:40px;}
 .new-btn:hover{background:#CC0000;}
 .new-btn:hover .ni{color:#fff;}
@@ -83,10 +91,22 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <div class="ni">+</div>
     <div><div class="nt">New Project</div><div class="ns">Create new sales project &nbsp;|&nbsp; General info</div></div>
   </div>
-  <div class="section-label">Current Projects</div>
-  <div class="projects-list" id="list"><div class="empty" id="emptyMsg">Loading...</div></div>
-  <div class="section-label" style="margin-top:40px">Completed Projects</div>
-  <div class="projects-list" id="listDone"></div>
+  <div class="section-toggle" onclick="toggleSection('active')">
+    <span class="toggle-arrow" id="arrowActive">▾</span>
+    <span class="section-label" style="margin-bottom:0">Current Projects</span>
+    <span class="section-count" id="countActive"></span>
+  </div>
+  <div class="collapsible" id="wrapActive" style="max-height:9999px">
+    <div class="projects-list" id="list" style="margin-bottom:40px"><div class="empty" id="emptyMsg">Loading...</div></div>
+  </div>
+  <div class="section-toggle" style="margin-top:8px" onclick="toggleSection('done')">
+    <span class="toggle-arrow" id="arrowDone">▾</span>
+    <span class="section-label" style="margin-bottom:0">Completed Projects</span>
+    <span class="section-count" id="countDone"></span>
+  </div>
+  <div class="collapsible" id="wrapDone" style="max-height:9999px">
+    <div class="projects-list" id="listDone"></div>
+  </div>
 </div>
 
 <div class="overlay" id="newModal">
@@ -146,7 +166,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408013114"></script>
+<script src="auth.js?v=20260408014119"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -359,6 +379,24 @@ function render(){
 
   active.forEach(function(p){ list.appendChild(makeCard(p)); });
   done.forEach(function(p){ listDone.appendChild(makeCard(p)); });
+  document.getElementById('countActive').textContent = '(' + active.length + ')';
+  document.getElementById('countDone').textContent = done.length ? '(' + done.length + ')' : '';
+}
+
+var _collapsed = {};
+function toggleSection(key){
+  _collapsed[key] = !_collapsed[key];
+  var wrap = document.getElementById(key==='active'?'wrapActive':'wrapDone');
+  var arrow = document.getElementById(key==='active'?'arrowActive':'arrowDone');
+  if(_collapsed[key]){
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
+    requestAnimationFrame(function(){ wrap.style.maxHeight = '0'; });
+    arrow.classList.add('collapsed');
+  } else {
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
+    setTimeout(function(){ wrap.style.maxHeight = '9999px'; }, 260);
+    arrow.classList.remove('collapsed');
+  }
 }
 </script>
 </body>
