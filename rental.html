@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408021806";
+  var V="20260408022203";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -50,7 +51,7 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .nt{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#fff;}
 .ns{font-size:13px;color:#555;margin-top:10px;}
 .projects-list{display:flex;flex-direction:column;gap:6px;max-width:1100px;}
-.card-row{display:flex;align-items:stretch;gap:10px;}
+.card-row{display:flex;align-items:stretch;gap:10px;}.card-row .ship-block{margin-left:50%;}
 .card-row .pcard{flex:1;}
 .ship-block{background:#1a1a1a;border:1px solid #2a2a2a;border-left:3px solid #f0a500;border-radius:3px;padding:12px 18px;display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:160px;position:relative;cursor:pointer;transition:border-color 0.15s;flex-shrink:0;}
 .ship-block:hover{border-color:#f0a500;}
@@ -199,7 +200,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408021806"></script>
+<script src="auth.js?v=20260408022203"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -302,10 +303,7 @@ function resetConfirm(){
 
 function tgBtn(url,label){
   if(!url) return '';
-  return '<a href="'+url+'" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;flex-shrink:0;display:flex;align-items:center;gap:6px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 12px;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#4a90d9\'" onmouseout="this.style.borderColor=\'#2a2a2a\'">'
-    +'<span style="font-size:14px;color:#4a90d9;">✈</span>'
-    +'<span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;">'+label+'</span>'
-  +'</a>';
+  return '<span class="ptag-wrap">'    +'<span class="ptag-label">TELEGRAM GROUP</span>'    +'<a href="'+url+'" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;display:flex;align-items:center;gap:6px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:2px 8px;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#4a90d9\'" onmouseout="this.style.borderColor=\'#2a2a2a\'">'      +'<span style="font-size:12px;color:#4a90d9;">✈</span>'      +'<span style="font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;">'+label+'</span>'    +'</a>'  +'</span>';
 }
 
 
@@ -455,10 +453,7 @@ function render(){
          tgBtn(p.tg1,'US Projects')+
          tgBtn(p.tg2,'Production')+
          '<span style="flex:1"></span>'+
-         '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">'+
-           statusBtn+
-           '<button class="pdel">Delete</button>'+
-         '</div>'+
+         '<button class="pdel">Delete</button>'+
          '<div class="parrow">&#8594;</div>'+
        '</div>';
 
