@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408031738";
+  var V="20260408032305";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -220,7 +221,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408031738"></script>
+<script src="auth.js?v=20260408032305"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -483,9 +484,9 @@ function render(){
     card.className='pcard';
     if(isDone) card.style.opacity='0.6';
     var statusBtn='<button class="pstatus-btn" style="font-size:11px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:2px;cursor:pointer;font-family:Consolas,monospace;flex-shrink:0;border:1px solid '+(isDone?'#555':'#1D9E75')+';background:'+(isDone?'#2a2a2a':'#0f2a1e')+';color:'+(isDone?'#555':'#1D9E75')+'">'+(isDone?'Done':'Active')+'</button>';
-    var statusBtn='<button class="pstatus-btn" style="font-size:12px;font-weight:700;text-transform:uppercase;padding:7px 12px;border-radius:4px;cursor:pointer;font-family:Consolas,monospace;border:1px solid '+(isDone?'#555':'#1D9E75')+';background:'+(isDone?'#2a2a2a':'#0f2a1e')+';color:'+(isDone?'#555':'#1D9E75')+'">'+(isDone?'Done':'Active')+'</button>';
     var delBtn='<span class="ptag-wrap"><span class="ptag-label">&nbsp;</span><button class="pdel">Delete</button></span>';
 
+     card.innerHTML=
        '<div class="pcard-name">'+
          '<span>'+p.name+'</span>'+
          statusBtn+
