@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408024224";
+  var V="20260408024559";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -208,7 +209,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408024224"></script>
+<script src="auth.js?v=20260408024559"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -416,9 +417,32 @@ function closeShipPicker(pid){
 }
 
 document.addEventListener('click', function(e){
-  var shipWrap = e.target.closest('.ship-wrap');
-  if(!shipWrap){
-    document.querySelectorAll('.ship-picker.open').forEach(function(el){ el.classList.remove('open'); });
+  // Save — must be first
+  var saveBtn = e.target.closest('.ship-save-btn');
+  if(saveBtn){
+    var pid = saveBtn.dataset.pid;
+    var proj = projects.find(function(x){ return x.id===pid; });
+    if(proj) saveShipping(pid, proj.name);
+    return;
+  }
+  // Cancel
+  var cancelBtn = e.target.closest('.ship-cancel-btn');
+  if(cancelBtn){
+    closeShipPicker(cancelBtn.dataset.pid);
+    return;
+  }
+  // Inside picker (date input etc) — do nothing
+  if(e.target.closest('.ship-picker')) return;
+  // Click ship-block — open picker
+  var shipBlock = e.target.closest('.ship-block');
+  if(shipBlock){
+    var pid = shipBlock.dataset.pid;
+    if(pid) openShipPicker(pid);
+    return;
+  }
+  // Outside — close all
+  document.querySelectorAll('.ship-picker.open').forEach(function(el){ el.classList.remove('open'); });
+});
   } else if(!e.target.closest('.ship-picker') && !e.target.classList.contains('ship-save-btn') && !e.target.classList.contains('ship-cancel-btn')){
     var pid = shipWrap.dataset.shipid;
     if(pid) openShipPicker(pid);
@@ -475,7 +499,6 @@ function render(){
          tgBtn(p.tg1,'US Projects')+
          tgBtn(p.tg2,'Production')+
          delBtn+
-         '<div class="parrow">&#8594;</div>'+
        '</div>';
 
     card.querySelector('.pstatus-btn').onclick=function(e){
@@ -512,6 +535,7 @@ function render(){
     // Shipping block — separate element to the right
     var shipBlock = document.createElement('div');
     shipBlock.className = 'ship-block';
+    shipBlock.dataset.pid = p.id;
     if(isDone) shipBlock.style.opacity='0.6';
     var sd = shippingData[p.id];
     shipBlock.innerHTML =
@@ -524,12 +548,7 @@ function render(){
         '<button class="ship-save-btn" data-pid="'+p.id+'">Save & Add to Calendar</button>'+
         '<button class="ship-cancel-btn" data-pid="'+p.id+'">Cancel</button>'+
       '</div>';
-    shipBlock.querySelector('.ship-block-pencil').onclick = function(e){
-      e.stopPropagation(); openShipPicker(p.id);
-    };
-    shipBlock.onclick = function(e){
-      e.stopPropagation(); openShipPicker(p.id);
-    };
+
 
     var row = document.createElement('div');
     row.className = 'card-row';
