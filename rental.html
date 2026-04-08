@@ -4,10 +4,13 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408015544";
+  var V="20260408020405";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
 
 
 
@@ -53,6 +56,20 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .pedit:hover{color:#CC0000;}
 .pdel{font-size:12px;color:#444;padding:2px 8px;border:1px solid #2a2a2a;border-radius:2px;cursor:pointer;background:transparent;font-family:Consolas,monospace;text-transform:uppercase;flex-shrink:0;}
 .pdel:hover{color:#CC0000;border-color:#CC0000;}
+.ship-wrap{display:flex;flex-direction:column;gap:2px;}
+.ship-label{font-size:9px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.1em;}
+.ship-val{display:flex;align-items:center;gap:4px;}
+.ship-date{font-size:13px;color:#111;background:#f0a500;border-radius:2px;padding:2px 8px;white-space:nowrap;font-weight:700;}
+.ship-empty{font-size:12px;color:#333;font-style:italic;}
+.ship-pencil{background:none;border:none;color:#444;cursor:pointer;font-size:13px;padding:0 2px;flex-shrink:0;}
+.ship-pencil:hover{color:#f0a500;}
+.ship-picker{display:none;position:absolute;z-index:50;background:#1a1a1a;border:1px solid #f0a500;border-radius:3px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,0.6);}
+.ship-picker.open{display:block;}
+.ship-picker input[type=date]{background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:6px 10px;outline:none;color-scheme:dark;}
+.ship-picker input[type=date]:focus{border-color:#f0a500;}
+.ship-save-btn{margin-top:8px;width:100%;padding:6px;background:#f0a500;border:none;border-radius:2px;color:#111;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;}
+.ship-save-btn:hover{background:#e09400;}
+.ship-cancel-btn{margin-top:4px;width:100%;padding:4px;background:transparent;border:1px solid #333;border-radius:2px;color:#555;font-family:Consolas,monospace;font-size:10px;cursor:pointer;}
 .parrow{font-size:15px;color:#333;flex-shrink:0;}
 .pcard:hover .parrow{color:#CC0000;}
 .empty{padding:40px 0;text-align:center;color:#333;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;}
@@ -164,11 +181,11 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408015544"></script>
+<script src="auth.js?v=20260408020405"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
-requireAuth(function(){ loadProjects(); });
+requireAuth(function(){ loadShipping().then(function(){ loadProjects(); }); });
 
 function loadProjects(){
   document.getElementById('emptyMsg').textContent='Loading...';
@@ -267,8 +284,114 @@ function resetConfirm(){
 
 function tgBtn(url,label){
   if(!url) return '';
-  return '<a href="'+url+'" target="_blank" onclick="event.stopPropagation()" style="font-size:12px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:2px 8px;border-radius:2px;white-space:nowrap;font-weight:700;text-transform:uppercase;flex-shrink:0">'+label+' &#8599;</a>';
+  return '<a href="'+url+'" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;flex-shrink:0;display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 14px;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#4a90d9\'" onmouseout="this.style.borderColor=\'#2a2a2a\'">'
+    +'<span style="font-size:16px;color:#4a90d9;">✈</span>'
+    +'<span style="display:flex;flex-direction:column;gap:1px;">'
+      +'<span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;">'+label+'</span>'
+      +'<span style="font-size:9px;color:#444;">Telegram group</span>'
+    +'</span>'
+  +'</a>';
 }
+
+
+// ═══ SHIPPING ════════════════════════════════════════
+var shippingData = {}; // { projectId: { date, eventId } }
+
+async function loadShipping(){
+  try {
+    await ensureSheet('Shipping');
+    var data = await sheetsGet('Shipping!A:C');
+    var rows = data.values || [];
+    rows.slice(1).forEach(function(r){
+      if(r[0]) shippingData[r[0]] = { date: r[1]||'', eventId: r[2]||'' };
+    });
+  } catch(e){ console.log('No shipping data yet'); }
+}
+
+async function saveShippingToSheet(pid, date, eventId){
+  await ensureSheet('Shipping');
+  var data = await sheetsGet('Shipping!A:A');
+  var rows = data.values || [];
+  var rowIdx = -1;
+  for(var i=1;i<rows.length;i++){ if(rows[i][0]===String(pid)){rowIdx=i+1;break;} }
+  var vals = [[pid, date, eventId]];
+  if(rowIdx>0) await sheetsUpdate('Shipping!A'+rowIdx+':C'+rowIdx, vals);
+  else await sheetsAppend('Shipping!A:C', vals);
+}
+
+async function createCalendarEvent(projectName, date){
+  var nextDay = new Date(date); nextDay.setDate(nextDay.getDate()+1);
+  var endDate = nextDay.toISOString().split('T')[0];
+  var r = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+    method:'POST',
+    headers:{ Authorization:'Bearer '+accessToken, 'Content-Type':'application/json' },
+    body: JSON.stringify({
+      summary: projectName + ' — Shipping',
+      start: { date: date },
+      end: { date: endDate },
+      colorId: '5'
+    })
+  });
+  var d = await r.json();
+  return d.id || '';
+}
+
+async function updateCalendarEvent(eventId, projectName, date){
+  var nextDay = new Date(date); nextDay.setDate(nextDay.getDate()+1);
+  var endDate = nextDay.toISOString().split('T')[0];
+  var r = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events/'+eventId, {
+    method:'PUT',
+    headers:{ Authorization:'Bearer '+accessToken, 'Content-Type':'application/json' },
+    body: JSON.stringify({
+      summary: projectName + ' — Shipping',
+      start: { date: date },
+      end: { date: endDate },
+      colorId: '5'
+    })
+  });
+  return r.ok;
+}
+
+async function saveShipping(pid, projectName){
+  var inp = document.getElementById('sd-'+pid);
+  var date = inp ? inp.value : '';
+  if(!date) return;
+  var btn = document.querySelector('#sp-'+pid+' .ship-save-btn');
+  if(btn) btn.textContent = 'Saving...';
+  try {
+    var existing = shippingData[pid];
+    var eventId = '';
+    if(existing && existing.eventId){
+      await updateCalendarEvent(existing.eventId, projectName, date);
+      eventId = existing.eventId;
+    } else {
+      eventId = await createCalendarEvent(projectName, date);
+    }
+    shippingData[pid] = { date: date, eventId: eventId };
+    await saveShippingToSheet(pid, date, eventId);
+    closeShipPicker(pid);
+    render();
+  } catch(e){
+    if(btn) btn.textContent = 'Error: '+e.message;
+  }
+}
+
+function openShipPicker(pid){
+  document.querySelectorAll('.ship-picker.open').forEach(function(el){ el.classList.remove('open'); });
+  var picker = document.getElementById('sp-'+pid);
+  if(picker){ picker.classList.add('open'); }
+}
+
+function closeShipPicker(pid){
+  var picker = document.getElementById('sp-'+pid);
+  if(picker) picker.classList.remove('open');
+}
+
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.ship-wrap')){
+    document.querySelectorAll('.ship-picker.open').forEach(function(el){ el.classList.remove('open'); });
+  }
+});
 
 function render(){
   var list=document.getElementById('list');
@@ -298,10 +421,25 @@ function render(){
         (p.address?'<span class="ptag-wrap"><span class="ptag-label">LOCATION</span><span class="ptag">'+p.address+'</span></span>':'')+
         (p.start?'<span class="ptag-wrap"><span class="ptag-label">DEADLINE</span><span class="pdate">'+p.start+'</span></span>':'')+
         '<span style="flex:1"></span>'+
-        statusBtn+
+        '<span class="ship-wrap" style="position:relative">'+
+          '<span class="ship-label">SHIPPING</span>'+
+          '<span class="ship-val">'+
+            (shippingData[p.id]?'<span class="ship-date">'+shippingData[p.id].date+'</span>':'<span class="ship-empty">—</span>')+
+            '<button class="ship-pencil" title="Set shipping date">✎</button>'+
+          '</span>'+
+          '<div class="ship-picker" id="sp-'+p.id+'">'+
+            '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Shipping Date</div>'+
+            '<input type="date" id="sd-'+p.id+'" value="'+(shippingData[p.id]?shippingData[p.id].date:'')+'"/>'+
+            '<button class="ship-save-btn" onclick="saveShipping(\'' + p.id + '\',\'' + p.name.replace(/\'/g,\'\\\'\')+'\')">Save & Add to Calendar</button>'+
+            '<button class="ship-cancel-btn" onclick="closeShipPicker(\'' + p.id + '\')">Cancel</button>'+
+          '</div>'+
+        '</span>'+
         tgBtn(p.tg1,'US Projects')+
         tgBtn(p.tg2,'Production')+
-        '<button class="pdel">Delete</button>'+
+        '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">'+
+          statusBtn+
+          '<button class="pdel">Delete</button>'+
+        '</div>'+
         '<div class="parrow">&#8594;</div>'+
       '</div>';
 
@@ -330,6 +468,10 @@ function render(){
       e.stopPropagation();
       deleteTarget=p.id;
       document.getElementById('confirmModal').classList.add('open');
+    };
+    card.querySelector('.ship-pencil').onclick=function(e){
+      e.stopPropagation();
+      openShipPicker(p.id);
     };
     card.onclick=function(){
       window.location.href='project_map.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name);
