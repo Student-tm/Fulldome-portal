@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+/* AUTO CACHE BUSTER */
+(function(){
+  var V="20260408013114";
+  if(localStorage.getItem("_fv")!==V){
+    localStorage.setItem("_fv",V);
+    if(performance.navigation.type!==1) location.reload(true);
+  }
+})();
+</script>
+
+<meta charset="UTF-8"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fulldome.pro — Sales Projects</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Consolas,"Courier New",monospace;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-items:center;gap:20px;}
+.back{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.back:hover{color:#CC0000;}
+.header-title{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
+.main{flex:1;padding:32px;}
+.section-label{font-size:12px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;}
+.new-btn{display:flex;align-items:center;gap:12px;background:#1a1a1a;border:1px dashed #CC0000;border-radius:3px;padding:18px 24px;cursor:pointer;width:100%;max-width:500px;transition:all 0.2s;margin-bottom:40px;}
+.new-btn:hover{background:#CC0000;}
+.new-btn:hover .ni{color:#fff;}
+.new-btn:hover .nt{color:#fff;}
+.new-btn:hover .ns{color:rgba(255,255,255,0.7);}
+.ni{font-size:20px;color:#CC0000;font-weight:700;transition:color 0.2s;}
+.nt{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#fff;}
+.ns{font-size:12px;color:#555;margin-top:10px;}
+.projects-list{display:flex;flex-direction:column;gap:6px;max-width:960px;}
+.pcard{background:#1a1a1a;border:1px solid #2a2a2a;border-left:3px solid #CC0000;border-radius:3px;cursor:pointer;transition:all 0.15s;overflow:hidden;}
+.pcard:hover{background:#222;border-color:#CC0000;}
+.pcard-name{font-size:14px;font-weight:700;color:#fff;padding:12px 20px;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;}
+.pcard-name span{flex:1;}
+.pcard-body{padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ptag{font-size:11px;color:#555;background:#111;border-radius:2px;padding:2px 8px;white-space:nowrap;}
+.pdate{font-size:11px;color:#444;white-space:nowrap;}
+.pedit{font-size:12px;color:#444;background:transparent;border:none;cursor:pointer;padding:2px 4px;flex-shrink:0;}
+.pedit:hover{color:#CC0000;}
+.pdel{font-size:11px;color:#444;padding:2px 8px;border:1px solid #2a2a2a;border-radius:2px;cursor:pointer;background:transparent;font-family:Consolas,monospace;text-transform:uppercase;flex-shrink:0;}
+.pdel:hover{color:#CC0000;border-color:#CC0000;}
+.parrow{font-size:14px;color:#333;flex-shrink:0;}
+.pcard:hover .parrow{color:#CC0000;}
+.empty{padding:40px 0;text-align:center;color:#333;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;}
+.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:100;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.mbox{background:#1a1a1a;border:1px solid #2a2a2a;border-top:3px solid #CC0000;border-radius:3px;padding:28px;width:560px;max-width:98vw;}
+.mrow{display:flex;gap:10px;overflow:hidden;}
+.mtitle{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;}
+.mlabel{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.minput{width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:10px 12px;outline:none;margin-bottom:12px;}
+.minput:focus{border-color:#CC0000;}
+.minput::placeholder{color:#444;}
+input[type="date"]{color-scheme:dark;}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:0.5;}
+.tg-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#111;border:1px solid #333;border-radius:2px;padding:6px 10px;}
+.tg-label{font-size:11px;color:#555;white-space:nowrap;min-width:100px;}
+.mbtn{padding:8px 20px;border-radius:3px;font-family:Consolas,monospace;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;border:none;}
+.mbtn-red{background:#CC0000;color:#fff;}
+.mbtn-gray{background:#2a2a2a;color:#888;}
+.mbtns{display:flex;gap:10px;justify-content:flex-end;margin-top:4px;}
+footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;}
+.ft{font-size:12px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
+</style>
+</head>
+<body>
+<header>
+  <div class="back" onclick="window.location.href='index.html'">&#8592; Portal</div>
+  <span class="header-title">Sales &mdash; Projects</span>
+  <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
+</header>
+<div class="main">
+  <div class="section-label">Create</div>
+  <div class="new-btn" id="newBtn">
+    <div class="ni">+</div>
+    <div><div class="nt">New Project</div><div class="ns">Create new sales project &nbsp;|&nbsp; General info</div></div>
+  </div>
+  <div class="section-label">Current Projects</div>
+  <div class="projects-list" id="list"><div class="empty" id="emptyMsg">Loading...</div></div>
+  <div class="section-label" style="margin-top:40px">Completed Projects</div>
+  <div class="projects-list" id="listDone"></div>
+</div>
+
+<div class="overlay" id="newModal">
+  <div class="mbox">
+    <div class="mtitle" id="modalTitle">New Sales Project</div>
+    <input class="minput" id="projName" placeholder="Project name (e.g. 10m Planetarium NY)..."/>
+    <select class="minput" id="projAddress" style="color:#888;cursor:pointer">
+      <option value="" disabled selected style="color:#444">Location (State)...</option>
+      <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
+    </select>
+    <input class="minput" id="projStart" placeholder="Installation start..." type="date" style="color:#888;min-width:0;flex:1"/>
+    <div class="tg-row">
+      <span class="tg-label">US Projects:</span>
+      <input class="minput" id="projTG1" placeholder="https://t.me/..." style="margin:0;border:none;background:transparent;padding:0;flex:1"/>
+      <a id="tgLink1" href="#" target="_blank" style="font-size:11px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:3px 8px;border-radius:2px;white-space:nowrap;font-weight:700;text-transform:uppercase">Open &#8599;</a>
+    </div>
+    <div class="tg-row">
+      <span class="tg-label">Production:</span>
+      <input class="minput" id="projTG2" placeholder="https://t.me/..." style="margin:0;border:none;background:transparent;padding:0;flex:1"/>
+      <a id="tgLink2" href="#" target="_blank" style="font-size:11px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:3px 8px;border-radius:2px;white-space:nowrap;font-weight:700;text-transform:uppercase">Open &#8599;</a>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn mbtn-gray" id="cancelBtn">Cancel</button>
+      <button class="mbtn mbtn-red" id="createBtn">Create Project</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="confirmModal">
+  <div class="mbox" style="width:340px">
+    <div id="step1">
+      <div class="mtitle">Delete Project?</div>
+      <div style="font-size:12px;color:#555;margin-bottom:20px">This action cannot be undone.</div>
+      <div class="mbtns">
+        <button class="mbtn mbtn-gray" id="confirmNo">Cancel</button>
+        <button class="mbtn mbtn-red" id="confirmYes">Yes, Delete</button>
+      </div>
+    </div>
+    <div id="step2" style="display:none">
+      <div class="mtitle">Enter PIN Code</div>
+      <div style="font-size:12px;color:#555;margin-bottom:16px">Enter 4-digit PIN to confirm.</div>
+      <input id="pinInput" type="password" maxlength="4" placeholder="_ _ _ _" style="width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:24px;padding:12px;outline:none;text-align:center;letter-spacing:8px;margin-bottom:8px"/>
+      <div id="pinError" style="font-size:12px;color:#CC0000;text-align:center;height:16px;margin-bottom:12px"></div>
+      <div class="mbtns">
+        <button class="mbtn mbtn-gray" id="pinCancel">Cancel</button>
+        <button class="mbtn mbtn-red" id="pinOk">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="ft">Fulldome.pro &copy; 2026</span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="ft">Team:</span>
+    <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:11px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:3px 10px;border-radius:2px;text-transform:uppercase">Telegram &#8599;</a>
+  </div>
+</footer>
+
+<script src="auth.js?v=20260408013114"></script>
+<script>
+var projects=[], deleteTarget=null, editId=null;
+
+const SALES_SHEET='SalesProjects';
+
+async function getSalesProjects(){
+  await ensureSheet(SALES_SHEET);
+  var data=await sheetsGet(SALES_SHEET+'!A:I');
+  var rows=data.values||[];
+  if(rows.length&&rows[0][0]==='ID') rows=rows.slice(1);
+  return rows.filter(function(r){return r[0]&&r[1];}).map(function(r){return{
+    id:r[0]||'',name:r[1]||'',address:r[2]||'',start:r[3]||'',
+    tg1:r[4]||'',tg2:r[5]||'',created:r[6]?parseInt(r[6]):Date.now(),status:r[7]||'active'
+  };});
+}
+
+async function saveSalesProject(p){
+  await ensureSheet(SALES_SHEET);
+  var data=await sheetsGet(SALES_SHEET+'!A:A');
+  var rows=data.values||[];
+  var rowIdx=-1;
+  for(var i=1;i<rows.length;i++){if(rows[i][0]===String(p.id)){rowIdx=i+1;break;}}
+  var vals=[[p.id,p.name,p.address||'',p.start||'',p.tg1||'',p.tg2||'',p.created,p.status||'active']];
+  if(rowIdx>0){await sheetsUpdate(SALES_SHEET+'!A'+rowIdx+':H'+rowIdx,vals);}
+  else{await sheetsAppend(SALES_SHEET+'!A:H',vals);}
+}
+
+async function deleteSalesProject(id){
+  var data=await sheetsGet(SALES_SHEET+'!A:A');
+  var rows=data.values||[];
+  var rowIdx=-1;
+  for(var i=1;i<rows.length;i++){if(rows[i][0]===String(id)){rowIdx=i;break;}}
+  if(rowIdx===-1)return;
+  var sheetId=await getSheetId(SALES_SHEET);
+  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+':batchUpdate',{
+    method:'POST',
+    headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
+    body:JSON.stringify({requests:[{deleteDimension:{range:{sheetId:sheetId,dimension:'ROWS',startIndex:rowIdx,endIndex:rowIdx+1}}}]})
+  });
+}
+
+requireAuth(function(){ loadProjects(); });
+
+function loadProjects(){
+  document.getElementById('emptyMsg').textContent='Loading...';
+  getSalesProjects().then(function(data){
+    projects=data||[];
+    render();
+  }).catch(function(e){
+    document.getElementById('emptyMsg').textContent='Error: '+e.message;
+  });
+}
+
+document.getElementById('newBtn').onclick=function(){
+  editId=null;
+  document.getElementById('modalTitle').textContent='New Sales Project';
+  document.getElementById('projName').value='';
+  document.getElementById('projAddress').value='';
+  document.getElementById('projStart').value='';
+  document.getElementById('projTG1').value='';
+  document.getElementById('projTG2').value='';
+  document.getElementById('tgLink1').href='#';
+  document.getElementById('tgLink2').href='#';
+  document.getElementById('createBtn').textContent='Create Project';
+  document.getElementById('newModal').classList.add('open');
+  setTimeout(function(){document.getElementById('projName').focus();},100);
+};
+
+document.getElementById('cancelBtn').onclick=function(){document.getElementById('newModal').classList.remove('open');};
+
+document.getElementById('projTG1').oninput=function(){document.getElementById('tgLink1').href=this.value.trim()||'#';};
+document.getElementById('projTG2').oninput=function(){document.getElementById('tgLink2').href=this.value.trim()||'#';};
+
+document.getElementById('createBtn').onclick=function(){
+  var name=document.getElementById('projName').value.trim();
+  if(!name)return;
+  var p={
+    id:editId||Date.now()+'',
+    name:name,
+    address:document.getElementById('projAddress').value.trim(),
+    start:document.getElementById('projStart').value.trim(),
+    tg1:document.getElementById('projTG1').value.trim(),
+    tg2:document.getElementById('projTG2').value.trim(),
+    created:Date.now(),
+    status:editId?(projects.find(function(x){return x.id===editId;})||{}).status||'active':'active'
+  };
+  document.getElementById('createBtn').textContent='Saving...';
+  document.getElementById('createBtn').disabled=true;
+  saveSalesProject(p).then(function(){
+    if(editId){
+      var idx=projects.findIndex(function(x){return x.id===editId;});
+      if(idx!==-1) projects[idx]=p;
+    } else {
+      projects.unshift(p);
+    }
+    document.getElementById('newModal').classList.remove('open');
+    document.getElementById('createBtn').textContent='Create Project';
+    document.getElementById('createBtn').disabled=false;
+    editId=null;
+    render();
+  }).catch(function(e){
+    alert('Error: '+e.message);
+    document.getElementById('createBtn').textContent='Create Project';
+    document.getElementById('createBtn').disabled=false;
+  });
+};
+
+document.getElementById('projName').onkeydown=function(e){if(e.key==='Enter')document.getElementById('createBtn').click();};
+
+document.getElementById('confirmNo').onclick=function(){resetConfirm();};
+document.getElementById('confirmYes').onclick=function(){
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').style.display='block';
+  document.getElementById('pinInput').value='';
+  document.getElementById('pinError').textContent='';
+  setTimeout(function(){document.getElementById('pinInput').focus();},100);
+};
+document.getElementById('pinCancel').onclick=function(){resetConfirm();};
+document.getElementById('pinOk').onclick=function(){
+  if(document.getElementById('pinInput').value==='1008'){
+    deleteSalesProject(deleteTarget).then(function(){
+      projects=projects.filter(function(p){return p.id!==deleteTarget;});
+      resetConfirm();render();
+    });
+  } else {
+    document.getElementById('pinError').textContent='Incorrect PIN.';
+    document.getElementById('pinInput').value='';
+  }
+};
+document.getElementById('pinInput').onkeydown=function(e){if(e.key==='Enter')document.getElementById('pinOk').click();};
+
+function resetConfirm(){
+  document.getElementById('confirmModal').classList.remove('open');
+  document.getElementById('step1').style.display='block';
+  document.getElementById('step2').style.display='none';
+  deleteTarget=null;
+}
+
+function tgBtn(url,label){
+  if(!url) return '';
+  return '<a href="'+url+'" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:2px 8px;border-radius:2px;white-space:nowrap;font-weight:700;text-transform:uppercase;flex-shrink:0">'+label+' &#8599;</a>';
+}
+
+function render(){
+  var list=document.getElementById('list');
+  var listDone=document.getElementById('listDone');
+  list.innerHTML='';
+  listDone.innerHTML='';
+
+  var active=projects.filter(function(p){return p.status!=='done';});
+  var done=projects.filter(function(p){return p.status==='done';});
+
+  if(!active.length) list.innerHTML='<div class="empty">No active projects — create your first one</div>';
+
+  function makeCard(p){
+    var isDone=p.status==='done';
+    var card=document.createElement('div');
+    card.className='pcard';
+    if(isDone) card.style.opacity='0.6';
+
+    var statusBtn='<button class="pstatus-btn" style="font-size:11px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:2px;border:1px solid '+(isDone?'#555':'#1D9E75')+';background:'+(isDone?'#2a2a2a':'#0f2a1e')+';color:'+(isDone?'#555':'#1D9E75')+';cursor:pointer;font-family:Consolas,monospace;flex-shrink:0">'+(isDone?'Done':'Active')+'</button>';
+
+    card.innerHTML=
+      '<div class="pcard-name">'+
+        '<span>'+p.name+'</span>'+
+        '<button class="pedit" title="Edit">&#9998;</button>'+
+      '</div>'+
+      '<div class="pcard-body">'+
+        (p.address?'<span class="ptag">'+p.address+'</span>':'')+
+        (p.start?'<span class="pdate">'+p.start+'</span>':'')+
+        '<span style="flex:1"></span>'+
+        statusBtn+
+        tgBtn(p.tg1,'US Projects')+
+        tgBtn(p.tg2,'Production')+
+        '<button class="pdel">Delete</button>'+
+        '<div class="parrow">&#8594;</div>'+
+      '</div>';
+
+    card.querySelector('.pstatus-btn').onclick=function(e){
+      e.stopPropagation();
+      var proj=projects.find(function(x){return x.id===p.id;});
+      proj.status=proj.status==='done'?'active':'done';
+      saveSalesProject(proj).then(function(){render();});
+    };
+    card.querySelector('.pedit').onclick=function(e){
+      e.stopPropagation();
+      var proj=projects.find(function(x){return x.id===p.id;});
+      editId=proj.id;
+      document.getElementById('modalTitle').textContent='Edit Project';
+      document.getElementById('projName').value=proj.name||'';
+      document.getElementById('projAddress').value=proj.address||'';
+      document.getElementById('projStart').value=proj.start||'';
+      document.getElementById('projTG1').value=proj.tg1||'';
+      document.getElementById('projTG2').value=proj.tg2||'';
+      document.getElementById('tgLink1').href=proj.tg1||'#';
+      document.getElementById('tgLink2').href=proj.tg2||'#';
+      document.getElementById('createBtn').textContent='Save Changes';
+      document.getElementById('newModal').classList.add('open');
+    };
+    card.querySelector('.pdel').onclick=function(e){
+      e.stopPropagation();
+      deleteTarget=p.id;
+      document.getElementById('confirmModal').classList.add('open');
+    };
+    card.onclick=function(){
+      window.location.href='project_map.html?type=sales?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name);
+    };
+    return card;
+  }
+
+  active.forEach(function(p){ list.appendChild(makeCard(p)); });
+  done.forEach(function(p){ listDone.appendChild(makeCard(p)); });
+}
+</script>
+</body>
+</html>
