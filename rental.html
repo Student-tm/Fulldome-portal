@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408032305";
+  var V="20260408033239";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -221,7 +222,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408032305"></script>
+<script src="auth.js?v=20260408033239"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -529,7 +530,7 @@ function render(){
       document.getElementById('confirmModal').classList.add('open');
     };
     card.onclick=function(){
-      window.location.href='project_map.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name);
+      window.location.href='project_map_rental.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name);
     };
     if(isDone) card.style.opacity='0.6';
 

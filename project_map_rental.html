@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+/* AUTO CACHE BUSTER */
+(function(){
+  var V="20260408033239";
+  if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
+})();
+</script>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fulldome.pro — Project Map</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Consolas,"Courier New",monospace;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-items:center;gap:20px;}
+.back{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;}
+.back:hover{color:#CC0000;}
+.header-title{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
+.main{flex:1;padding:32px;max-width:1100px;}
+.section-label{font-size:12px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;margin-top:32px;}
+.section-label:first-child{margin-top:0;}
+
+/* Quick actions */
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.abtn{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;padding:12px 20px;cursor:pointer;transition:all 0.2s;text-decoration:none;font-family:Consolas,monospace;}
+.abtn:hover{background:#222;border-color:#CC0000;}
+.abtn-red{border-color:#CC0000;}
+.abtn-red:hover{background:#CC0000;}
+.abtn-red:hover .abtn-label{color:#fff;}
+.abtn-red:hover .abtn-sub{color:rgba(255,255,255,0.7);}
+.abtn-icon{font-size:16px;color:#CC0000;}
+.abtn-red:hover .abtn-icon{color:#fff;}
+.abtn-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#fff;}
+.abtn-sub{font-size:11px;color:#555;margin-top:2px;}
+
+/* Brief table */
+.brief-wrap{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;overflow:hidden;}
+.brief-section{background:#CC0000;padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#fff;}
+.brief-row{display:grid;grid-template-columns:260px 1fr 1fr;border-bottom:1px solid #222;}
+.brief-row:last-child{border-bottom:none;}
+.brief-row:hover{background:#1f1f1f;}
+.brief-field{font-size:12px;color:#666;padding:8px 16px;border-right:1px solid #222;display:flex;align-items:center;}
+.brief-val{font-size:12px;color:#fff;padding:4px 8px;border-right:1px solid #222;}
+.brief-val input{width:100%;background:transparent;border:none;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
+.brief-val input:focus{background:#111;border-radius:2px;}
+.brief-val input::placeholder{color:#333;}
+.brief-comment{font-size:12px;color:#555;padding:4px 8px;}
+.brief-comment input{width:100%;background:transparent;border:none;color:#888;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
+.brief-comment input:focus{background:#111;border-radius:2px;}
+.brief-comment input::placeholder{color:#333;}
+.brief-header{display:grid;grid-template-columns:260px 1fr 1fr;background:#161616;border-bottom:1px solid #2a2a2a;}
+.brief-header div{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.15em;padding:6px 16px;}
+
+.tg-action{text-decoration:none;display:flex;align-items:center;gap:6px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;}
+.tg-action:hover{border-color:#4a90d9;}
+.tg-action-icon{font-size:14px;color:#4a90d9;}
+.tg-action-label{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;}
+.save-bar{position:fixed;bottom:24px;right:32px;display:flex;gap:10px;align-items:center;}
+.save-btn{background:#CC0000;color:#fff;border:none;padding:10px 24px;font-family:Consolas,monospace;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;border-radius:3px;}
+.save-btn:hover{background:#aa0000;}
+.save-status{font-size:11px;color:#555;text-transform:uppercase;}
+
+footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;margin-top:80px;}
+.ft{font-size:12px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
+</style>
+</head>
+<body>
+<header>
+  <div class="back" id="backBtn">&#8592; Projects</div>
+  <span class="header-title" id="pageTitle">Project Workspace</span>
+  <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
+</header>
+<div class="main">
+  <div class="section-label">Quick Actions</div>
+  <div class="actions">
+    <div class="abtn abtn-red" id="equipBtn">
+      <div class="abtn-icon">&#9634;</div>
+      <div><div class="abtn-label">Equipment List</div><div class="abtn-sub">Packing list &amp; dome setup</div></div>
+    </div>
+    <div class="abtn" id="serverBtn">
+      <div class="abtn-icon" style="color:#CC0000">&#9881;</div>
+      <div><div class="abtn-label">Server Config</div><div class="abtn-sub">Projection system setup</div></div>
+    </div>
+    <div class="tg-action" id="tg1Btn">
+      <span class="tg-action-icon">✈</span>
+      <span class="tg-action-label">US Projects</span>
+    </div>
+    <div class="tg-action" id="tg2Btn">
+      <span class="tg-action-icon">✈</span>
+      <span class="tg-action-label">Production</span>
+    </div>
+  </div>
+
+  <div class="section-label">General Info — Brief</div>
+  <div class="brief-wrap">
+    <div class="brief-header">
+      <div>Field</div><div>Specification</div><div>Comments</div>
+    </div>
+
+    <div class="brief-section">Information about client and venue</div>
+    <div class="brief-row"><div class="brief-field">Company / Client name</div><div class="brief-val"><input data-field="client_name" data-label="Company / Client name" placeholder="—"/></div><div class="brief-comment"><input data-field="client_name_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Event name</div><div class="brief-val"><input data-field="event_name" data-label="Event name" placeholder="—"/></div><div class="brief-comment"><input data-field="event_name_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Client contact</div><div class="brief-val"><input data-field="client_contact" data-label="Client contact" placeholder="—"/></div><div class="brief-comment"><input data-field="client_contact_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Address of installation / event</div><div class="brief-val"><input data-field="address" data-label="Address of installation / event" placeholder="—"/></div><div class="brief-comment"><input data-field="address_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Installation start time-date</div><div class="brief-val"><input data-field="install_start" data-label="Installation start time-date" placeholder="—"/></div><div class="brief-comment"><input data-field="install_start_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Client walk-through time</div><div class="brief-val"><input data-field="walkthrough" data-label="Client walk-through time" placeholder="—"/></div><div class="brief-comment"><input data-field="walkthrough_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Event break-down time</div><div class="brief-val"><input data-field="breakdown" data-label="Event break-down time" placeholder="—"/></div><div class="brief-comment"><input data-field="breakdown_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Sale or Rental</div><div class="brief-val"><input data-field="sale_rental" data-label="Sale or Rental" placeholder="—"/></div><div class="brief-comment"><input data-field="sale_rental_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Dome description</div>
+    <div class="brief-row"><div class="brief-field">Dome size</div><div class="brief-val"><input data-field="dome_size" data-label="Dome size" placeholder="—"/></div><div class="brief-comment"><input data-field="dome_size_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Dome origin</div><div class="brief-val"><input data-field="dome_origin" data-label="Dome origin" placeholder="—"/></div><div class="brief-comment"><input data-field="dome_origin_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Blackout / Open dome</div><div class="brief-val"><input data-field="blackout" data-label="Blackout / Open dome" placeholder="—"/></div><div class="brief-comment"><input data-field="blackout_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Indoor / Outdoor</div><div class="brief-val"><input data-field="indoor" data-label="Indoor / Outdoor" placeholder="—"/></div><div class="brief-comment"><input data-field="indoor_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Outer cover</div><div class="brief-val"><input data-field="outer_cover" data-label="Outer cover" placeholder="—"/></div><div class="brief-comment"><input data-field="outer_cover_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Screen type</div><div class="brief-val"><input data-field="screen_type" data-label="Screen type" placeholder="—"/></div><div class="brief-comment"><input data-field="screen_type_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Inflatable decor cover</div><div class="brief-val"><input data-field="decor_cover" data-label="Inflatable decor cover" placeholder="—"/></div><div class="brief-comment"><input data-field="decor_cover_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Are we shipping fans</div><div class="brief-val"><input data-field="fans" data-label="Are we shipping fans" placeholder="—"/></div><div class="brief-comment"><input data-field="fans_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Duct size</div><div class="brief-val"><input data-field="duct_size" data-label="Duct size" placeholder="—"/></div><div class="brief-comment"><input data-field="duct_size_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Assembly scheme link</div><div class="brief-val"><input data-field="assembly_link" data-label="Assembly scheme link" placeholder="—"/></div><div class="brief-comment"><input data-field="assembly_link_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Truss drawing link</div><div class="brief-val"><input data-field="truss_link" data-label="Truss drawing link" placeholder="—"/></div><div class="brief-comment"><input data-field="truss_link_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Projection system description</div>
+    <div class="brief-row"><div class="brief-field">Server</div><div class="brief-val"><input data-field="server" data-label="Server" placeholder="—"/></div><div class="brief-comment"><input data-field="server_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Capture card</div><div class="brief-val"><input data-field="capture_card" data-label="Capture card" placeholder="—"/></div><div class="brief-comment"><input data-field="capture_card_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Location of the server</div><div class="brief-val"><input data-field="server_location" data-label="Location of the server" placeholder="—"/></div><div class="brief-comment"><input data-field="server_location_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Projectors, number and brand</div><div class="brief-val"><input data-field="projectors" data-label="Projectors, number and brand" placeholder="—"/></div><div class="brief-comment"><input data-field="projectors_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Sound system brand</div><div class="brief-val"><input data-field="sound" data-label="Sound system brand" placeholder="—"/></div><div class="brief-comment"><input data-field="sound_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">HVACs</div><div class="brief-val"><input data-field="hvac" data-label="HVACs" placeholder="—"/></div><div class="brief-comment"><input data-field="hvac_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Location of HVACs</div><div class="brief-val"><input data-field="hvac_location" data-label="Location of HVACs" placeholder="—"/></div><div class="brief-comment"><input data-field="hvac_location_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Content</div>
+    <div class="brief-row"><div class="brief-field">Content for the event list</div><div class="brief-val"><input data-field="content_list" data-label="Content for the event list" placeholder="—"/></div><div class="brief-comment"><input data-field="content_list_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Content on the server</div><div class="brief-val"><input data-field="content_server" data-label="Content on the server" placeholder="—"/></div><div class="brief-comment"><input data-field="content_server_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Encoder needed</div><div class="brief-val"><input data-field="encoder" data-label="Encoder needed" placeholder="—"/></div><div class="brief-comment"><input data-field="encoder_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Promo materials</div><div class="brief-val"><input data-field="promo" data-label="Promo materials" placeholder="—"/></div><div class="brief-comment"><input data-field="promo_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Event specifics</div>
+    <div class="brief-row"><div class="brief-field">Any event specifics</div><div class="brief-val"><input data-field="event_specifics" data-label="Any event specifics" placeholder="—"/></div><div class="brief-comment"><input data-field="event_specifics_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Budget for shipping</div><div class="brief-val"><input data-field="budget_shipping" data-label="Budget for shipping" placeholder="—"/></div><div class="brief-comment"><input data-field="budget_shipping_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Budget for travelling expenses</div><div class="brief-val"><input data-field="budget_travel" data-label="Budget for travelling expenses" placeholder="—"/></div><div class="brief-comment"><input data-field="budget_travel_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Training for local team</div><div class="brief-val"><input data-field="training" data-label="Training for local team" placeholder="—"/></div><div class="brief-comment"><input data-field="training_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Setup on site</div>
+    <div class="brief-row"><div class="brief-field">Construction start time-date</div><div class="brief-val"><input data-field="construction_start" data-label="Construction start time-date" placeholder="—"/></div><div class="brief-comment"><input data-field="construction_start_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Client walk-through time</div><div class="brief-val"><input data-field="setup_walkthrough" data-label="Client walk-through time" placeholder="—"/></div><div class="brief-comment"><input data-field="setup_walkthrough_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Event break-down time</div><div class="brief-val"><input data-field="setup_breakdown" data-label="Event break-down time" placeholder="—"/></div><div class="brief-comment"><input data-field="setup_breakdown_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Ceiling height and obstructions</div><div class="brief-val"><input data-field="ceiling" data-label="Ceiling height and obstructions" placeholder="—"/></div><div class="brief-comment"><input data-field="ceiling_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Crane, boom, etc.</div><div class="brief-val"><input data-field="crane" data-label="Crane, boom, etc." placeholder="—"/></div><div class="brief-comment"><input data-field="crane_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Local labour / union, contact person</div><div class="brief-val"><input data-field="labour" data-label="Local labour / union, contact person" placeholder="—"/></div><div class="brief-comment"><input data-field="labour_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Additional info</div>
+    <div class="brief-row"><div class="brief-field">Certificates (fire)</div><div class="brief-val"><input data-field="certificates" data-label="Certificates (fire)" placeholder="—"/></div><div class="brief-comment"><input data-field="certificates_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Permits (we provide info only)</div><div class="brief-val"><input data-field="permits" data-label="Permits (we provide info only)" placeholder="—"/></div><div class="brief-comment"><input data-field="permits_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">COI if needed</div><div class="brief-val"><input data-field="coi" data-label="COI if needed" placeholder="—"/></div><div class="brief-comment"><input data-field="coi_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Flooring type</div><div class="brief-val"><input data-field="flooring" data-label="Flooring type" placeholder="—"/></div><div class="brief-comment"><input data-field="flooring_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Furniture (tables, chairs, bean bags)</div><div class="brief-val"><input data-field="furniture" data-label="Furniture (tables, chairs, bean bags)" placeholder="—"/></div><div class="brief-comment"><input data-field="furniture_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Electricity required</div><div class="brief-val"><input data-field="electricity" data-label="Electricity required" placeholder="—"/></div><div class="brief-comment"><input data-field="electricity_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Safety signs (fire extinguisher, exit)</div><div class="brief-val"><input data-field="safety" data-label="Safety signs (fire extinguisher, exit)" placeholder="—"/></div><div class="brief-comment"><input data-field="safety_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Packing / flight cases type</div><div class="brief-val"><input data-field="packing" data-label="Packing / flight cases type" placeholder="—"/></div><div class="brief-comment"><input data-field="packing_c" placeholder="—"/></div></div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <span class="save-status" id="saveStatus"></span>
+  <button class="save-btn" id="saveBtn">Save Brief</button>
+</div>
+
+<footer>
+  <span class="ft">Fulldome.pro &copy; 2026</span>
+</footer>
+
+<script src="auth.js?v=20260408033239"></script>
+<script>
+var params = new URLSearchParams(window.location.search);
+var projectId = params.get('project') || '';
+var projectName = params.get('name') ? decodeURIComponent(params.get('name')) : 'Project';
+var projectType = params.get('type') || 'rental';
+
+document.getElementById('pageTitle').textContent = projectName;
+document.getElementById('backBtn').onclick = function(){
+  window.location.href = (projectType==='sales' ? 'sales.html' : 'rental.html');
+};
+
+// TG buttons — loaded from project data
+document.getElementById('equipBtn').onclick = function(){
+  window.location.href = 'equipment.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
+};
+document.getElementById('serverBtn').onclick = function(){
+  window.location.href = 'server_configurator.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
+};
+
+requireAuth(function(){
+  loadBrief();
+  loadProjectTG();
+});
+
+
+async function getSalesProjects(){
+  await ensureSheet('SalesProjects');
+  var data=await sheetsGet('SalesProjects!A:I');
+  var rows=data.values||[];
+  if(rows.length&&rows[0][0]==='ID') rows=rows.slice(1);
+  return rows.filter(function(r){return r[0]&&r[1];}).map(function(r){return{
+    id:r[0]||'',name:r[1]||'',address:r[2]||'',start:r[3]||'',
+    tg1:r[4]||'',tg2:r[5]||'',created:r[6]?parseInt(r[6]):Date.now(),status:r[7]||'active'
+  };});
+}
+function loadProjectTG(){
+  var loader = (projectType==='sales') ? getSalesProjects() : getProjects();
+  loader.then(function(projects){
+    var p = projects.find(function(x){ return x.id === projectId; });
+    if(!p) return;
+    if(p.tg1){
+      document.getElementById('tg1Btn').onclick = function(){ window.open(p.tg1, '_blank'); };
+      document.getElementById('tg1Btn').style.cursor = 'pointer';
+    }
+    if(p.tg2){
+      document.getElementById('tg2Btn').onclick = function(){ window.open(p.tg2, '_blank'); };
+      document.getElementById('tg2Btn').style.cursor = 'pointer';
+    }
+  });
+}
+
+function loadBrief(){
+  getBrief(projectId).then(function(data){
+    if(!data) return;
+    data.forEach(function(row){
+      // Find input by data-label
+      var el = document.querySelector('.brief-val [data-label="'+row.field+'"]');
+      if(el) el.value = row.value || '';
+    });
+  });
+}
+
+document.getElementById('saveBtn').onclick = function(){
+  var inputs = document.querySelectorAll('.brief-val [data-field]');
+  var rows = [];
+  inputs.forEach(function(inp){
+    var label = inp.getAttribute('data-label') || inp.getAttribute('data-field');
+    // Find comment input in same row
+    var row = inp.closest('.brief-row');
+    var commentInp = row ? row.querySelector('.brief-comment input') : null;
+    rows.push({ field: label, value: inp.value, comment: commentInp ? commentInp.value : '' });
+  });
+  document.getElementById('saveStatus').textContent = 'Saving...';
+  saveBrief(projectId, rows).then(function(){
+    document.getElementById('saveStatus').textContent = 'Saved ✓';
+    setTimeout(function(){ document.getElementById('saveStatus').textContent = ''; }, 3000);
+  }).catch(function(e){
+    document.getElementById('saveStatus').textContent = 'Error: ' + e.message;
+  });
+};
+</script>
+</body>
+</html>

@@ -4,13 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260407033831";
-  if(localStorage.getItem("_fv")!==V){
-    localStorage.setItem("_fv",V);
-    if(performance.navigation.type!==1) location.reload(true);
-  }
+  var V="20260408033239";
+  if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -170,7 +168,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;margin-top:40px;}
 </head>
 <body>
 <header>
-  <div id="backToMap" style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;margin-right:16px;" onclick="var p=new URLSearchParams(window.location.search);window.location.href='project_map.html?project='+encodeURIComponent(p.get('project')||'')+'&name='+encodeURIComponent(p.get('name')||'');">&#8592; Project Map</div>
+  <div id="backToMap" style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;margin-right:16px;" onclick="var p=new URLSearchParams(window.location.search);window.location.href='project_map_rental.html?project='+encodeURIComponent(p.get('project')||'')+'&name='+encodeURIComponent(p.get('name')||'');">&#8592; Project Map</div>
   <img src="logo.png" style="height:36px" alt="Fulldome.pro"/>
   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;margin-left:16px;">System Configurator</div>
   <div style="font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.1em;margin-left:auto;">Server · Rack · BOM · Order Tracking</div>
@@ -844,7 +842,7 @@ function signOutDrive(){
   </div>
 </div>
 
-<script src="auth.js?v=20260407024706"></script>
+<script src="auth.js?v=20260408033239"></script>
 <script>
 function openAddPartModal(){
   document.getElementById('ap_name').value='';
@@ -1053,7 +1051,7 @@ async function saveCurrentRackConfig(){
   }
   var p=new URLSearchParams(window.location.search);
   document.getElementById('backToMap').onclick=function(){
-    window.location.href='project_map.html?project='+encodeURIComponent(p.get('project')||'')+'&name='+encodeURIComponent(p.get('name')||'');
+    window.location.href='project_map_rental.html?project='+encodeURIComponent(p.get('project')||'')+'&name='+encodeURIComponent(p.get('name')||'');
   };
 })();
 </script>
