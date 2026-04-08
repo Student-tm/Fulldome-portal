@@ -4,10 +4,13 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408023341";
+  var V="20260408024224";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
 
 
 
@@ -87,7 +90,7 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .ship-empty{font-size:12px;color:#333;font-style:italic;}
 .ship-pencil{background:none;border:none;color:#444;cursor:pointer;font-size:13px;padding:0 2px;flex-shrink:0;}
 .ship-pencil:hover{color:#f0a500;}
-.ship-picker{display:none;position:absolute;z-index:50;background:#1a1a1a;border:1px solid #f0a500;border-radius:3px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,0.6);}
+.ship-picker{display:none;position:absolute;z-index:200;background:#1a1a1a;border:1px solid #f0a500;border-radius:3px;padding:14px;box-shadow:0 4px 24px rgba(0,0,0,0.8);width:220px;}
 .ship-picker.open{display:block;}
 .ship-picker input[type=date]{background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:6px 10px;outline:none;color-scheme:dark;}
 .ship-picker input[type=date]:focus{border-color:#f0a500;}
@@ -205,7 +208,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408023341"></script>
+<script src="auth.js?v=20260408024224"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -421,16 +424,20 @@ document.addEventListener('click', function(e){
     if(pid) openShipPicker(pid);
   }
   // Save shipping
-  if(e.target.classList.contains('ship-save-btn')){
+  var saveBtn = e.target.closest('.ship-save-btn');
+  if(saveBtn){
     e.stopPropagation();
-    var pid = e.target.dataset.pid;
+    var pid = saveBtn.dataset.pid;
     var proj = projects.find(function(x){ return x.id===pid; });
     if(proj) saveShipping(pid, proj.name);
+    return;
   }
   // Cancel
-  if(e.target.classList.contains('ship-cancel-btn')){
+  var cancelBtn = e.target.closest('.ship-cancel-btn');
+  if(cancelBtn){
     e.stopPropagation();
-    closeShipPicker(e.target.dataset.pid);
+    closeShipPicker(cancelBtn.dataset.pid);
+    return;
   }
 });
 
@@ -459,17 +466,15 @@ function render(){
        '<div class="pcard-name">'+
          '<span>'+p.name+'</span>'+
          '<button class="pedit" title="Edit">&#9998;</button>'+
-         '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">'+
-           statusBtn+
-           delBtn+
-         '</div>'+
+         statusBtn+
        '</div>'+
        '<div class="pcard-body">'+
          (p.address?'<span class="ptag-wrap"><span class="ptag-label">LOCATION</span><span class="ptag">'+p.address+'</span></span>':'')+
          (p.start?'<span class="ptag-wrap"><span class="ptag-label">DEADLINE</span><span class="pdate">'+p.start+'</span></span>':'')+
+         '<span style="flex:1"></span>'+
          tgBtn(p.tg1,'US Projects')+
          tgBtn(p.tg2,'Production')+
-         '<span style="flex:1"></span>'+
+         delBtn+
          '<div class="parrow">&#8594;</div>'+
        '</div>';
 
@@ -513,7 +518,7 @@ function render(){
       '<div class="ship-block-label">SHIPPING</div>'+
       '<div class="ship-block-val">'+(sd?sd.date:'<span class="ship-block-empty">— not set</span>')+'</div>'+
       '<button class="ship-block-pencil" title="Edit shipping date">✎</button>'+
-      '<div class="ship-picker" id="sp-'+p.id+'" style="left:0;top:100%;">'+
+      '<div class="ship-picker" id="sp-'+p.id+'" style="left:100%;top:0;margin-left:8px;">'+
         '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Shipping Date</div>'+
         '<input type="date" id="sd-'+p.id+'" value="'+(sd?sd.date:'')+'"/>'+
         '<button class="ship-save-btn" data-pid="'+p.id+'">Save & Add to Calendar</button>'+
