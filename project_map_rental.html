@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411224638";
+  var V="20260411225041";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -82,7 +84,7 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .dashboard{display:grid;grid-template-columns:520px 1fr 520px;gap:0;flex:1;}
 .sidebar{background:#1f2128;border-right:1px solid #2e3039;padding:24px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 75px);}
 .content{padding:32px;overflow-y:auto;}
-.right-panel{border-left:1px solid #2e3039;background:#1f2128;display:flex;flex-direction:column;padding:24px;gap:16px;overflow-y:auto;}
+.right-panel{border-left:1px solid #2e3039;background:#1f2128;border-left:2px solid #2e3039;display:flex;flex-direction:column;padding:24px;gap:16px;overflow-y:auto;}
 .eq-g{margin-bottom:12px;}
 .eq-g-name{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
 .eq-r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #232530;font-size:12px;}
@@ -321,7 +323,6 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <div class="brief-row"><div class="brief-field">Packing / flight cases type</div><div class="brief-val"><input data-field="packing" data-label="Packing / flight cases type" placeholder="—"/></div><div class="brief-comment"><input data-field="packing_c" placeholder="—"/></div></div>
   </div>
 </div>
-</div>
   <!-- RIGHT PANEL -->
   <div class="right-panel" id="rightPanel">
     <div class="panel-label">Equipment List</div>
@@ -348,7 +349,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411224638"></script>
+<script src="auth.js?v=20260411225041"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -692,12 +693,16 @@ async function loadEqMirror(){
   try {
     var tok = localStorage.getItem('gtoken');
     if(!tok){ el.innerHTML='<span style="color:#4a4f5c">Auth needed</span>'; return; }
-    var sheet = 'EQ_' + String(projectId).substring(0, 10);
+    var sid = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
+    var pid = String(projectId || new URLSearchParams(window.location.search).get('project') || '').substring(0, 10);
+    var sheet = 'EQ_' + pid;
+    el.innerHTML = '<span style="color:#4a4f5c">Loading EQ_'+pid+'...</span>';
     var r = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
+      'https://sheets.googleapis.com/v4/spreadsheets/'+sid+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
       {headers:{Authorization:'Bearer '+tok}}
     );
-    if(r.status===401){ el.innerHTML='<span style="color:#4a4f5c">Token expired, refresh page</span>'; return; }
+    if(r.status===401){ el.innerHTML='<span style="color:#4a4f5c">Token expired — refresh page</span>'; return; }
+    if(r.status===400){ el.innerHTML='<span style="color:#4a4f5c">Sheet '+sheet+' not found</span>'; return; }
     var d = await r.json();
     var rows = d.values || [];
     var dataRow = rows.find(function(x){ return x[0]==='data'; });
