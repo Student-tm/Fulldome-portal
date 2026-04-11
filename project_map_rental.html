@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411025416";
+  var V="20260411025731";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -54,6 +55,11 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .ship-panel{display:flex;flex-direction:column;gap:4px;}
 .ship-date{font-size:18px;font-weight:700;color:#f0a500;}
 .ship-empty{font-size:12px;color:#333;font-style:italic;}
+.ship-countdown{font-size:11px;font-weight:700;padding:2px 8px;border-radius:2px;margin-top:2px;display:inline-block;}
+.ship-countdown.future{color:#f0a500;background:#2a1f00;border:1px solid #f0a500;}
+.ship-countdown.today{color:#fff;background:#CC0000;border:1px solid #CC0000;animation:pulse 1s infinite;}
+.ship-countdown.past{color:#555;background:#1a1a1a;border:1px solid #333;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
 
 /* Notes */
 .note-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #1a1a1a;}
@@ -137,6 +143,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
       <div class="panel-label">Shipping Date</div>
       <div class="ship-panel">
         <span class="ship-date" id="projShipping" style="display:none"></span>
+        <span class="ship-countdown" id="shipCountdown" style="display:none"></span>
         <span class="ship-empty" id="projShippingEmpty">— not set</span>
       </div>
     </div>
@@ -231,7 +238,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411025416"></script>
+<script src="auth.js?v=20260411025731"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -377,8 +384,36 @@ async function loadShippingDate(){
       document.getElementById('projShipping').textContent = d;
       document.getElementById('projShipping').style.display = 'inline-block';
       document.getElementById('projShippingEmpty').style.display = 'none';
+      // Countdown
+      showCountdown(row[1]);
     }
   } catch(e){ console.log('No shipping data'); }
+}
+
+function showCountdown(isoDate){
+  var el = document.getElementById('shipCountdown');
+  if(!isoDate){ el.style.display='none'; return; }
+  function update(){
+    var today = new Date(); today.setHours(0,0,0,0);
+    var ship = new Date(isoDate); ship.setHours(0,0,0,0);
+    var diff = Math.round((ship - today) / 86400000);
+    el.style.display = 'inline-block';
+    if(diff === 0){
+      el.textContent = '[ TODAY ]';
+      el.className = 'ship-countdown today';
+    } else if(diff > 0){
+      el.textContent = '[ in ' + diff + ' day' + (diff===1?'':'s') + ' ]';
+      el.className = 'ship-countdown future';
+    } else {
+      el.textContent = '[ ' + Math.abs(diff) + ' day' + (Math.abs(diff)===1?'':'s') + ' ago ]';
+      el.className = 'ship-countdown past';
+    }
+  }
+  update();
+  // Refresh at midnight
+  var now = new Date();
+  var msToMidnight = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1) - now;
+  setTimeout(function(){ update(); setInterval(update, 86400000); }, msToMidnight);
 }
 
 // ═══ GOOGLE DRIVE FOLDER ═══════════════════════════
