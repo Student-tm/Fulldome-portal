@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411223033";
+  var V="20260411223821";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -314,13 +315,10 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </div>
 </div>
-  <!-- RIGHT PANEL: Equipment Mirror -->
+  <!-- RIGHT PANEL -->
   <div class="right-panel" id="rightPanel">
-    <div class="panel-label" style="display:flex;align-items:center;justify-content:space-between;">
-      Equipment List
-      <button onclick="loadEqMirror()" style="background:none;border:none;color:#4a4f5c;cursor:pointer;font-family:Consolas,monospace;font-size:10px;">↻</button>
-    </div>
-    <div id="eqMirror" style="font-size:12px;color:#6b7080;font-style:italic;">Loading...</div>
+    <div class="panel-label">Equipment List</div>
+    <div style="font-size:12px;color:#4a4f5c;font-style:italic;">Coming soon</div>
   </div>
 </div>
 
@@ -343,7 +341,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411223033"></script>
+<script src="auth.js?v=20260411223821"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -388,44 +386,6 @@ document.getElementById('serverBtn').onclick = function(){
   window.location.href = 'server_configurator.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
 };
 
-async function loadEqMirror(){
-  var el = document.getElementById('eqMirror');
-  if(!el) return;
-  el.innerHTML = '<span style="color:#4a4f5c;font-style:italic;">Loading...</span>';
-  try {
-    var tok = accessToken || localStorage.getItem('gtoken');
-    if(!tok){ el.innerHTML='<span class="eq-empty">Auth needed</span>'; return; }
-    var sheet = 'EQ_' + String(projectId).substring(0, 10);
-    var r = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
-      {headers:{Authorization:'Bearer '+tok}}
-    );
-    var d = await r.json();
-    var rows = d.values || [];
-    var dataRow = rows.find(function(r){ return r[0]==='data'; });
-    if(!dataRow){ el.innerHTML='<span class="eq-empty">No equipment data yet</span>'; return; }
-    var data = JSON.parse(dataRow[1]);
-    if(!data || !data.groups || !data.groups.length){
-      el.innerHTML = '<span class="eq-empty">No items added yet</span>'; return;
-    }
-    var html = '';
-    if(data.dome && data.dome.size) html += '<div class="eq-dome">'+data.dome.size+'</div>';
-    data.groups.forEach(function(g){
-      var rows2 = g.rows || g.items || [];
-      var filled = rows2.filter(function(row){ return row.item && row.item.trim(); });
-      if(!filled.length) return;
-      html += '<div class="eq-group"><div class="eq-group-name">'+(g.label||g.name||'Group')+'</div>';
-      filled.forEach(function(row){
-        html += '<div class="eq-item"><span class="eq-item-name">'+(row.item||'')+'</span><span class="eq-item-qty">×'+(row.qty||1)+'</span></div>';
-      });
-      html += '</div>';
-    });
-    el.innerHTML = html || '<span class="eq-empty">No items added yet</span>';
-  } catch(e){
-    el.innerHTML = '<span class="eq-empty">Error: '+e.message+'</span>';
-    console.error('loadEqMirror:', e);
-  }
-}
     if(!data || !data.groups || !data.groups.length){
       el.innerHTML = '<span class="eq-empty">No equipment data yet</span>';
       return;
@@ -461,8 +421,6 @@ requireAuth(function(){
   initDriveFolder();
   loadNotes();
   loadShippingDate();
-  loadEqMirror();
-  setInterval(loadEqMirror, 30000);
 });
 
 function getNoteInputs(){
