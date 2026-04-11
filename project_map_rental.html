@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411031329";
+  var V="20260411031905";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -256,7 +257,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411031329"></script>
+<script src="auth.js?v=20260411031905"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -421,15 +422,19 @@ function showCountdown(isoDate){
   if(!isoDate){ el.style.display='none'; return; }
   function update(){
     var today = new Date(); today.setHours(0,0,0,0);
-    var ship = new Date(isoDate); ship.setHours(0,0,0,0);
+    var parts2 = isoDate.split('-');
+    var ship = new Date(parseInt(parts2[0]), parseInt(parts2[1])-1, parseInt(parts2[2]));
     var diff = Math.round((ship - today) / 86400000);
     el.style.display = 'inline-block';
     if(diff === 0){
       el.textContent = '[ TODAY ]';
       el.className = 'ship-countdown today';
-    } else if(diff > 0){
+    } else if(diff > 0 && diff <= 3){
       el.textContent = '[ IN ' + diff + ' DAY' + (diff===1?'':'S') + ' ]';
-      el.className = 'ship-countdown future' + (diff <= 3 ? ' urgent' : '');
+      el.className = 'ship-countdown future urgent';
+    } else if(diff > 3){
+      el.textContent = '[ IN ' + diff + ' DAYS ]';
+      el.className = 'ship-countdown future';
     } else {
       el.textContent = '[ ' + Math.abs(diff) + ' DAY' + (Math.abs(diff)===1?'':'S') + ' AGO ]';
       el.className = 'ship-countdown past';
