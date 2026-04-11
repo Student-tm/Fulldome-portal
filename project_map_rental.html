@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411223821";
+  var V="20260411224339";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -341,7 +342,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411223821"></script>
+<script src="auth.js?v=20260411224339"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -386,34 +387,6 @@ document.getElementById('serverBtn').onclick = function(){
   window.location.href = 'server_configurator.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
 };
 
-    if(!data || !data.groups || !data.groups.length){
-      el.innerHTML = '<span class="eq-empty">No equipment data yet</span>';
-      return;
-    }
-    var html = '';
-    if(data.domeName) html += '<div class="eq-dome">'+data.domeName+'</div>';
-    if(data.dome && data.dome.size) html += '<div class="eq-dome">'+data.dome.size+'</div>';
-    data.groups.forEach(function(g){
-      var rows = g.rows || g.items || [];
-      var filled = rows.filter(function(r){ return r.item && r.item.trim(); });
-      if(!filled.length) return;
-      html += '<div class="eq-group">';
-      html += '<div class="eq-group-name">'+(g.label||g.name||'Group')+'</div>';
-      filled.forEach(function(row){
-        html += '<div class="eq-item">'
-          +'<span class="eq-item-name">'+(row.item||'')+'</span>'
-          +'<span class="eq-item-qty">×'+(row.qty||1)+'</span>'
-          +'</div>';
-      });
-      html += '</div>';
-    });
-    if(!html) html = '<span class="eq-empty">No items added yet</span>';
-    el.innerHTML = html;
-  } catch(e){
-    el.innerHTML = '<span class="eq-empty">Error loading</span>';
-    console.error(e);
-  }
-}
 
 requireAuth(function(){
   loadBrief();
