@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411194642";
+  var V="20260411195048";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -55,6 +56,10 @@ header{padding:16px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 
 /* Projects side */
 .proj-side{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.proj-panes{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.pane-header{font-size:9px;font-weight:700;color:#4a4f5c;text-transform:uppercase;letter-spacing:0.15em;padding:4px 20px;background:#1f2128;border-bottom:1px solid #2a2d35;border-top:1px solid #2a2d35;flex-shrink:0;}
+.pane-divider{height:1px;background:#2e3039;flex-shrink:0;}
+.proj-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0;}
 .qa-col{width:280px;flex-shrink:0;border-left:1px solid #2e3039;display:flex;flex-direction:column;background:#1f2128;overflow:hidden;}
 .qa-rows{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .qa-row{display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #2a2d35;flex-shrink:0;height:38px;}
@@ -123,7 +128,13 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
         <span class="proj-head-count" id="rentalCount"></span>
         <button class="proj-refresh" onclick="loadRental()" title="Refresh">↻</button>
       </div>
-      <div class="proj-scroll" id="rentalList"><div class="pempty">Loading...</div></div>
+      <div class="proj-panes" id="rentalList">
+        <div class="pane-header">Current</div>
+        <div class="pane-active proj-scroll"></div>
+        <div class="pane-divider"></div>
+        <div class="pane-header">Completed</div>
+        <div class="pane-done proj-scroll"></div>
+      </div>
     </div>
     <div class="qa-col" id="rentalQA">
       <div class="qa-head">Quick Actions</div>
@@ -145,7 +156,13 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
         <span class="proj-head-count" id="salesCount"></span>
         <button class="proj-refresh" onclick="loadSales()" title="Refresh">↻</button>
       </div>
-      <div class="proj-scroll" id="salesList"><div class="pempty">Loading...</div></div>
+      <div class="proj-panes" id="salesList">
+        <div class="pane-header">Current</div>
+        <div class="pane-active proj-scroll"></div>
+        <div class="pane-divider"></div>
+        <div class="pane-header">Completed</div>
+        <div class="pane-done proj-scroll"></div>
+      </div>
     </div>
     <div class="qa-col" id="salesQA">
       <div class="qa-head">Quick Actions</div>
@@ -220,38 +237,24 @@ async function loadSales(){
 function renderList(listId, countId, projects, type){
   var el = document.getElementById(listId);
   var cnt = document.getElementById(countId);
-  if(!projects){ el.innerHTML='<div class="pempty">Loading...</div>'; return; }
+  if(!projects){ 
+    el.querySelector('.pane-active').innerHTML='<div class="pempty">Loading...</div>';
+    return; 
+  }
   var active = projects.filter(function(p){return p.status!=='done';});
   var done = projects.filter(function(p){return p.status==='done';});
   cnt.textContent = active.length+' active · '+done.length+' done';
-  if(!projects.length){ el.innerHTML='<div class="pempty">No projects yet</div>'; return; }
-  el.innerHTML = '';
 
-  var lsKey = type+'_idx_collapsed';
-  var collapsed = JSON.parse(localStorage.getItem(lsKey)||'{}');
+  var paneA = el.querySelector('.pane-active');
+  var paneD = el.querySelector('.pane-done');
 
-  function makeSection(label, key, rows){
-    var sec = document.createElement('div');
-    sec.className = 'psection'+(collapsed[key]?' collapsed':'');
-    sec.dataset.key = key;
-    sec.innerHTML = label+' <span class="psection-arrow">▾</span>';
-    var grp = document.createElement('div');
-    grp.className = 'pgroup'+(collapsed[key]?' collapsed':'');
-    rows.forEach(function(p){ grp.insertAdjacentHTML('beforeend', makeRow(p,type)); });
-    sec.addEventListener('click', function(){
-      var isCol = grp.classList.toggle('collapsed');
-      sec.classList.toggle('collapsed', isCol);
-      collapsed[key] = isCol;
-      localStorage.setItem(lsKey, JSON.stringify(collapsed));
-      var qaId = type==='rental'?'rentalQA':'salesQA';
-      buildQARows(el, qaId, type);
-    });
-    el.appendChild(sec);
-    el.appendChild(grp);
-  }
+  paneA.innerHTML = active.length
+    ? active.map(function(p){return makeRow(p,type);}).join('')
+    : '<div class="pempty">No active projects</div>';
 
-  if(active.length) makeSection('Current ('+active.length+')', 'active', active);
-  if(done.length) makeSection('Completed ('+done.length+')', 'done', done);
+  paneD.innerHTML = done.length
+    ? done.map(function(p){return makeRow(p,type);}).join('')
+    : '<div class="pempty">No completed projects</div>';
 
   el.querySelectorAll('.prow').forEach(function(r){
     r.addEventListener('click', function(){
@@ -301,9 +304,52 @@ function buildQARows(listEl, qaId, type){
     }
   }
 
-  Array.from(listEl.children).forEach(function(child){ processEl(child, qaRows); });
+  var paneA = listEl.querySelector('.pane-active');
+  var paneD = listEl.querySelector('.pane-done');
 
-  listEl.addEventListener('scroll', function(){ qaRows.scrollTop = listEl.scrollTop; });
+  // Active section separator
+  var sepA = document.createElement('div');
+  sepA.className = 'qa-sep';sepA.style.height='24px';
+  qaRows.appendChild(sepA);
+
+  if(paneA) Array.from(paneA.children).forEach(function(child){
+    if(!child.classList.contains('prow')) return;
+    qaRows.appendChild(makeQARow(child, type));
+  });
+
+  // Done section separator  
+  var sepD = document.createElement('div');
+  sepD.className = 'qa-sep';sepD.style.height='24px';
+  qaRows.appendChild(sepD);
+
+  if(paneD) Array.from(paneD.children).forEach(function(child){
+    if(!child.classList.contains('prow')) return;
+    qaRows.appendChild(makeQARow(child, type));
+  });
+
+  // Sync scroll for both panes
+  if(paneA) paneA.addEventListener('scroll', function(){ 
+    // scroll qa-rows to match - approximate
+  });
+}
+
+function makeQARow(row, type){
+  var div = document.createElement('div');
+  div.className = 'qa-row';
+  var pid = encodeURIComponent(row.dataset.id);
+  var pname = row.dataset.name;
+  var tg1 = row.dataset.tg1;
+  var tg2 = row.dataset.tg2;
+  if(tg1 && tg1!='undefined' && tg1!='')
+    div.innerHTML += '<a class="qb qb-tg" href="'+tg1+'" target="_blank" onclick="event.stopPropagation()">✈ US</a>';
+  if(tg2 && tg2!='undefined' && tg2!='')
+    div.innerHTML += '<a class="qb qb-tg" href="'+tg2+'" target="_blank" onclick="event.stopPropagation()">✈ Prod</a>';
+  div.innerHTML += '<a class="qb" href="equipment.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">EQ</a>';
+  div.innerHTML += '<a class="qb" href="server_configurator.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">SRV</a>';
+  div.innerHTML += '<a class="qb" href="https://drive.google.com/drive/search?q='+decodeURIComponent(pname)+'" target="_blank" onclick="event.stopPropagation()">📁</a>';
+  row.addEventListener('mouseenter', function(){ div.classList.add('active-row'); });
+  row.addEventListener('mouseleave', function(){ div.classList.remove('active-row'); });
+  return div;
 }
 
 function makeRow(p, type){
