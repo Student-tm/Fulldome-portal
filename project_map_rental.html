@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411173204";
+  var V="20260411173502";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -284,7 +285,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411173204"></script>
+<script src="auth.js?v=20260411173502"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -332,6 +333,7 @@ requireAuth(function(){
   loadProjectTG();
   initDriveFolder();
   loadNotes();
+  loadShippingDate();
 });
 
 function getNoteInputs(){
@@ -413,8 +415,6 @@ function loadProjectTG(){
     sb.textContent = isDone ? 'Done' : 'Active';
     sb.className = 'status-badge ' + (isDone ? 'status-done' : 'status-active');
   }).catch(function(e){ console.error('loadProjectTG error', e); });
-  // Shipping
-  loadShippingDate();
 }
 
 async function loadShippingDate(){
