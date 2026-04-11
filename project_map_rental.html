@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411023658";
+  var V="20260411024945";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -34,7 +36,7 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .header-title{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
 
 /* Dashboard layout */
-.dashboard{display:grid;grid-template-columns:280px 1fr;gap:0;flex:1;}
+.dashboard{display:grid;grid-template-columns:520px 1fr;gap:0;flex:1;}
 .sidebar{background:#111;border-right:1px solid #1e1e1e;padding:24px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 75px);}
 .content{padding:32px;overflow-y:auto;max-width:900px;}
 
@@ -53,11 +55,20 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .ship-empty{font-size:12px;color:#333;font-style:italic;}
 
 /* Notes */
-.notes-area{width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:3px;color:#ccc;font-family:Consolas,monospace;font-size:12px;padding:10px;outline:none;resize:vertical;min-height:120px;line-height:1.6;}
-.notes-area:focus{border-color:#CC0000;}
-.notes-area::placeholder{color:#333;}
-.notes-save{width:100%;margin-top:6px;padding:6px;background:transparent;border:1px solid #2a2a2a;border-radius:3px;color:#555;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
-.notes-save:hover{border-color:#CC0000;color:#CC0000;}
+.note-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #1a1a1a;}
+.note-row:last-of-type{border-bottom:none;}
+.note-num{font-size:9px;color:#444;min-width:14px;text-align:center;font-weight:700;}
+.note-text{flex:1;background:transparent;border:none;color:#ccc;font-family:Consolas,monospace;font-size:12px;padding:3px 6px;outline:none;border-radius:2px;}
+.note-text:focus{background:#0d0d0d;color:#fff;}
+.note-text::placeholder{color:#2a2a2a;}
+.note-text.readonly{color:#666;pointer-events:none;}
+.note-icon{background:none;border:none;cursor:pointer;font-size:12px;padding:2px 4px;color:#333;flex-shrink:0;line-height:1;}
+.note-icon:hover{color:#CC0000;}
+.notes-actions{display:flex;gap:6px;margin-top:8px;}
+.notes-save{flex:1;padding:5px;background:#CC0000;border:none;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;}
+.notes-save:hover{background:#aa0000;}
+.notes-clear-all{flex:1;padding:5px;background:transparent;border:1px solid #2a2a2a;border-radius:2px;color:#555;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;}
+.notes-clear-all:hover{border-color:#CC0000;color:#CC0000;}
 
 /* Actions */
 .btn-wrap{display:flex;flex-direction:column;gap:2px;}
@@ -131,9 +142,18 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
 
     <div class="panel">
       <div class="panel-label">Notes</div>
-      <textarea class="notes-area" id="notesArea" placeholder="Add notes about this project..."></textarea>
-      <button class="notes-save" id="notesBtn">Save Notes</button>
-      <span style="font-size:10px;color:#555;" id="notesSaveStatus"></span>
+      <div id="notesRows">
+        <div class="note-row"><span class="note-num">1</span><input class="note-text" placeholder="—" data-note="0"/><button class="note-icon" onclick="editNote(0)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(0)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">2</span><input class="note-text" placeholder="—" data-note="1"/><button class="note-icon" onclick="editNote(1)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(1)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">3</span><input class="note-text" placeholder="—" data-note="2"/><button class="note-icon" onclick="editNote(2)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(2)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">4</span><input class="note-text" placeholder="—" data-note="3"/><button class="note-icon" onclick="editNote(3)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(3)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">5</span><input class="note-text" placeholder="—" data-note="4"/><button class="note-icon" onclick="editNote(4)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(4)" title="Clear">✕</button></div>
+      </div>
+      <div class="notes-actions">
+        <button class="notes-clear-all" onclick="clearAllNotes()">Clear All</button>
+        <button class="notes-save" id="notesBtn">Save Notes</button>
+      </div>
+      <span style="font-size:10px;color:#555;margin-top:4px;display:block;" id="notesSaveStatus"></span>
     </div>
 
     <div class="panel">
@@ -210,7 +230,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411023658"></script>
+<script src="auth.js?v=20260411024945"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -260,19 +280,36 @@ requireAuth(function(){
   loadNotes();
 });
 
+function getNoteInputs(){
+  return Array.from(document.querySelectorAll('.note-text'));
+}
+function editNote(i){
+  var inp = getNoteInputs()[i];
+  inp.focus(); inp.select();
+}
+function clearNote(i){
+  getNoteInputs()[i].value = '';
+}
+function clearAllNotes(){
+  getNoteInputs().forEach(function(inp){ inp.value=''; });
+}
+
 async function loadNotes(){
   try {
-    var sheetName = 'Notes';
-    await ensureSheet(sheetName);
-    var data = await sheetsGet(sheetName+'!A:B');
+    await ensureSheet('Notes');
+    var data = await sheetsGet('Notes!A:F');
     var rows = data.values || [];
     var row = rows.find(function(r){ return r[0] === String(projectId); });
-    if(row && row[1]) document.getElementById('notesArea').value = row[1];
+    if(row){
+      getNoteInputs().forEach(function(inp, i){
+        inp.value = row[i+1] || '';
+      });
+    }
   } catch(e){ console.log('No notes yet'); }
 }
 
 async function saveNotes(){
-  var text = document.getElementById('notesArea').value;
+  var notes = getNoteInputs().map(function(inp){ return inp.value || ''; });
   var btn = document.getElementById('notesSaveStatus');
   btn.textContent = 'Saving...';
   try {
@@ -281,8 +318,9 @@ async function saveNotes(){
     var rows = data.values || [];
     var rowIdx = -1;
     for(var i=0;i<rows.length;i++){ if(rows[i][0]===String(projectId)){rowIdx=i+1;break;} }
-    if(rowIdx>0){ await sheetsUpdate('Notes!A'+rowIdx+':B'+rowIdx, [[projectId, text]]); }
-    else { await sheetsAppend('Notes!A:B', [[projectId, text]]); }
+    var vals = [[projectId].concat(notes)];
+    if(rowIdx>0){ await sheetsUpdate('Notes!A'+rowIdx+':F'+rowIdx, vals); }
+    else { await sheetsAppend('Notes!A:F', vals); }
     btn.textContent = 'Saved ✓';
     setTimeout(function(){ btn.textContent=''; }, 2000);
   } catch(e){ btn.textContent = 'Error'; }
