@@ -4,10 +4,14 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411021609";
+  var V="20260411023658";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
+
 
 
 
@@ -23,58 +27,83 @@
 <title>Fulldome.pro — Project Map</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:Consolas,"Courier New",monospace;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
-header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-items:center;gap:20px;}
+body{font-family:Consolas,"Courier New",monospace;background:#0d0d0d;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-items:center;gap:20px;background:#111;}
 .back{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;}
 .back:hover{color:#CC0000;}
 .header-title{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
-.main{flex:1;padding:32px;max-width:1100px;}
-.section-label{font-size:12px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;margin-top:32px;}
-.section-label:first-child{margin-top:0;}
 
-/* Quick actions */
+/* Dashboard layout */
+.dashboard{display:grid;grid-template-columns:280px 1fr;gap:0;flex:1;}
+.sidebar{background:#111;border-right:1px solid #1e1e1e;padding:24px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 75px);}
+.content{padding:32px;overflow-y:auto;max-width:900px;}
+
+/* Sidebar panels */
+.panel{display:flex;flex-direction:column;gap:10px;}
+.panel-label{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;padding-bottom:8px;border-bottom:1px solid #1e1e1e;}
+
+/* Status badge */
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:3px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;width:100%;justify-content:center;}
+.status-active{color:#1D9E75;background:#0f2a1e;border:1px solid #1D9E75;}
+.status-done{color:#555;background:#2a2a2a;border:1px solid #555;}
+
+/* Shipping */
+.ship-panel{display:flex;flex-direction:column;gap:4px;}
+.ship-date{font-size:18px;font-weight:700;color:#f0a500;}
+.ship-empty{font-size:12px;color:#333;font-style:italic;}
+
+/* Notes */
+.notes-area{width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:3px;color:#ccc;font-family:Consolas,monospace;font-size:12px;padding:10px;outline:none;resize:vertical;min-height:120px;line-height:1.6;}
+.notes-area:focus{border-color:#CC0000;}
+.notes-area::placeholder{color:#333;}
+.notes-save{width:100%;margin-top:6px;padding:6px;background:transparent;border:1px solid #2a2a2a;border-radius:3px;color:#555;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+.notes-save:hover{border-color:#CC0000;color:#CC0000;}
+
+/* Actions */
 .btn-wrap{display:flex;flex-direction:column;gap:2px;}
 .btn-label{font-size:9px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.1em;}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;align-items:stretch;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:flex-end;}
 .abtn{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;text-decoration:none;font-family:Consolas,monospace;}
 .abtn:hover{border-color:#CC0000;}
 .abtn-red{border-color:#2a2a2a;}
 .abtn-red:hover{background:#CC0000;border-color:#CC0000;}
 .abtn-red:hover .abtn-label{color:#fff;}
-.abtn-icon{font-size:14px;color:#CC0000;}
 .abtn-red:hover .abtn-icon{color:#fff;}
+.abtn-icon{font-size:14px;color:#CC0000;}
 .abtn-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fff;}
-
-/* Brief table */
-.brief-wrap{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;overflow:hidden;}
-.brief-section{background:#CC0000;padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#fff;}
-.brief-row{display:grid;grid-template-columns:260px 1fr 1fr;border-bottom:1px solid #222;}
-.brief-row:last-child{border-bottom:none;}
-.brief-row:hover{background:#1f1f1f;}
-.brief-field{font-size:12px;color:#666;padding:8px 16px;border-right:1px solid #222;display:flex;align-items:center;}
-.brief-val{font-size:12px;color:#fff;padding:4px 8px;border-right:1px solid #222;}
-.brief-val input{width:100%;background:transparent;border:none;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
-.brief-val input:focus{background:#111;border-radius:2px;}
-.brief-val input::placeholder{color:#333;}
-.brief-comment{font-size:12px;color:#555;padding:4px 8px;}
-.brief-select{width:100%;background:#0d0d0d;border:none;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;cursor:pointer;border-radius:2px;}
-.brief-select option{background:#1a1a1a;}
-.brief-comment input{width:100%;background:transparent;border:none;color:#888;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
-.brief-comment input:focus{background:#111;border-radius:2px;}
-.brief-comment input::placeholder{color:#333;}
-.brief-header{display:grid;grid-template-columns:260px 1fr 1fr;background:#161616;border-bottom:1px solid #2a2a2a;}
-.brief-header div{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.15em;padding:6px 16px;}
-
 .tg-action{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;text-decoration:none;}
 .tg-action:hover{border-color:#4a90d9;}
 .tg-action-icon{font-size:14px;color:#4a90d9;}
 .tg-action-label{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;}
-.save-bar{position:fixed;bottom:24px;right:32px;display:flex;gap:10px;align-items:center;}
+
+/* Section label */
+.section-label{font-size:11px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #1e1e1e;}
+
+/* Brief table */
+.brief-wrap{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;overflow:hidden;}
+.brief-section{background:#CC0000;padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#fff;}
+.brief-row{display:grid;grid-template-columns:240px 1fr 1fr;border-bottom:1px solid #222;}
+.brief-row:last-child{border-bottom:none;}
+.brief-row:hover{background:#1f1f1f;}
+.brief-field{font-size:12px;color:#666;padding:7px 14px;border-right:1px solid #222;display:flex;align-items:center;}
+.brief-val{font-size:12px;color:#fff;padding:4px 8px;border-right:1px solid #222;}
+.brief-val input{width:100%;background:transparent;border:none;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
+.brief-val input:focus{background:#0d0d0d;border-radius:2px;}
+.brief-val input::placeholder{color:#333;}
+.brief-select{width:100%;background:#0d0d0d;border:none;color:#fff;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;cursor:pointer;border-radius:2px;}
+.brief-select option{background:#1a1a1a;}
+.brief-comment{font-size:12px;color:#555;padding:4px 8px;}
+.brief-comment input{width:100%;background:transparent;border:none;color:#888;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
+.brief-comment input:focus{background:#0d0d0d;border-radius:2px;}
+.brief-comment input::placeholder{color:#333;}
+.brief-header{display:grid;grid-template-columns:240px 1fr 1fr;background:#161616;border-bottom:1px solid #2a2a2a;}
+.brief-header div{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.15em;padding:6px 14px;}
+
+.save-bar{position:fixed;bottom:24px;right:32px;display:flex;gap:10px;align-items:center;z-index:50;}
 .save-btn{background:#CC0000;color:#fff;border:none;padding:10px 24px;font-family:Consolas,monospace;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;border-radius:3px;}
 .save-btn:hover{background:#aa0000;}
 .save-status{font-size:11px;color:#555;text-transform:uppercase;}
-
-footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;margin-top:80px;}
+footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;}
 .ft{font-size:12px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
 </style>
 </head>
@@ -84,15 +113,44 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="header-title" id="pageTitle">Project Map — <span style="color:#CC0000" id="projNameSpan"></span></span>
   <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
 </header>
-<div class="main">
-  <div class="section-label">Quick Actions</div>
-  <div class="actions">
-    <div class="btn-wrap"><span class="btn-label">Packing list & dome setup</span><div class="abtn abtn-red" id="equipBtn"><div class="abtn-icon">&#9634;</div><div class="abtn-label">Equipment List</div></div></div>
-    <div class="btn-wrap"><span class="btn-label">Projection system setup</span><div class="abtn" id="serverBtn"><div class="abtn-icon" style="color:#CC0000">&#9881;</div><div class="abtn-label">Server Config</div></div></div>
-    <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg1Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">US Projects</span></div></div>
-    <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg2Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">Production</span></div></div>
+<div class="dashboard">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="panel">
+      <div class="panel-label">Project Status</div>
+      <span class="status-badge" id="projStatus">—</span>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Shipping Date</div>
+      <div class="ship-panel">
+        <span class="ship-date" id="projShipping" style="display:none"></span>
+        <span class="ship-empty" id="projShippingEmpty">— not set</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Notes</div>
+      <textarea class="notes-area" id="notesArea" placeholder="Add notes about this project..."></textarea>
+      <button class="notes-save" id="notesBtn">Save Notes</button>
+      <span style="font-size:10px;color:#555;" id="notesSaveStatus"></span>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Quick Actions</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="btn-wrap"><span class="btn-label">Packing list & dome setup</span><div class="abtn abtn-red" id="equipBtn"><div class="abtn-icon">&#9634;</div><div class="abtn-label">Equipment List</div></div></div>
+        <div class="btn-wrap"><span class="btn-label">Projection system setup</span><div class="abtn" id="serverBtn"><div class="abtn-icon" style="color:#CC0000">&#9881;</div><div class="abtn-label">Server Config</div></div></div>
+        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg1Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">US Projects</span></div></div>
+        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg2Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">Production</span></div></div>
+        <div class="btn-wrap"><span class="btn-label">Project files</span><div class="abtn" id="driveFolderBtn"><div class="abtn-icon" id="driveIcon" style="color:#4a90d9">📁</div><div class="abtn-label" id="driveBtnLabel">Create Project Folder</div></div></div>
+        <div class="btn-wrap"><span class="btn-label">Project photos</span><div class="abtn" id="drivePhotosBtn"><div class="abtn-icon" id="photosIcon" style="color:#4a90d9">📷</div><div class="abtn-label" id="photosBtnLabel">Project Photos</div></div></div>
+      </div>
+    </div>
   </div>
 
+  <!-- CONTENT -->
+  <div class="content">
   <div class="section-label">General Info — Brief</div>
   <div class="brief-wrap">
     <div class="brief-header">
@@ -140,6 +198,8 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <div class="brief-row"><div class="brief-field">Packing / flight cases type</div><div class="brief-val"><input data-field="packing" data-label="Packing / flight cases type" placeholder="—"/></div><div class="brief-comment"><input data-field="packing_c" placeholder="—"/></div></div>
   </div>
 </div>
+</div>
+</div>
 
 <div class="save-bar">
   <span class="save-status" id="saveStatus"></span>
@@ -150,7 +210,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411021609"></script>
+<script src="auth.js?v=20260411023658"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -196,7 +256,39 @@ document.getElementById('serverBtn').onclick = function(){
 requireAuth(function(){
   loadBrief();
   loadProjectTG();
+  initDriveFolder();
+  loadNotes();
 });
+
+async function loadNotes(){
+  try {
+    var sheetName = 'Notes';
+    await ensureSheet(sheetName);
+    var data = await sheetsGet(sheetName+'!A:B');
+    var rows = data.values || [];
+    var row = rows.find(function(r){ return r[0] === String(projectId); });
+    if(row && row[1]) document.getElementById('notesArea').value = row[1];
+  } catch(e){ console.log('No notes yet'); }
+}
+
+async function saveNotes(){
+  var text = document.getElementById('notesArea').value;
+  var btn = document.getElementById('notesSaveStatus');
+  btn.textContent = 'Saving...';
+  try {
+    await ensureSheet('Notes');
+    var data = await sheetsGet('Notes!A:A');
+    var rows = data.values || [];
+    var rowIdx = -1;
+    for(var i=0;i<rows.length;i++){ if(rows[i][0]===String(projectId)){rowIdx=i+1;break;} }
+    if(rowIdx>0){ await sheetsUpdate('Notes!A'+rowIdx+':B'+rowIdx, [[projectId, text]]); }
+    else { await sheetsAppend('Notes!A:B', [[projectId, text]]); }
+    btn.textContent = 'Saved ✓';
+    setTimeout(function(){ btn.textContent=''; }, 2000);
+  } catch(e){ btn.textContent = 'Error'; }
+}
+
+document.getElementById('notesBtn').onclick = saveNotes;
 
 
 async function getSalesProjects(){
@@ -223,6 +315,111 @@ function loadProjectTG(){
       document.getElementById('tg2Btn').style.cursor = 'pointer';
     }
   });
+}
+
+// ═══ GOOGLE DRIVE FOLDER ═══════════════════════════
+var DRIVE_TOKEN = null;
+var DRIVE_FOLDER_URL = null;
+
+async function driveFetch(url, opts){
+  var token = localStorage.getItem('drive_token');
+  if(!token){ initDriveAuth(); return null; }
+  var headers = Object.assign({'Authorization':'Bearer '+token}, (opts&&opts.headers)||{});
+  var r = await fetch(url, Object.assign({}, opts, {headers:headers}));
+  if(r.status===401){ localStorage.removeItem('drive_token'); localStorage.removeItem('drive_token_time'); return null; }
+  return r;
+}
+
+async function findOrCreateFolder(name, parentId){
+  var q = "name='"+name.replace(/'/g,"\\'")+"' and mimeType='application/vnd.google-apps.folder' and trashed=false";
+  if(parentId) q += " and '"+parentId+"' in parents";
+  var r = await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,webViewLink)');
+  if(!r) return null;
+  var d = await r.json();
+  if(d.files && d.files.length) return d.files[0];
+  var meta = {name:name, mimeType:'application/vnd.google-apps.folder'};
+  if(parentId) meta.parents = [parentId];
+  var cr = await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id,webViewLink',{
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(meta)
+  });
+  if(!cr) return null;
+  return cr.json();
+}
+
+function initDriveAuth(){
+  var saved = localStorage.getItem('drive_token');
+  var savedTime = localStorage.getItem('drive_token_time');
+  var expired = !savedTime || (Date.now()-parseInt(savedTime)) > 3500000;
+  if(saved && !expired){ DRIVE_TOKEN=saved; return; }
+  var s=document.createElement('script');
+  s.src='https://accounts.google.com/gsi/client';
+  s.onload=function(){
+    var tc=google.accounts.oauth2.initTokenClient({
+      client_id:'673039541518-jurnkvne074u3ib66u52skjoru204rn5.apps.googleusercontent.com',
+      scope:'https://www.googleapis.com/auth/drive',
+      callback:function(resp){
+        if(resp.error) return;
+        localStorage.setItem('drive_token',resp.access_token);
+        localStorage.setItem('drive_token_time',Date.now());
+        DRIVE_TOKEN=resp.access_token;
+      }
+    });
+    tc.requestAccessToken();
+  };
+  document.head.appendChild(s);
+}
+
+async function initDriveFolder(){
+  // Photos button
+  var photosBtn = document.getElementById('drivePhotosBtn');
+  photosBtn.onclick = async function(){
+    var token = localStorage.getItem('drive_token');
+    if(!token){ initDriveAuth(); return; }
+    document.getElementById('photosBtnLabel').textContent = 'Creating...';
+    try {
+      var root = await findOrCreateFolder('Rental_portal', null);
+      if(!root){ document.getElementById('photosBtnLabel').textContent='Auth needed'; initDriveAuth(); return; }
+      var projFolder = await findOrCreateFolder(projectName, root.id);
+      if(!projFolder){ document.getElementById('photosBtnLabel').textContent='Error'; return; }
+      var photosFolder = await findOrCreateFolder('Photos — '+projectName, projFolder.id);
+      if(!photosFolder){ document.getElementById('photosBtnLabel').textContent='Error'; return; }
+      document.getElementById('photosBtnLabel').textContent = 'Open Photos';
+      document.getElementById('photosIcon').textContent = '✓';
+      document.getElementById('photosIcon').style.color = '#1D9E75';
+      photosBtn.style.borderColor = '#1D9E75';
+      var url = photosFolder.webViewLink;
+      photosBtn.onclick = function(){ window.open(url,'_blank'); };
+      window.open(url, '_blank');
+    } catch(e){
+      document.getElementById('photosBtnLabel').textContent = 'Error';
+      console.error(e);
+    }
+  };
+
+  var btn = document.getElementById('driveFolderBtn');
+  btn.onclick = async function(){
+    if(DRIVE_FOLDER_URL){ window.open(DRIVE_FOLDER_URL,'_blank'); return; }
+    document.getElementById('driveBtnLabel').textContent = 'Creating...';
+    try {
+      var root = await findOrCreateFolder('Rental_portal', null);
+      if(!root){
+        document.getElementById('driveBtnLabel').textContent = 'Sign in & retry';
+        initDriveAuth();
+        return;
+      }
+      var folder = await findOrCreateFolder(projectName, root.id);
+      if(!folder){ document.getElementById('driveBtnLabel').textContent = 'Error'; return; }
+      DRIVE_FOLDER_URL = folder.webViewLink;
+      document.getElementById('driveBtnLabel').textContent = 'Open Project Folder';
+      document.getElementById('driveIcon').textContent = '✓';
+      document.getElementById('driveIcon').style.color = '#1D9E75';
+      btn.style.borderColor = '#1D9E75';
+      window.open(DRIVE_FOLDER_URL, '_blank');
+    } catch(e){
+      document.getElementById('driveBtnLabel').textContent = 'Error';
+      console.error(e);
+    }
+  };
 }
 
 function loadBrief(){
