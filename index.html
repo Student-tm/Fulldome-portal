@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411181920";
+  var V="20260411182448";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -106,7 +107,7 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:12px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:4px 14px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram &nearr;</a>
   </div>
 </footer>
-<script src="auth.js?v=20260411181920"></script>
+<script src="auth.js?v=20260411182448"></script>
 <script>
 initGoogleAuth(function() {
   console.log("Authenticated");
@@ -153,20 +154,20 @@ function startLongPress(e){
 function endLongPress(e){
   clearTimeout(_lpTimer);
   if(_lpActive){
-    // Long press — go to hovered project or close popup
     if(_hoverProject){
       window.location.href = 'project_map_rental.html?project='+encodeURIComponent(_hoverProject.id)+'&name='+encodeURIComponent(_hoverProject.name);
     }
-    // else popup stays open, user can hover items
+    // else popup stays open for mouse navigation
   } else {
-    // Short click — go to rental
     window.location.href = 'rental.html';
   }
+  _lpActive = false;
 }
 
 function closePopup(){
   rentalPopup.classList.remove('open');
   _hoverProject = null;
+  _lpActive = false;
 }
 
 async function loadAndShowPopup(){
