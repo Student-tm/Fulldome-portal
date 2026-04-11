@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411024945";
+  var V="20260411025416";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -230,7 +231,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411024945"></script>
+<script src="auth.js?v=20260411025416"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -344,6 +345,7 @@ function loadProjectTG(){
   loader.then(function(projects){
     var p = projects.find(function(x){ return x.id === projectId; });
     if(!p) return;
+    // TG buttons
     if(p.tg1){
       document.getElementById('tg1Btn').onclick = function(){ window.open(p.tg1, '_blank'); };
       document.getElementById('tg1Btn').style.cursor = 'pointer';
@@ -352,7 +354,31 @@ function loadProjectTG(){
       document.getElementById('tg2Btn').onclick = function(){ window.open(p.tg2, '_blank'); };
       document.getElementById('tg2Btn').style.cursor = 'pointer';
     }
-  });
+    // Status
+    var isDone = p.status === 'done';
+    var sb = document.getElementById('projStatus');
+    sb.textContent = isDone ? 'Done' : 'Active';
+    sb.className = 'status-badge ' + (isDone ? 'status-done' : 'status-active');
+  }).catch(function(e){ console.error('loadProjectTG error', e); });
+  // Shipping
+  loadShippingDate();
+}
+
+async function loadShippingDate(){
+  try {
+    await ensureSheet('Shipping');
+    var data = await sheetsGet('Shipping!A:B');
+    var rows = data.values || [];
+    var row = rows.find(function(r){ return r[0] === String(projectId); });
+    if(row && row[1]){
+      var d = row[1];
+      var parts = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if(parts) d = parts[2]+'/'+parts[3]+'/'+parts[1];
+      document.getElementById('projShipping').textContent = d;
+      document.getElementById('projShipping').style.display = 'inline-block';
+      document.getElementById('projShippingEmpty').style.display = 'none';
+    }
+  } catch(e){ console.log('No shipping data'); }
 }
 
 // ═══ GOOGLE DRIVE FOLDER ═══════════════════════════
