@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411195048";
+  var V="20260411195702";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -57,7 +59,8 @@ header{padding:16px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 /* Projects side */
 .proj-side{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .proj-panes{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.pane-header{font-size:9px;font-weight:700;color:#4a4f5c;text-transform:uppercase;letter-spacing:0.15em;padding:4px 20px;background:#1f2128;border-bottom:1px solid #2a2d35;border-top:1px solid #2a2d35;flex-shrink:0;}
+.pane-header{font-size:9px;font-weight:700;color:#4a4f5c;text-transform:uppercase;letter-spacing:0.15em;padding:4px 20px;background:transparent;border-top:1px solid #2a2d35;flex-shrink:0;display:flex;align-items:center;gap:10px;}
+.pane-header::after{content:'';flex:1;height:1px;background:#2a2d35;}
 .pane-divider{height:1px;background:#2e3039;flex-shrink:0;}
 .proj-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0;}
 .qa-col{width:280px;flex-shrink:0;border-left:1px solid #2e3039;display:flex;flex-direction:column;background:#1f2128;overflow:hidden;}
