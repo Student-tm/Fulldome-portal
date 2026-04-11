@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411193909";
+  var V="20260411194642";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -55,9 +57,8 @@ header{padding:16px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 .proj-side{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .qa-col{width:280px;flex-shrink:0;border-left:1px solid #2e3039;display:flex;flex-direction:column;background:#1f2128;overflow:hidden;}
 .qa-rows{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.qa-row{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #2a2d35;flex-shrink:0;min-height:38px;}
+.qa-row{display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #2a2d35;flex-shrink:0;height:38px;}
 .qa-row.active-row{background:#2a2d35;}
-.qa-sep{min-height:27px;border-bottom:1px solid #2a2d35;background:#1f2128;flex-shrink:0;}
 .qb{display:flex;align-items:center;justify-content:center;padding:2px 0;border:1px solid #2e3039;border-radius:2px;background:transparent;color:#6b7080;font-family:Consolas,monospace;font-size:10px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all 0.12s;width:52px;}
 .qb:hover{border-color:#CC0000;color:#fff;}
 .qb-tg:hover{border-color:#4a90d9;color:#4a90d9;}
@@ -73,7 +74,7 @@ header{padding:16px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 .proj-scroll::-webkit-scrollbar-thumb:hover{background:#CC0000;}
 
 /* Project row */
-.prow{display:flex;align-items:center;gap:12px;padding:9px 20px;border-bottom:1px solid #2a2d35;cursor:pointer;transition:all 0.1s;flex-shrink:0;}
+.prow{display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid #2a2d35;cursor:pointer;transition:all 0.1s;flex-shrink:0;height:38px;}
 .prow:hover{background:#2a2d35;padding-left:24px;}
 .prow:hover .prow-arrow{color:#CC0000;}
 .prow.is-done{opacity:0.4;}
@@ -86,7 +87,15 @@ header{padding:16px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 .st-active{color:#1D9E75;border:1px solid #1D9E75;}
 .st-done{color:#4a4f5c;border:1px solid #4a4f5c;}
 .prow-arrow{font-size:11px;color:#4a4f5c;flex-shrink:0;}
-.psection{font-size:9px;font-weight:700;color:#4a4f5c;text-transform:uppercase;letter-spacing:0.15em;padding:5px 20px;background:#1f2128;border-bottom:1px solid #2a2d35;flex-shrink:0;}
+.psection{font-size:9px;font-weight:700;color:#888c98;text-transform:uppercase;letter-spacing:0.15em;padding:0 20px;height:28px;background:#1f2128;border-bottom:1px solid #2a2d35;flex-shrink:0;display:flex;align-items:center;cursor:pointer;user-select:none;}
+.psection:hover{color:#eaeaea;}
+.psection-arrow{margin-left:auto;font-size:10px;transition:transform 0.2s;color:#4a4f5c;}
+.psection.collapsed .psection-arrow{transform:rotate(-90deg);}
+.pgroup{display:flex;flex-direction:column;}
+.qa-sep{height:28px;border-bottom:1px solid #2a2d35;background:#1f2128;flex-shrink:0;}
+.pgroup.collapsed .prow{display:none;}
+.qa-group{display:flex;flex-direction:column;}
+.qa-group.collapsed .qa-row{display:none;}
 .pempty{padding:16px 20px;font-size:12px;color:#4a4f5c;font-style:italic;}
 
 footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:center;justify-content:space-between;background:#1f2128;flex-shrink:0;}
@@ -214,17 +223,36 @@ function renderList(listId, countId, projects, type){
   if(!projects){ el.innerHTML='<div class="pempty">Loading...</div>'; return; }
   var active = projects.filter(function(p){return p.status!=='done';});
   var done = projects.filter(function(p){return p.status==='done';});
-  cnt.textContent = active.length+' active';
-  var html = '';
+  cnt.textContent = active.length+' active · '+done.length+' done';
   if(!projects.length){ el.innerHTML='<div class="pempty">No projects yet</div>'; return; }
-  if(active.length){
-    html += active.map(function(p){ return makeRow(p,type); }).join('');
+  el.innerHTML = '';
+
+  var lsKey = type+'_idx_collapsed';
+  var collapsed = JSON.parse(localStorage.getItem(lsKey)||'{}');
+
+  function makeSection(label, key, rows){
+    var sec = document.createElement('div');
+    sec.className = 'psection'+(collapsed[key]?' collapsed':'');
+    sec.dataset.key = key;
+    sec.innerHTML = label+' <span class="psection-arrow">▾</span>';
+    var grp = document.createElement('div');
+    grp.className = 'pgroup'+(collapsed[key]?' collapsed':'');
+    rows.forEach(function(p){ grp.insertAdjacentHTML('beforeend', makeRow(p,type)); });
+    sec.addEventListener('click', function(){
+      var isCol = grp.classList.toggle('collapsed');
+      sec.classList.toggle('collapsed', isCol);
+      collapsed[key] = isCol;
+      localStorage.setItem(lsKey, JSON.stringify(collapsed));
+      var qaId = type==='rental'?'rentalQA':'salesQA';
+      buildQARows(el, qaId, type);
+    });
+    el.appendChild(sec);
+    el.appendChild(grp);
   }
-  if(done.length){
-    html += '<div class="psection">Completed ('+done.length+')</div>';
-    html += done.map(function(p){ return makeRow(p,type); }).join('');
-  }
-  el.innerHTML = html;
+
+  if(active.length) makeSection('Current ('+active.length+')', 'active', active);
+  if(done.length) makeSection('Completed ('+done.length+')', 'done', done);
+
   el.querySelectorAll('.prow').forEach(function(r){
     r.addEventListener('click', function(){
       window.location.href='project_map_rental.html?project='+encodeURIComponent(r.dataset.id)+'&name='+r.dataset.name+'&type='+type;
@@ -239,33 +267,43 @@ function buildQARows(listEl, qaId, type){
   var qaRows = qaEl ? qaEl.querySelector('.qa-rows') : null;
   if(!qaRows) return;
   qaRows.innerHTML = '';
-  Array.from(listEl.children).forEach(function(child){
-    var div = document.createElement('div');
+
+  function processEl(child, container){
     if(child.classList.contains('psection')){
-      div.className = 'qa-sep';
-    } else if(child.classList.contains('prow')){
-      div.className = 'qa-row';
-      var pid = encodeURIComponent(child.dataset.id);
-      var pname = child.dataset.name;
-      var tg1 = child.dataset.tg1;
-      var tg2 = child.dataset.tg2;
-      if(tg1 && tg1!='undefined' && tg1!='')
-        div.innerHTML += '<a class="qb qb-tg" href="'+tg1+'" target="_blank" onclick="event.stopPropagation()">✈ US</a>';
-      if(tg2 && tg2!='undefined' && tg2!='')
-        div.innerHTML += '<a class="qb qb-tg" href="'+tg2+'" target="_blank" onclick="event.stopPropagation()">✈ Prod</a>';
-      div.innerHTML += '<a class="qb" href="equipment.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">EQ</a>';
-      div.innerHTML += '<a class="qb" href="server_configurator.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">SRV</a>';
-      div.innerHTML += '<a class="qb" href="https://drive.google.com/drive/search?q='+encodeURIComponent(child.dataset.name)+'" target="_blank" onclick="event.stopPropagation()">📁</a>';
-      child.addEventListener('mouseenter', function(){ div.classList.add('active-row'); });
-      child.addEventListener('mouseleave', function(){ div.classList.remove('active-row'); });
+      var div = document.createElement('div');
+      div.className = 'psection'+(child.classList.contains('collapsed')?' collapsed':'');
+      div.style.cursor='default';
+      div.innerHTML = '&nbsp;';
+      container.appendChild(div);
+    } else if(child.classList.contains('pgroup')){
+      var grpDiv = document.createElement('div');
+      grpDiv.className = 'qa-group'+(child.classList.contains('collapsed')?' collapsed':'');
+      Array.from(child.children).forEach(function(row){
+        if(!row.classList.contains('prow')) return;
+        var div = document.createElement('div');
+        div.className = 'qa-row';
+        var pid = encodeURIComponent(row.dataset.id);
+        var pname = row.dataset.name;
+        var tg1 = row.dataset.tg1;
+        var tg2 = row.dataset.tg2;
+        if(tg1 && tg1!='undefined' && tg1!='')
+          div.innerHTML += '<a class="qb qb-tg" href="'+tg1+'" target="_blank" onclick="event.stopPropagation()">✈ US</a>';
+        if(tg2 && tg2!='undefined' && tg2!='')
+          div.innerHTML += '<a class="qb qb-tg" href="'+tg2+'" target="_blank" onclick="event.stopPropagation()">✈ Prod</a>';
+        div.innerHTML += '<a class="qb" href="equipment.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">EQ</a>';
+        div.innerHTML += '<a class="qb" href="server_configurator.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">SRV</a>';
+        div.innerHTML += '<a class="qb" href="https://drive.google.com/drive/search?q='+decodeURIComponent(pname)+'" target="_blank" onclick="event.stopPropagation()">📁</a>';
+        row.addEventListener('mouseenter', function(){ div.classList.add('active-row'); });
+        row.addEventListener('mouseleave', function(){ div.classList.remove('active-row'); });
+        grpDiv.appendChild(div);
+      });
+      container.appendChild(grpDiv);
     }
-    qaRows.appendChild(div);
-  });
-  // Sync scroll
-  var scrollEl = listEl;
-  scrollEl.addEventListener('scroll', function(){
-    qaRows.scrollTop = scrollEl.scrollTop;
-  });
+  }
+
+  Array.from(listEl.children).forEach(function(child){ processEl(child, qaRows); });
+
+  listEl.addEventListener('scroll', function(){ qaRows.scrollTop = listEl.scrollTop; });
 }
 
 function makeRow(p, type){
