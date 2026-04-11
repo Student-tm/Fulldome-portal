@@ -4,10 +4,15 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411192548";
+  var V="20260411193909";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
+
+
 
 
 
@@ -53,11 +58,11 @@ header{padding:16px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 .qa-row{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #2a2d35;flex-shrink:0;min-height:38px;}
 .qa-row.active-row{background:#2a2d35;}
 .qa-sep{min-height:27px;border-bottom:1px solid #2a2d35;background:#1f2128;flex-shrink:0;}
-.qb{display:flex;align-items:center;padding:2px 7px;border:1px solid #2e3039;border-radius:2px;background:transparent;color:#6b7080;font-family:Consolas,monospace;font-size:10px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all 0.12s;}
+.qb{display:flex;align-items:center;justify-content:center;padding:2px 0;border:1px solid #2e3039;border-radius:2px;background:transparent;color:#6b7080;font-family:Consolas,monospace;font-size:10px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all 0.12s;width:52px;}
 .qb:hover{border-color:#CC0000;color:#fff;}
 .qb-tg:hover{border-color:#4a90d9;color:#4a90d9;}
-.qa-head{padding:24px 32px;font-size:9px;font-weight:700;color:#6b7080;text-transform:uppercase;letter-spacing:0.2em;}
-.proj-head{display:flex;align-items:center;gap:10px;padding:8px 20px;border-bottom:1px solid #2e3039;background:#1f2128;flex-shrink:0;}
+.qa-head{display:flex;align-items:center;padding:8px 20px;border-bottom:1px solid #2e3039;background:#1f2128;font-size:10px;font-weight:700;color:#888c98;text-transform:uppercase;letter-spacing:0.15em;flex-shrink:0;height:37px;}
+.proj-head{display:flex;align-items:center;gap:10px;padding:8px 20px;border-bottom:1px solid #2e3039;background:#1f2128;flex-shrink:0;height:37px;}
 .proj-head-title{font-size:10px;font-weight:700;color:#888c98;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
 .proj-head-count{font-size:10px;color:#6b7080;}
 .proj-refresh{background:none;border:none;color:#6b7080;cursor:pointer;font-size:12px;font-family:Consolas,monospace;padding:2px 4px;}
@@ -250,11 +255,16 @@ function buildQARows(listEl, qaId, type){
         div.innerHTML += '<a class="qb qb-tg" href="'+tg2+'" target="_blank" onclick="event.stopPropagation()">✈ Prod</a>';
       div.innerHTML += '<a class="qb" href="equipment.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">EQ</a>';
       div.innerHTML += '<a class="qb" href="server_configurator.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">SRV</a>';
-      div.innerHTML += '<a class="qb" href="project_map_rental.html?project='+pid+'&name='+pname+'&type='+type+'" onclick="event.stopPropagation()">MAP</a>';
+      div.innerHTML += '<a class="qb" href="https://drive.google.com/drive/search?q='+encodeURIComponent(child.dataset.name)+'" target="_blank" onclick="event.stopPropagation()">📁</a>';
       child.addEventListener('mouseenter', function(){ div.classList.add('active-row'); });
       child.addEventListener('mouseleave', function(){ div.classList.remove('active-row'); });
     }
     qaRows.appendChild(div);
+  });
+  // Sync scroll
+  var scrollEl = listEl;
+  scrollEl.addEventListener('scroll', function(){
+    qaRows.scrollTop = scrollEl.scrollTop;
   });
 }
 
