@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411214559";
+  var V="20260411215958";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -72,7 +74,14 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .dashboard{display:grid;grid-template-columns:520px 1fr 520px;gap:0;flex:1;}
 .sidebar{background:#1f2128;border-right:1px solid #2e3039;padding:24px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 75px);}
 .content{padding:32px;overflow-y:auto;}
-.right-panel{border-left:1px solid #2e3039;background:#1f2128;display:flex;flex-direction:column;padding:24px;gap:24px;overflow-y:auto;}
+.right-panel{border-left:1px solid #2e3039;background:#1f2128;display:flex;flex-direction:column;padding:24px;gap:16px;overflow-y:auto;}
+.eq-dome{font-size:11px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;padding-bottom:6px;border-bottom:1px solid #2e3039;margin-bottom:4px;}
+.eq-group{margin-bottom:12px;}
+.eq-group-name{font-size:10px;font-weight:700;color:#888c98;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.eq-item{display:flex;align-items:center;justify-content:space-between;padding:3px 0;border-bottom:1px solid #232530;}
+.eq-item-name{font-size:12px;color:#eaeaea;}
+.eq-item-qty{font-size:11px;font-weight:700;color:#f0a500;min-width:24px;text-align:right;}
+.eq-empty{font-size:12px;color:#4a4f5c;font-style:italic;}
 
 /* Sidebar panels */
 .panel{display:flex;flex-direction:column;gap:10px;}
@@ -289,9 +298,13 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </div>
 </div>
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT PANEL: Equipment Mirror -->
   <div class="right-panel" id="rightPanel">
-    <div class="panel-label">Right Panel</div>
+    <div class="panel-label" style="display:flex;align-items:center;justify-content:space-between;">
+      Equipment List
+      <button onclick="loadEqMirror()" style="background:none;border:none;color:#4a4f5c;cursor:pointer;font-family:Consolas,monospace;font-size:10px;">↻</button>
+    </div>
+    <div id="eqMirror" style="font-size:12px;color:#6b7080;font-style:italic;">Loading...</div>
   </div>
 </div>
 
@@ -304,7 +317,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411214559"></script>
+<script src="auth.js?v=20260411215958"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -349,12 +362,45 @@ document.getElementById('serverBtn').onclick = function(){
   window.location.href = 'server_configurator.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
 };
 
+async function loadEqMirror(){
+  var el = document.getElementById('eqMirror');
+  if(!el) return;
+  el.innerHTML = '<span style="color:#4a4f5c;font-style:italic;">Loading...</span>';
+  try {
+    var data = await loadEquipment(projectId);
+    if(!data || !data.groups || !data.groups.length){
+      el.innerHTML = '<span class="eq-empty">No equipment data yet</span>';
+      return;
+    }
+    var html = '';
+    if(data.domeName) html += '<div class="eq-dome">'+data.domeName+'</div>';
+    data.groups.forEach(function(g){
+      if(!g.items || !g.items.length) return;
+      html += '<div class="eq-group">';
+      html += '<div class="eq-group-name">'+g.name+'</div>';
+      g.items.forEach(function(item){
+        html += '<div class="eq-item">'
+          +'<span class="eq-item-name">'+item.name+'</span>'
+          +'<span class="eq-item-qty">×'+item.qty+'</span>'
+          +'</div>';
+      });
+      html += '</div>';
+    });
+    el.innerHTML = html;
+  } catch(e){
+    el.innerHTML = '<span class="eq-empty">Error loading</span>';
+    console.error(e);
+  }
+}
+
 requireAuth(function(){
   loadBrief();
   loadProjectTG();
   initDriveFolder();
   loadNotes();
   loadShippingDate();
+  loadEqMirror();
+  setInterval(loadEqMirror, 30000);
 });
 
 function getNoteInputs(){
