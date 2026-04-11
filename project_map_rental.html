@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411222013";
+  var V="20260411223033";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -342,7 +343,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411222013"></script>
+<script src="auth.js?v=20260411223033"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -392,19 +393,12 @@ async function loadEqMirror(){
   if(!el) return;
   el.innerHTML = '<span style="color:#4a4f5c;font-style:italic;">Loading...</span>';
   try {
-    if(!accessToken){
-      await new Promise(function(resolve){
-        var check = setInterval(function(){
-          if(accessToken){ clearInterval(check); resolve(); }
-        }, 100);
-        setTimeout(function(){ clearInterval(check); resolve(); }, 5000);
-      });
-    }
-    if(!accessToken){ el.innerHTML='<span class="eq-empty">Auth needed</span>'; return; }
+    var tok = accessToken || localStorage.getItem('gtoken');
+    if(!tok){ el.innerHTML='<span class="eq-empty">Auth needed</span>'; return; }
     var sheet = 'EQ_' + String(projectId).substring(0, 10);
     var r = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
-      {headers:{Authorization:'Bearer '+accessToken}}
+      {headers:{Authorization:'Bearer '+tok}}
     );
     var d = await r.json();
     var rows = d.values || [];
