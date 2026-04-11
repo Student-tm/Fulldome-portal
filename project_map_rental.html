@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411030609";
+  var V="20260411031113";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -145,7 +147,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     </div>
 
     <div class="panel">
-      <div class="panel-label">Shipping Date</div>
+      <div class="panel-label">Shipping Date <button onclick="loadShippingDate()" style="background:none;border:none;color:#555;cursor:pointer;font-size:10px;padding:0 4px;font-family:Consolas,monospace;" title="Refresh">↻</button></div>
       <div class="ship-panel">
         <span class="ship-date" id="projShipping" style="display:none"></span>
         <span class="ship-countdown" id="shipCountdown" style="display:none"></span>
@@ -161,6 +163,16 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
         <div class="note-row"><span class="note-num">3</span><input class="note-text" placeholder="—" data-note="2"/><button class="note-icon" onclick="editNote(2)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(2)" title="Clear">✕</button></div>
         <div class="note-row"><span class="note-num">4</span><input class="note-text" placeholder="—" data-note="3"/><button class="note-icon" onclick="editNote(3)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(3)" title="Clear">✕</button></div>
         <div class="note-row"><span class="note-num">5</span><input class="note-text" placeholder="—" data-note="4"/><button class="note-icon" onclick="editNote(4)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(4)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">6</span><input class="note-text" placeholder="—" data-note="5"/><button class="note-icon" onclick="editNote(5)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(5)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">7</span><input class="note-text" placeholder="—" data-note="6"/><button class="note-icon" onclick="editNote(6)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(6)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">8</span><input class="note-text" placeholder="—" data-note="7"/><button class="note-icon" onclick="editNote(7)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(7)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">9</span><input class="note-text" placeholder="—" data-note="8"/><button class="note-icon" onclick="editNote(8)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(8)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">10</span><input class="note-text" placeholder="—" data-note="9"/><button class="note-icon" onclick="editNote(9)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(9)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">11</span><input class="note-text" placeholder="—" data-note="10"/><button class="note-icon" onclick="editNote(10)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(10)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">12</span><input class="note-text" placeholder="—" data-note="11"/><button class="note-icon" onclick="editNote(11)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(11)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">13</span><input class="note-text" placeholder="—" data-note="12"/><button class="note-icon" onclick="editNote(12)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(12)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">14</span><input class="note-text" placeholder="—" data-note="13"/><button class="note-icon" onclick="editNote(13)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(13)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">15</span><input class="note-text" placeholder="—" data-note="14"/><button class="note-icon" onclick="editNote(14)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(14)" title="Clear">✕</button></div>
       </div>
       <div class="notes-actions">
         <button class="notes-clear-all" onclick="clearAllNotes()">Clear All</button>
@@ -243,7 +255,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411030609"></script>
+<script src="auth.js?v=20260411031113"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -310,7 +322,7 @@ function clearAllNotes(){
 async function loadNotes(){
   try {
     await ensureSheet('Notes');
-    var data = await sheetsGet('Notes!A:F');
+    var data = await sheetsGet('Notes!A:Q');
     var rows = data.values || [];
     var row = rows.find(function(r){ return r[0] === String(projectId); });
     if(row){
@@ -332,8 +344,8 @@ async function saveNotes(){
     var rowIdx = -1;
     for(var i=0;i<rows.length;i++){ if(rows[i][0]===String(projectId)){rowIdx=i+1;break;} }
     var vals = [[projectId].concat(notes)];
-    if(rowIdx>0){ await sheetsUpdate('Notes!A'+rowIdx+':F'+rowIdx, vals); }
-    else { await sheetsAppend('Notes!A:F', vals); }
+    if(rowIdx>0){ await sheetsUpdate('Notes!A'+rowIdx+':Q'+rowIdx, vals); }
+    else { await sheetsAppend('Notes!A:Q', vals); }
     btn.textContent = 'Saved ✓';
     setTimeout(function(){ btn.textContent=''; }, 2000);
   } catch(e){ btn.textContent = 'Error'; }
@@ -379,7 +391,12 @@ function loadProjectTG(){
 async function loadShippingDate(){
   try {
     await ensureSheet('Shipping');
-    var data = await sheetsGet('Shipping!A:B');
+    // Force fresh data with direct fetch bypassing sheetsGet cache
+    var r = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/'+encodeURIComponent('Shipping!A:B')+'?_='+Date.now(),
+      {headers:{Authorization:'Bearer '+accessToken}}
+    );
+    var data = await r.json();
     var rows = data.values || [];
     var row = rows.find(function(r){ return r[0] === String(projectId); });
     if(row && row[1]){
@@ -389,8 +406,11 @@ async function loadShippingDate(){
       document.getElementById('projShipping').textContent = d;
       document.getElementById('projShipping').style.display = 'inline-block';
       document.getElementById('projShippingEmpty').style.display = 'none';
-      // Countdown
       showCountdown(row[1]);
+    } else {
+      document.getElementById('projShipping').style.display = 'none';
+      document.getElementById('projShippingEmpty').style.display = 'inline-block';
+      document.getElementById('shipCountdown').style.display = 'none';
     }
   } catch(e){ console.log('No shipping data'); }
 }
