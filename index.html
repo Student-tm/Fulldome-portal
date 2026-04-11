@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411200301";
+  var V="20260411210402";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -65,6 +66,7 @@ header{padding:16px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 .pane-divider{height:1px;background:#2e3039;flex-shrink:0;}
 .proj-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0;}
 .qa-col{width:280px;flex-shrink:0;border-left:1px solid #2e3039;display:flex;flex-direction:column;background:#1f2128;overflow:hidden;}
+.qa-panes{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
 .qa-rows{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .qa-row{display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #2a2d35;flex-shrink:0;height:38px;}
 .qa-row.active-row{background:#2a2d35;}
@@ -142,7 +144,12 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
     </div>
     <div class="qa-col" id="rentalQA">
       <div class="qa-head">Quick Actions</div>
-      <div class="qa-rows"></div>
+      <div class="qa-panes">
+        <div class="pane-header" style="border-top:none;"></div>
+        <div class="qa-pane-active" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;"></div>
+        <div class="pane-header"></div>
+        <div class="qa-pane-done" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;"></div>
+      </div>
     </div>
   </div>
 
@@ -170,7 +177,12 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
     </div>
     <div class="qa-col" id="salesQA">
       <div class="qa-head">Quick Actions</div>
-      <div class="qa-rows"></div>
+      <div class="qa-panes">
+        <div class="pane-header" style="border-top:none;"></div>
+        <div class="qa-pane-active" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;"></div>
+        <div class="pane-header"></div>
+        <div class="qa-pane-done" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;"></div>
+      </div>
     </div>
   </div>
 
@@ -271,75 +283,27 @@ function renderList(listId, countId, projects, type){
 
 function buildQARows(listEl, qaId, type){
   var qaEl = document.getElementById(qaId);
-  var qaRows = qaEl ? qaEl.querySelector('.qa-rows') : null;
-  if(!qaRows) return;
-  qaRows.innerHTML = '';
-
-  function processEl(child, container){
-    if(child.classList.contains('psection')){
-      var div = document.createElement('div');
-      div.className = 'psection'+(child.classList.contains('collapsed')?' collapsed':'');
-      div.style.cursor='default';
-      div.innerHTML = '&nbsp;';
-      container.appendChild(div);
-    } else if(child.classList.contains('pgroup')){
-      var grpDiv = document.createElement('div');
-      grpDiv.className = 'qa-group'+(child.classList.contains('collapsed')?' collapsed':'');
-      Array.from(child.children).forEach(function(row){
-        if(!row.classList.contains('prow')) return;
-        var div = document.createElement('div');
-        div.className = 'qa-row';
-        var pid = encodeURIComponent(row.dataset.id);
-        var pname = row.dataset.name;
-        var tg1 = row.dataset.tg1;
-        var tg2 = row.dataset.tg2;
-        if(tg1 && tg1!='undefined' && tg1!='')
-          div.innerHTML += '<a class="qb qb-tg" href="'+tg1+'" target="_blank" onclick="event.stopPropagation()">✈ US</a>';
-        if(tg2 && tg2!='undefined' && tg2!='')
-          div.innerHTML += '<a class="qb qb-tg" href="'+tg2+'" target="_blank" onclick="event.stopPropagation()">✈ Prod</a>';
-        div.innerHTML += '<a class="qb" href="equipment.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">EQ</a>';
-        div.innerHTML += '<a class="qb" href="server_configurator.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">SRV</a>';
-        div.innerHTML += '<a class="qb" href="https://drive.google.com/drive/search?q='+decodeURIComponent(pname)+'" target="_blank" onclick="event.stopPropagation()">📁</a>';
-        row.addEventListener('mouseenter', function(){ div.classList.add('active-row'); });
-        row.addEventListener('mouseleave', function(){ div.classList.remove('active-row'); });
-        grpDiv.appendChild(div);
-      });
-      container.appendChild(grpDiv);
-    }
-  }
-
+  if(!qaEl) return;
   var paneA = listEl.querySelector('.pane-active');
   var paneD = listEl.querySelector('.pane-done');
+  var qaPaneA = qaEl.querySelector('.qa-pane-active');
+  var qaPaneD = qaEl.querySelector('.qa-pane-done');
+  if(!qaPaneA || !qaPaneD) return;
 
-  // Mirror pane-header for Current
-  var hdrA = listEl.previousElementSibling ? listEl.closest('.proj-panes').querySelectorAll('.pane-header')[0] : null;
-  var phHeight = hdrA ? hdrA.getBoundingClientRect().height : 25;
-
-  var sepA = document.createElement('div');
-  sepA.className = 'pane-header';
-  sepA.style.cssText = 'border-top:none;';
-  sepA.textContent = '';
-  qaRows.appendChild(sepA);
+  qaPaneA.innerHTML = '';
+  qaPaneD.innerHTML = '';
 
   if(paneA) Array.from(paneA.children).forEach(function(child){
     if(!child.classList.contains('prow')) return;
-    qaRows.appendChild(makeQARow(child, type));
+    qaPaneA.appendChild(makeQARow(child, type));
   });
-
-  var sepD = document.createElement('div');
-  sepD.className = 'pane-header';
-  sepD.textContent = '';
-  qaRows.appendChild(sepD);
-
   if(paneD) Array.from(paneD.children).forEach(function(child){
     if(!child.classList.contains('prow')) return;
-    qaRows.appendChild(makeQARow(child, type));
+    qaPaneD.appendChild(makeQARow(child, type));
   });
 
-  // Sync scroll for both panes
-  if(paneA) paneA.addEventListener('scroll', function(){ 
-    // scroll qa-rows to match - approximate
-  });
+  if(paneA) paneA.addEventListener('scroll', function(){ qaPaneA.scrollTop = paneA.scrollTop; });
+  if(paneD) paneD.addEventListener('scroll', function(){ qaPaneD.scrollTop = paneD.scrollTop; });
 }
 
 function makeQARow(row, type){
