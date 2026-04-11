@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411225041";
+  var V="20260411225949";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -349,7 +351,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411225041"></script>
+<script src="auth.js?v=20260411225949"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -710,13 +712,39 @@ async function loadEqMirror(){
     var data = JSON.parse(dataRow[1]);
     if(!data||!data.groups||!data.groups.length){ el.innerHTML='<span style="color:#4a4f5c">No items added yet</span>'; return; }
     var html = '';
-    if(data.dome&&data.dome.size) html+='<div style="font-size:10px;font-weight:700;color:#888c98;margin-bottom:8px;">'+data.dome.size+'</div>';
+    // Dome info block
+    if(data.dome){
+      html += '<div style="background:#17171a;border:1px solid #2e3039;border-radius:3px;padding:10px 12px;margin-bottom:12px;">';
+      if(data.dome.size) html += '<div style="font-size:13px;font-weight:700;color:#CC0000;margin-bottom:6px;">'+data.dome.size+'</div>';
+      if(data.domeSer) html += '<div style="font-size:11px;color:#888c98;margin-bottom:2px;">S/N: '+data.domeSer+'</div>';
+      if(data.dome.ductSize) html += '<div style="font-size:11px;color:#888c98;margin-bottom:2px;">Duct: '+data.dome.ductSize+'</div>';
+      html += '</div>';
+    }
+    // Groups as tables
     data.groups.forEach(function(g){
-      var items=(g.rows||g.items||[]).filter(function(x){return x.item&&x.item.trim();});
-      if(!items.length) return;
-      html+='<div class="eq-g"><div class="eq-g-name">'+(g.label||g.name||'Group')+'</div>';
-      items.forEach(function(x){ html+='<div class="eq-r"><span>'+x.item+'</span><span>×'+(x.qty||1)+'</span></div>'; });
-      html+='</div>';
+      var items = (g.rows||g.items||[]).filter(function(x){ return x.item && x.item.trim(); });
+      html += '<div class="eq-g">';
+      html += '<div class="eq-g-name">'+(g.label||g.name||'Group')+'</div>';
+      html += '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
+      html += '<thead><tr style="background:#17171a;color:#6b7080;">';
+      html += '<th style="text-align:left;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">MODEL</th>';
+      html += '<th style="text-align:left;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">LABEL|IP</th>';
+      html += '<th style="text-align:center;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">QTY</th>';
+      html += '<th style="text-align:left;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">S/N</th>';
+      html += '</tr></thead><tbody>';
+      if(!items.length){
+        html += '<tr><td colspan="4" style="padding:6px 8px;color:#4a4f5c;font-style:italic;">+ SELECT...</td></tr>';
+      } else {
+        items.forEach(function(x){
+          html += '<tr style="border-bottom:1px solid #232530;">';
+          html += '<td style="padding:5px 8px;color:#eaeaea;">'+(x.item||'—')+'</td>';
+          html += '<td style="padding:5px 8px;color:#6b7080;">'+(x.labelIp||'...')+'</td>';
+          html += '<td style="padding:5px 8px;color:#f0a500;text-align:center;">'+(x.qty||1)+'</td>';
+          html += '<td style="padding:5px 8px;color:#6b7080;">'+(x.sn||'...')+'</td>';
+          html += '</tr>';
+        });
+      }
+      html += '</tbody></table></div>';
     });
     el.innerHTML = html||'<span style="color:#4a4f5c">No items</span>';
   } catch(e){ el.innerHTML='<span style="color:#CC0000">'+e.message+'</span>'; }
