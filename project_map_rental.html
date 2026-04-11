@@ -4,10 +4,19 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411225949";
+  var V="20260411231417";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -83,7 +92,8 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .header-title{font-size:12px;font-weight:700;color:#eaeaea;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
 
 /* Dashboard layout */
-.dashboard{display:grid;grid-template-columns:520px 1fr 520px;gap:0;flex:1;}
+.dashboard{display:grid;grid-template-columns:30% 1fr 30%;gap:0;flex:1;}
+.sidebar{margin-right:1%;}
 .sidebar{background:#1f2128;border-right:1px solid #2e3039;padding:24px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 75px);}
 .content{padding:32px;overflow-y:auto;}
 .right-panel{border-left:1px solid #2e3039;background:#1f2128;border-left:2px solid #2e3039;display:flex;flex-direction:column;padding:24px;gap:16px;overflow-y:auto;}
@@ -276,6 +286,14 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     </div>
   </div>
 
+  <!-- RIGHT PANEL -->
+  <div class="right-panel" id="rightPanel">
+    <div class="panel-label">Equipment List</div>
+
+
+    <div id="eqMirror" style="font-size:12px;color:#4a4f5c;font-style:italic;">Loading...</div>
+  </div>
+
   <!-- CONTENT -->
   <div class="content">
   <div class="section-label">General Info — Brief</div>
@@ -325,11 +343,6 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <div class="brief-row"><div class="brief-field">Packing / flight cases type</div><div class="brief-val"><input data-field="packing" data-label="Packing / flight cases type" placeholder="—"/></div><div class="brief-comment"><input data-field="packing_c" placeholder="—"/></div></div>
   </div>
 </div>
-  <!-- RIGHT PANEL -->
-  <div class="right-panel" id="rightPanel">
-    <div class="panel-label">Equipment List</div>
-    <div id="eqMirror" style="font-size:12px;color:#4a4f5c;font-style:italic;">Loading...</div>
-  </div>
 </div>
 
 <div class="modal-overlay" id="confirmModal">
@@ -351,7 +364,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411225949"></script>
+<script src="auth.js?v=20260411231417"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -720,31 +733,36 @@ async function loadEqMirror(){
       if(data.dome.ductSize) html += '<div style="font-size:11px;color:#888c98;margin-bottom:2px;">Duct: '+data.dome.ductSize+'</div>';
       html += '</div>';
     }
-    // Groups as tables
+    // Groups as full tables matching equipment.html columns
     data.groups.forEach(function(g){
       var items = (g.rows||g.items||[]).filter(function(x){ return x.item && x.item.trim(); });
       html += '<div class="eq-g">';
       html += '<div class="eq-g-name">'+(g.label||g.name||'Group')+'</div>';
-      html += '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
-      html += '<thead><tr style="background:#17171a;color:#6b7080;">';
-      html += '<th style="text-align:left;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">MODEL</th>';
-      html += '<th style="text-align:left;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">LABEL|IP</th>';
-      html += '<th style="text-align:center;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">QTY</th>';
-      html += '<th style="text-align:left;padding:4px 8px;border-bottom:1px solid #2e3039;font-weight:700;letter-spacing:0.05em;">S/N</th>';
+      html += '<div style="overflow-x:auto;">';
+      html += '<table style="width:100%;border-collapse:collapse;font-size:10px;min-width:400px;">';
+      html += '<thead><tr style="background:#17171a;">';
+      var cols = ['MODEL','LABEL|IP','QTY','S/N','COLOR','HOURS','COMMENTS'];
+      cols.forEach(function(c,i){
+        var w = i===0?'130px':'80px';
+        html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;letter-spacing:0.05em;width:'+w+'">'+c+'</th>';
+      });
       html += '</tr></thead><tbody>';
       if(!items.length){
-        html += '<tr><td colspan="4" style="padding:6px 8px;color:#4a4f5c;font-style:italic;">+ SELECT...</td></tr>';
+        html += '<tr><td colspan="7" style="padding:6px;color:#4a4f5c;font-style:italic;">+ SELECT...</td></tr>';
       } else {
         items.forEach(function(x){
           html += '<tr style="border-bottom:1px solid #232530;">';
-          html += '<td style="padding:5px 8px;color:#eaeaea;">'+(x.item||'—')+'</td>';
-          html += '<td style="padding:5px 8px;color:#6b7080;">'+(x.labelIp||'...')+'</td>';
-          html += '<td style="padding:5px 8px;color:#f0a500;text-align:center;">'+(x.qty||1)+'</td>';
-          html += '<td style="padding:5px 8px;color:#6b7080;">'+(x.sn||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#eaeaea;border-right:1px solid #232530;">'+(x.item||'—')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.labelIp||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#f0a500;text-align:center;border-right:1px solid #232530;">'+(x.qty||1)+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.sn||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.color||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.hours||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;">'+(x.comments||'...')+'</td>';
           html += '</tr>';
         });
       }
-      html += '</tbody></table></div>';
+      html += '</tbody></table></div></div>';
     });
     el.innerHTML = html||'<span style="color:#4a4f5c">No items</span>';
   } catch(e){ el.innerHTML='<span style="color:#CC0000">'+e.message+'</span>'; }
