@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411224339";
+  var V="20260411224638";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -82,6 +83,11 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .sidebar{background:#1f2128;border-right:1px solid #2e3039;padding:24px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 75px);}
 .content{padding:32px;overflow-y:auto;}
 .right-panel{border-left:1px solid #2e3039;background:#1f2128;display:flex;flex-direction:column;padding:24px;gap:16px;overflow-y:auto;}
+.eq-g{margin-bottom:12px;}
+.eq-g-name{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.eq-r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #232530;font-size:12px;}
+.eq-r span:first-child{color:#eaeaea;}
+.eq-r span:last-child{color:#f0a500;font-weight:700;}
 .eq-dome{font-size:11px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;padding-bottom:6px;border-bottom:1px solid #2e3039;margin-bottom:4px;}
 .eq-group{margin-bottom:12px;}
 .eq-group-name{font-size:10px;font-weight:700;color:#888c98;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
@@ -319,7 +325,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <!-- RIGHT PANEL -->
   <div class="right-panel" id="rightPanel">
     <div class="panel-label">Equipment List</div>
-    <div style="font-size:12px;color:#4a4f5c;font-style:italic;">Coming soon</div>
+    <div id="eqMirror" style="font-size:12px;color:#4a4f5c;font-style:italic;">Loading...</div>
   </div>
 </div>
 
@@ -342,7 +348,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411224339"></script>
+<script src="auth.js?v=20260411224638"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -394,6 +400,7 @@ requireAuth(function(){
   initDriveFolder();
   loadNotes();
   loadShippingDate();
+  setTimeout(loadEqMirror, 1000);
 });
 
 function getNoteInputs(){
@@ -678,6 +685,39 @@ document.getElementById('saveBtn').onclick = function(){
     document.getElementById('saveStatus').textContent = 'Error: ' + e.message;
   });
 };
+
+async function loadEqMirror(){
+  var el = document.getElementById('eqMirror');
+  if(!el) return;
+  try {
+    var tok = localStorage.getItem('gtoken');
+    if(!tok){ el.innerHTML='<span style="color:#4a4f5c">Auth needed</span>'; return; }
+    var sheet = 'EQ_' + String(projectId).substring(0, 10);
+    var r = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
+      {headers:{Authorization:'Bearer '+tok}}
+    );
+    if(r.status===401){ el.innerHTML='<span style="color:#4a4f5c">Token expired, refresh page</span>'; return; }
+    var d = await r.json();
+    var rows = d.values || [];
+    var dataRow = rows.find(function(x){ return x[0]==='data'; });
+    if(!dataRow){ el.innerHTML='<span style="color:#4a4f5c">No equipment data yet</span>'; return; }
+    var data = JSON.parse(dataRow[1]);
+    if(!data||!data.groups||!data.groups.length){ el.innerHTML='<span style="color:#4a4f5c">No items added yet</span>'; return; }
+    var html = '';
+    if(data.dome&&data.dome.size) html+='<div style="font-size:10px;font-weight:700;color:#888c98;margin-bottom:8px;">'+data.dome.size+'</div>';
+    data.groups.forEach(function(g){
+      var items=(g.rows||g.items||[]).filter(function(x){return x.item&&x.item.trim();});
+      if(!items.length) return;
+      html+='<div class="eq-g"><div class="eq-g-name">'+(g.label||g.name||'Group')+'</div>';
+      items.forEach(function(x){ html+='<div class="eq-r"><span>'+x.item+'</span><span>×'+(x.qty||1)+'</span></div>'; });
+      html+='</div>';
+    });
+    el.innerHTML = html||'<span style="color:#4a4f5c">No items</span>';
+  } catch(e){ el.innerHTML='<span style="color:#CC0000">'+e.message+'</span>'; }
+}
+
+setInterval(loadEqMirror, 30000);
 </script>
 </body>
 </html>
