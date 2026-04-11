@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411180505";
+  var V="20260411181057";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -68,6 +69,7 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <p>Select a module to continue</p>
   </div>
   <div class="cards">
+    <div style="display:flex;flex-direction:column;gap:8px;">
     <div class="card-wrap" id="rentalWrap">
       <div class="card" id="rentalCard">
         <div class="card-label">Module 01</div>
@@ -101,11 +103,30 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:12px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:4px 14px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram &nearr;</a>
   </div>
 </footer>
-<script src="auth.js?v=20260411180505"></script>
+<script src="auth.js?v=20260411181057"></script>
 <script>
 initGoogleAuth(function() {
   console.log("Authenticated");
 });
+
+// ═══ LAST PROJECT ═══════════════════════════════
+function setLastProject(id, name){
+  localStorage.setItem('last_project_id', id);
+  localStorage.setItem('last_project_name', name);
+}
+function goLastProject(){
+  var id = localStorage.getItem('last_project_id');
+  var name = localStorage.getItem('last_project_name');
+  if(id) window.location.href='project_map_rental.html?project='+encodeURIComponent(id)+'&name='+encodeURIComponent(name);
+}
+(function(){
+  var id = localStorage.getItem('last_project_id');
+  var name = localStorage.getItem('last_project_name');
+  if(id && name){
+    document.getElementById('lastProjectName').textContent = name;
+    document.getElementById('lastProjectBar').style.display = 'block';
+  }
+})();
 
 // ═══ RENTAL LONG PRESS ═══════════════════════════
 var _lpTimer = null;

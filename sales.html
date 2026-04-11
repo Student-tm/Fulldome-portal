@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408032706";
+  var V="20260411181057";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -141,6 +143,13 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="header-title">Sales &mdash; Projects</span>
   <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
 </header>
+<div style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:5px 32px;display:flex;gap:16px;align-items:center;">
+  <a href="index.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">⌂ Portal</a>
+  <span style="color:#222;">|</span>
+  <a href="rental.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">Rental</a>
+  <span style="color:#222;">|</span>
+  <a href="sales.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">Sales</a>
+</div>
 <div class="main">
   <div class="section-label">Create</div>
   <div class="new-btn" id="newBtn">
@@ -222,7 +231,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260408032706"></script>
+<script src="auth.js?v=20260411181057"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -569,7 +578,7 @@ function render(){
       document.getElementById('confirmModal').classList.add('open');
     };
     card.onclick=function(){
-      window.location.href='project_map.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name)+'&type=sales';
+      window.location.href='project_map_rental.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name)+'&type=sales';
     };
     if(isDone) card.style.opacity='0.6';
 
