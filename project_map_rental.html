@@ -4,10 +4,13 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411173502";
+  var V="20260411173942";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
 
 
 
@@ -188,11 +191,11 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
         <div class="btn-wrap"><span class="btn-label">Projection system setup</span><div class="abtn" id="serverBtn"><div class="abtn-icon">⚙</div><div class="abtn-label">Server Config</div></div></div>
         <div style="display:flex;gap:6px;align-items:flex-end;">
           <div class="btn-wrap" style="flex:1"><span class="btn-label">Project files</span><div class="abtn" id="driveFolderBtn"><div class="abtn-icon" id="driveIcon">⚙</div><div class="abtn-label" id="driveBtnLabel">Create Project Folder</div></div></div>
-          <div class="abtn" title="Add file" style="flex-shrink:0;padding:7px 10px;"><div class="abtn-icon">⚙</div></div>
+          <div class="abtn" title="Add file" style="flex-shrink:0;padding:7px 14px;font-size:18px;font-weight:700;color:#CC0000;">+</div>
         </div>
         <div style="display:flex;gap:6px;align-items:flex-end;">
           <div class="btn-wrap" style="flex:1"><span class="btn-label">Project photos</span><div class="abtn" id="drivePhotosBtn"><div class="abtn-icon" id="photosIcon">⚙</div><div class="abtn-label" id="photosBtnLabel">Project Photos</div></div></div>
-          <div class="abtn" title="Add photo" style="flex-shrink:0;padding:7px 10px;"><div class="abtn-icon">⚙</div></div>
+          <div class="abtn" title="Add photo" style="flex-shrink:0;padding:7px 14px;font-size:18px;font-weight:700;color:#CC0000;">+</div>
         </div>
       </div>
     </div>
@@ -285,7 +288,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411173502"></script>
+<script src="auth.js?v=20260411173942"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -419,6 +422,16 @@ function loadProjectTG(){
 
 async function loadShippingDate(){
   try {
+    // Wait for accessToken if not ready yet
+    if(!accessToken){
+      await new Promise(function(resolve){
+        var check = setInterval(function(){
+          if(accessToken){ clearInterval(check); resolve(); }
+        }, 100);
+        setTimeout(function(){ clearInterval(check); resolve(); }, 5000);
+      });
+    }
+    if(!accessToken){ console.warn('No accessToken for shipping'); return; }
     await ensureSheet('Shipping');
     var data = await sheetsGet('Shipping!A:C');
     var rows = data.values || [];
@@ -449,16 +462,16 @@ function showCountdown(isoDate){
     var diff = Math.round((ship - today) / 86400000);
     el.style.display = 'inline-block';
     if(diff === 0){
-      el.textContent = '[ TODAY ]';
+      el.textContent = 'TODAY';
       el.className = 'ship-countdown today';
     } else if(diff > 0 && diff <= 3){
-      el.textContent = '[ IN ' + diff + ' DAY' + (diff===1?'':'S') + ' ]';
+      el.textContent = 'IN ' + diff + ' DAY' + (diff===1?'':'S');
       el.className = 'ship-countdown future urgent';
     } else if(diff > 3){
       el.textContent = '[ IN ' + diff + ' DAYS ]';
       el.className = 'ship-countdown future';
     } else {
-      el.textContent = '[ ' + Math.abs(diff) + ' DAY' + (Math.abs(diff)===1?'':'S') + ' AGO ]';
+      el.textContent = Math.abs(diff) + ' DAY' + (Math.abs(diff)===1?'':'S') + ' AGO';
       el.className = 'ship-countdown past';
     }
   }
