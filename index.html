@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411195702";
+  var V="20260411200301";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -310,9 +311,14 @@ function buildQARows(listEl, qaId, type){
   var paneA = listEl.querySelector('.pane-active');
   var paneD = listEl.querySelector('.pane-done');
 
-  // Active section separator
+  // Mirror pane-header for Current
+  var hdrA = listEl.previousElementSibling ? listEl.closest('.proj-panes').querySelectorAll('.pane-header')[0] : null;
+  var phHeight = hdrA ? hdrA.getBoundingClientRect().height : 25;
+
   var sepA = document.createElement('div');
-  sepA.className = 'qa-sep';sepA.style.height='24px';
+  sepA.className = 'pane-header';
+  sepA.style.cssText = 'border-top:none;';
+  sepA.textContent = '';
   qaRows.appendChild(sepA);
 
   if(paneA) Array.from(paneA.children).forEach(function(child){
@@ -320,9 +326,9 @@ function buildQARows(listEl, qaId, type){
     qaRows.appendChild(makeQARow(child, type));
   });
 
-  // Done section separator  
   var sepD = document.createElement('div');
-  sepD.className = 'qa-sep';sepD.style.height='24px';
+  sepD.className = 'pane-header';
+  sepD.textContent = '';
   qaRows.appendChild(sepD);
 
   if(paneD) Array.from(paneD.children).forEach(function(child){
