@@ -94,7 +94,7 @@ async function sheetsClear(range) {
 }
 
 async function getProjects() {
-  const data = await sheetsGet('Projects!A:I');
+  const data = await sheetsGet('RentalProjects!A:I');
   const rows = data.values || [];
   return rows.slice(1).filter(r => r[0] && r[1]).map(r => ({
     id: r[0] || '',
@@ -109,7 +109,7 @@ async function getProjects() {
 }
 
 async function saveProject(p) {
-  const data = await sheetsGet('Projects!A:A');
+  const data = await sheetsGet('RentalProjects!A:A');
   const rows = data.values || [];
   let rowIdx = -1;
   for (let i = 1; i < rows.length; i++) {
@@ -117,9 +117,9 @@ async function saveProject(p) {
   }
   const vals = [[p.id, p.name, p.address||'', p.start||'', p.tg1||'', p.tg2||'', p.created, p.status||'active']];
   if (rowIdx > 0) {
-    await sheetsUpdate(`Projects!A${rowIdx}:H${rowIdx}`, vals);
+    await sheetsUpdate(`RentalProjects!A${rowIdx}:H${rowIdx}`, vals);
   } else {
-    await sheetsAppend('Projects!A:H', vals);
+    await sheetsAppend('RentalProjects!A:H', vals);
   }
 }
 
@@ -134,14 +134,14 @@ async function getSheetId(sheetName) {
 }
 
 async function deleteProject(id) {
-  const data = await sheetsGet('Projects!A:A');
+  const data = await sheetsGet('RentalProjects!A:A');
   const rows = data.values || [];
   let rowIdx = -1;
   for (let i = 1; i < rows.length; i++) {
     if (rows[i][0] === String(id)) { rowIdx = i; break; }
   }
   if (rowIdx === -1) return;
-  const sheetId = await getSheetId('Projects');
+  const sheetId = await getSheetId('RentalProjects');
   await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
     {
@@ -349,60 +349,6 @@ async function getProjectConfigs(projectId) {
     configs[r[0]].components.push({ component: r[4]||'', value: r[5]||'', price: r[6]||'', link: r[7]||'', status: r[8]||'' });
   });
   return Object.values(configs);
-}
-
-// ═══ SERVER CONFIGS ════════════════════════════════════
-const CONFIGS_SPREADSHEET_ID = '1ArIPwqEmma1GqwZZXgaMiq4b1ZqfBx4ocB-9Bra4o8Q';
-
-async function configsGet(range) {
-  const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}/values/${encodeURIComponent(range)}`,
-    { headers: { Authorization: 'Bearer ' + accessToken } }
-  );
-  return r.json();
-}
-
-async function configsAppend(range, values) {
-  return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
-    {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values })
-    }
-  );
-}
-
-async function configsUpdate(range, values) {
-  return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
-    {
-      method: 'PUT',
-      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values })
-    }
-  );
-}
-
-async function ensureConfigsSheet(sheetName) {
-  const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}?fields=sheets.properties.title`,
-    { headers: { Authorization: 'Bearer ' + accessToken } }
-  );
-  const data = await r.json();
-  const exists = data.sheets && data.sheets.some(s => s.properties.title === sheetName);
-  if (!exists) {
-    await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${CONFIGS_SPREADSHEET_ID}:batchUpdate`,
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requests: [{ addSheet: { properties: { title: sheetName } } }] })
-      }
-    );
-    // Add headers
-    await configsAppend('Configs!A:I', [['ID','Type','ProjectID','ProjectName','Component','Value','Price','Link','Status']]);
-  }
 }
 
 
