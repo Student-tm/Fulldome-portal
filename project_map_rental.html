@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411215958";
+  var V="20260411220607";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -82,6 +84,17 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .eq-item-name{font-size:12px;color:#eaeaea;}
 .eq-item-qty{font-size:11px;font-weight:700;color:#f0a500;min-width:24px;text-align:right;}
 .eq-empty{font-size:12px;color:#4a4f5c;font-style:italic;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#1f2128;border:1px solid #2e3039;border-top:2px solid #CC0000;border-radius:3px;padding:24px;min-width:280px;font-family:Consolas,monospace;}
+.modal-title{font-size:12px;font-weight:700;color:#eaeaea;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.modal-text{font-size:12px;color:#888c98;margin-bottom:20px;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+.modal-btn{padding:6px 16px;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;border-radius:2px;border:1px solid #2e3039;}
+.modal-btn-cancel{background:transparent;color:#6b7080;}
+.modal-btn-cancel:hover{border-color:#6b7080;color:#eaeaea;}
+.modal-btn-confirm{background:#CC0000;color:#fff;border-color:#CC0000;}
+.modal-btn-confirm:hover{background:#aa0000;}
 
 /* Sidebar panels */
 .panel{display:flex;flex-direction:column;gap:10px;}
@@ -308,6 +321,16 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </div>
 
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-title">Clear All Notes</div>
+    <div class="modal-text">Are you sure? This will erase all 15 notes and save immediately.</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('confirmModal').classList.remove('open')">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmClearAll()">Clear All</button>
+    </div>
+  </div>
+</div>
 <div class="save-bar">
   <span class="save-status" id="saveStatus"></span>
   <button class="save-btn" id="saveBtn">Save Brief</button>
@@ -317,7 +340,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411215958"></script>
+<script src="auth.js?v=20260411220607"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -367,6 +390,15 @@ async function loadEqMirror(){
   if(!el) return;
   el.innerHTML = '<span style="color:#4a4f5c;font-style:italic;">Loading...</span>';
   try {
+    if(!accessToken){
+      await new Promise(function(resolve){
+        var check = setInterval(function(){
+          if(accessToken){ clearInterval(check); resolve(); }
+        }, 100);
+        setTimeout(function(){ clearInterval(check); resolve(); }, 5000);
+      });
+    }
+    if(!accessToken){ el.innerHTML='<span class="eq-empty">Auth needed</span>'; return; }
     var data = await loadEquipment(projectId);
     if(!data || !data.groups || !data.groups.length){
       el.innerHTML = '<span class="eq-empty">No equipment data yet</span>';
@@ -414,8 +446,12 @@ function clearNote(i){
   getNoteInputs()[i].value = '';
 }
 function clearAllNotes(){
-  if(!confirm('Clear all notes?')) return;
+  document.getElementById('confirmModal').classList.add('open');
+}
+async function confirmClearAll(){
+  document.getElementById('confirmModal').classList.remove('open');
   getNoteInputs().forEach(function(inp){ inp.value=''; });
+  await saveNotes();
 }
 
 async function loadNotes(){
