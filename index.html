@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411192258";
+  var V="20260411192548";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -226,6 +227,35 @@ function renderList(listId, countId, projects, type){
   });
   var qaId = type==='rental' ? 'rentalQA' : 'salesQA';
   buildQARows(el, qaId, type);
+}
+
+function buildQARows(listEl, qaId, type){
+  var qaEl = document.getElementById(qaId);
+  var qaRows = qaEl ? qaEl.querySelector('.qa-rows') : null;
+  if(!qaRows) return;
+  qaRows.innerHTML = '';
+  Array.from(listEl.children).forEach(function(child){
+    var div = document.createElement('div');
+    if(child.classList.contains('psection')){
+      div.className = 'qa-sep';
+    } else if(child.classList.contains('prow')){
+      div.className = 'qa-row';
+      var pid = encodeURIComponent(child.dataset.id);
+      var pname = child.dataset.name;
+      var tg1 = child.dataset.tg1;
+      var tg2 = child.dataset.tg2;
+      if(tg1 && tg1!='undefined' && tg1!='')
+        div.innerHTML += '<a class="qb qb-tg" href="'+tg1+'" target="_blank" onclick="event.stopPropagation()">✈ US</a>';
+      if(tg2 && tg2!='undefined' && tg2!='')
+        div.innerHTML += '<a class="qb qb-tg" href="'+tg2+'" target="_blank" onclick="event.stopPropagation()">✈ Prod</a>';
+      div.innerHTML += '<a class="qb" href="equipment.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">EQ</a>';
+      div.innerHTML += '<a class="qb" href="server_configurator.html?project='+pid+'&name='+pname+'" onclick="event.stopPropagation()">SRV</a>';
+      div.innerHTML += '<a class="qb" href="project_map_rental.html?project='+pid+'&name='+pname+'&type='+type+'" onclick="event.stopPropagation()">MAP</a>';
+      child.addEventListener('mouseenter', function(){ div.classList.add('active-row'); });
+      child.addEventListener('mouseleave', function(){ div.classList.remove('active-row'); });
+    }
+    qaRows.appendChild(div);
+  });
 }
 
 function makeRow(p, type){
