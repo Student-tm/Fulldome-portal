@@ -4,13 +4,13 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408013506";
-  if(localStorage.getItem("_fv")!==V){
-    localStorage.setItem("_fv",V);
-    if(performance.navigation.type!==1) location.reload(true);
-  }
+  var V="20260411180505";
+  if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
 
 
 
@@ -38,6 +38,18 @@ header{padding:20px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 .card-desc{font-size:14px;color:#555;line-height:1.6;}
 .arrow{font-size:21px;color:#333;margin-top:16px;display:block;transition:color 0.2s;}
 .soon{opacity:0.4;cursor:default;}
+.proj-popup{display:none;position:absolute;bottom:calc(100% + 12px);left:0;background:#1a1a1a;border:1px solid #CC0000;border-radius:3px;min-width:260px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;}
+.proj-popup.open{display:block;}
+.proj-popup-header{padding:8px 14px;font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;border-bottom:1px solid #2a2a2a;background:#111;}
+.proj-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #1e1e1e;transition:background 0.1s;}
+.proj-item:hover{background:#CC0000;}
+.proj-item:hover .proj-item-name{color:#fff;}
+.proj-item:hover .proj-item-sub{color:rgba(255,255,255,0.7);}
+.proj-item-name{font-size:13px;font-weight:700;color:#fff;}
+.proj-item-sub{font-size:10px;color:#555;margin-top:2px;}
+.proj-popup-empty{padding:14px;font-size:12px;color:#444;font-style:italic;}
+.card-wrap{position:relative;}
+.card-wrap *{user-select:none;-webkit-user-select:none;}
 .soon:hover{transform:none;background:#1a1a1a;border-color:#2a2a2a;}
 .badge{display:inline-block;font-size:10px;font-weight:700;background:#333;color:#666;padding:2px 6px;border-radius:2px;text-transform:uppercase;margin-left:8px;}
 footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;}
@@ -56,11 +68,17 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <p>Select a module to continue</p>
   </div>
   <div class="cards">
-    <div class="card" onclick="window.location.href='rental.html'">
-      <div class="card-label">Module 01</div>
-      <div class="card-title">Rental</div>
-      <div class="card-desc">Equipment packing list for dome rental projects. Select dome, add groups, track status.</div>
-      <span class="arrow">&rarr;</span>
+    <div class="card-wrap" id="rentalWrap">
+      <div class="card" id="rentalCard">
+        <div class="card-label">Module 01</div>
+        <div class="card-title">Rental</div>
+        <div class="card-desc">Equipment packing list for dome rental projects. Select dome, add groups, track status.</div>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <div class="proj-popup" id="rentalPopup">
+        <div class="proj-popup-header">Active Projects</div>
+        <div id="rentalPopupList"><div class="proj-popup-empty">Loading...</div></div>
+      </div>
     </div>
     <div class="card" onclick="window.location.href='sales.html'">
       <div class="card-label">Module 02</div>
@@ -83,10 +101,98 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:12px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:4px 14px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram &nearr;</a>
   </div>
 </footer>
-<script src="auth.js?v=20260408013506"></script>
+<script src="auth.js?v=20260411180505"></script>
 <script>
 initGoogleAuth(function() {
   console.log("Authenticated");
+});
+
+// ═══ RENTAL LONG PRESS ═══════════════════════════
+var _lpTimer = null;
+var _lpActive = false;
+var _hoverProject = null;
+var _projectsLoaded = false;
+var _rentalProjects = [];
+
+var rentalCard = document.getElementById('rentalCard');
+var rentalPopup = document.getElementById('rentalPopup');
+
+function startLongPress(){
+  _lpTimer = setTimeout(function(){
+    _lpActive = true;
+    loadAndShowPopup();
+  }, 1000);
+}
+
+function cancelLongPress(){
+  clearTimeout(_lpTimer);
+  if(!_lpActive) window.location.href='rental.html';
+  _lpActive = false;
+}
+
+function endLongPress(){
+  clearTimeout(_lpTimer);
+  if(_lpActive && _hoverProject){
+    window.location.href = 'project_map_rental.html?project='+encodeURIComponent(_hoverProject.id)+'&name='+encodeURIComponent(_hoverProject.name);
+  } else if(_lpActive){
+    closePopup();
+  } else {
+    window.location.href = 'rental.html';
+  }
+  _lpActive = false;
+}
+
+function closePopup(){
+  rentalPopup.classList.remove('open');
+  _hoverProject = null;
+}
+
+async function loadAndShowPopup(){
+  rentalPopup.classList.add('open');
+  if(_projectsLoaded){ renderPopup(); return; }
+  try {
+    var r = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('RentalProjects!A:I'),
+      {headers:{Authorization:'Bearer '+localStorage.getItem('gtoken')}}
+    );
+    var d = await r.json();
+    var rows = d.values || [];
+    _rentalProjects = rows.slice(1).filter(function(r){ return r[0]&&r[1]&&r[7]!=='done'; }).map(function(r){
+      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||''};
+    });
+    _projectsLoaded = true;
+    renderPopup();
+  } catch(e){
+    document.getElementById('rentalPopupList').innerHTML = '<div class="proj-popup-empty">Sign in first</div>';
+  }
+}
+
+function renderPopup(){
+  var list = document.getElementById('rentalPopupList');
+  if(!_rentalProjects.length){ list.innerHTML='<div class="proj-popup-empty">No active projects</div>'; return; }
+  list.innerHTML = _rentalProjects.map(function(p){
+    return '<div class="proj-item" data-id="'+p.id+'" data-name="'+encodeURIComponent(p.name)+'">'
+      +'<div class="proj-item-name">'+p.name+'</div>'
+      +(p.address||p.start ? '<div class="proj-item-sub">'+(p.address||'')+(p.start?' · '+p.start:'')+'</div>' : '')
+      +'</div>';
+  }).join('');
+  list.querySelectorAll('.proj-item').forEach(function(el){
+    el.addEventListener('mouseenter', function(){
+      _hoverProject = {id:el.dataset.id, name:decodeURIComponent(el.dataset.name)};
+    });
+    el.addEventListener('mouseleave', function(){ _hoverProject = null; });
+    el.addEventListener('mouseup', function(){
+      window.location.href = 'project_map_rental.html?project='+encodeURIComponent(el.dataset.id)+'&name='+el.dataset.name;
+    });
+  });
+}
+
+rentalCard.addEventListener('mousedown', startLongPress);
+rentalCard.addEventListener('mouseup', endLongPress);
+rentalCard.addEventListener('mouseleave', function(){ clearTimeout(_lpTimer); });
+
+document.addEventListener('mouseup', function(e){
+  if(!rentalPopup.contains(e.target) && e.target !== rentalCard){ closePopup(); _lpActive=false; }
 });
 </script>
 </body>
