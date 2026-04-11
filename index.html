@@ -4,25 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411182448";
+  var V="20260411183449";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
-
-
-
-
-
-
-
-
-
-
-
 <meta charset="UTF-8"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-  <meta http-equiv="Pragma" content="no-cache"/>
-  <meta http-equiv="Expires" content="0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Fulldome.pro — Internal Portal</title>
 <style>
@@ -30,36 +17,60 @@
 body{font-family:Consolas,"Courier New",monospace;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 header{padding:20px 40px;border-bottom:3px solid #CC0000;display:flex;align-items:center;justify-content:space-between;}
 .tagline{font-size:13px;color:#555;text-transform:uppercase;letter-spacing:0.15em;}
-.main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;}
-.welcome{text-align:center;margin-bottom:48px;}
-.welcome h1{font-size:17px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:8px;}
-.welcome p{font-size:14px;color:#444;letter-spacing:0.1em;text-transform:uppercase;}
-.cards{display:grid;grid-template-columns:repeat(3,240px);gap:16px;width:100%;max-width:900px;}
-.card{background:#1a1a1a;border:1px solid #2a2a2a;border-top:3px solid #CC0000;border-radius:3px;padding:28px 24px;cursor:pointer;transition:all 0.2s;width:240px;height:240px;display:flex;flex-direction:column;justify-content:space-between;}
-.card:hover{background:#222;border-color:#CC0000;transform:translateY(-2px);}
+.main{flex:1;display:flex;gap:0;overflow:hidden;}
+
+/* LEFT — modules */
+.left{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;min-width:320px;border-right:1px solid #1a1a1a;}
+.welcome{text-align:center;margin-bottom:32px;}
+.welcome h1{font-size:14px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:6px;}
+.welcome p{font-size:11px;color:#333;letter-spacing:0.1em;text-transform:uppercase;}
+.cards{display:flex;flex-direction:column;gap:12px;width:240px;}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-left:3px solid #CC0000;border-radius:3px;padding:16px 20px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px;}
+.card:hover{background:#222;border-color:#CC0000;transform:translateX(3px);}
 .card:hover .arrow{color:#CC0000;}
-.card-label{font-size:12px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:10px;}
-.card-title{font-size:23px;font-weight:700;color:#fff;margin-bottom:8px;}
-.card-desc{font-size:14px;color:#555;line-height:1.6;}
-.arrow{font-size:21px;color:#333;margin-top:16px;display:block;transition:color 0.2s;}
+.card-info{flex:1;}
+.card-label{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:4px;}
+.card-title{font-size:18px;font-weight:700;color:#fff;}
+.card-desc{font-size:11px;color:#444;line-height:1.5;margin-top:3px;}
+.arrow{font-size:16px;color:#333;transition:color 0.2s;flex-shrink:0;}
 .soon{opacity:0.4;cursor:default;}
-.proj-popup{display:none;position:fixed;top:50%;left:calc(50% + 140px);transform:translateY(-50%);background:#111;border:1px solid #CC0000;border-radius:3px;width:600px;max-height:80vh;z-index:200;box-shadow:0 16px 60px rgba(0,0,0,0.9);overflow:hidden;flex-direction:column;}
-.proj-popup.open{display:block;}
-.proj-popup-header{padding:8px 14px;font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;border-bottom:1px solid #2a2a2a;background:#111;}
-.proj-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #1e1e1e;transition:background 0.1s;}
-.proj-item:hover{background:#CC0000;}
-.proj-item:hover .proj-item-name{color:#fff;}
-.proj-item:hover .proj-item-sub{color:rgba(255,255,255,0.7);}
-.proj-item-name{font-size:13px;font-weight:700;color:#fff;}
-.proj-item-sub{font-size:10px;color:#555;margin-top:2px;}
-.proj-popup-empty{padding:14px;font-size:12px;color:#444;font-style:italic;}
-.card-wrap{position:relative;}
-.card-wrap *{user-select:none;-webkit-user-select:none;}
 .soon:hover{transform:none;background:#1a1a1a;border-color:#2a2a2a;}
-.badge{display:inline-block;font-size:10px;font-weight:700;background:#333;color:#666;padding:2px 6px;border-radius:2px;text-transform:uppercase;margin-left:8px;}
-footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;}
-.ft{font-size:12px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
-.user-info{font-size:12px;color:#444;text-transform:uppercase;letter-spacing:0.1em;}
+.badge{display:inline-block;font-size:8px;font-weight:700;background:#333;color:#666;padding:2px 6px;border-radius:2px;text-transform:uppercase;margin-left:6px;}
+
+/* RIGHT — rental panel */
+.right{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0d0d0d;}
+.panel-header{padding:12px 24px;border-bottom:2px solid #CC0000;display:flex;align-items:center;gap:12px;background:#111;flex-shrink:0;}
+.panel-title{font-size:11px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;flex:1;}
+.panel-count{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.1em;}
+.panel-refresh{background:none;border:none;color:#444;cursor:pointer;font-size:13px;padding:2px 6px;font-family:Consolas,monospace;}
+.panel-refresh:hover{color:#CC0000;}
+.panel-section{font-size:9px;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:0.15em;padding:8px 24px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;flex-shrink:0;}
+.proj-list{overflow-y:auto;flex:1;}
+.proj-list::-webkit-scrollbar{width:4px;}
+.proj-list::-webkit-scrollbar-track{background:#111;}
+.proj-list::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px;}
+.proj-list::-webkit-scrollbar-thumb:hover{background:#CC0000;}
+.proj-item{padding:10px 24px;cursor:pointer;border-bottom:1px solid #161616;transition:all 0.1s;display:flex;align-items:center;gap:12px;}
+.proj-item:hover{background:#1a1a1a;border-left:3px solid #CC0000;padding-left:21px;}
+.proj-item.done-item{opacity:0.5;}
+.proj-item.done-item:hover{opacity:0.8;}
+.proj-item-left{flex:1;min-width:0;}
+.proj-item-name{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.proj-item-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.proj-tag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:2px;}
+.tag-loc{background:#f0a500;color:#111;}
+.tag-dl{background:#f0a500;color:#111;}
+.tag-ship{color:#f0a500;border:1px solid #f0a500;}
+.proj-status{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:2px;flex-shrink:0;}
+.status-active{color:#1D9E75;background:#0f2a1e;border:1px solid #1D9E75;}
+.status-done{color:#444;background:#1a1a1a;border:1px solid #333;}
+.proj-arrow{font-size:12px;color:#2a2a2a;flex-shrink:0;}
+.proj-item:hover .proj-arrow{color:#CC0000;}
+.empty-state{padding:40px 24px;text-align:center;color:#333;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;}
+.loading{padding:24px;text-align:center;color:#333;font-size:11px;}
+
+footer{padding:12px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ft{font-size:10px;color:#333;text-transform:uppercase;letter-spacing:0.1em;}
 </style>
 </head>
 <body>
@@ -68,176 +79,137 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="tagline">Internal Staff Portal</span>
 </header>
 <div class="main">
-  <div class="welcome">
-    <h1>Welcome to Fulldome.pro</h1>
-    <p>Select a module to continue</p>
-  </div>
-  <div class="cards">
-    <div style="display:flex;flex-direction:column;gap:8px;">
-    <div class="card-wrap" id="rentalWrap">
-      <div class="card" id="rentalCard">
-        <div class="card-label">Module 01</div>
-        <div class="card-title">Rental</div>
-        <div class="card-desc">Equipment packing list for dome rental projects. Select dome, add groups, track status.</div>
+  <!-- LEFT: modules -->
+  <div class="left">
+    <div class="welcome">
+      <h1>Fulldome.pro</h1>
+      <p>Select a module</p>
+    </div>
+    <div class="cards">
+      <div class="card" onclick="window.location.href='rental.html'">
+        <div class="card-info">
+          <div class="card-label">Module 01</div>
+          <div class="card-title">Rental</div>
+          <div class="card-desc">Dome rental projects</div>
+        </div>
         <span class="arrow">&rarr;</span>
       </div>
-      <div class="proj-popup" id="rentalPopup">
-        <div class="proj-popup-header">Rental — Active Projects <span id="projCount"></span></div>
-        <div id="rentalPopupList"><div class="proj-popup-empty">Loading...</div></div>
+      <div class="card" onclick="window.location.href='sales.html'">
+        <div class="card-info">
+          <div class="card-label">Module 02</div>
+          <div class="card-title">Sales</div>
+          <div class="card-desc">Dome sales projects</div>
+        </div>
+        <span class="arrow">&rarr;</span>
+      </div>
+      <div class="card" onclick="window.open('https://docs.google.com/spreadsheets/d/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/edit','_blank')">
+        <div class="card-info">
+          <div class="card-label">Module 03</div>
+          <div class="card-title">Inventory</div>
+          <div class="card-desc">Equipment database</div>
+        </div>
+        <span class="arrow">&rarr;</span>
       </div>
     </div>
-    <div class="card" onclick="window.location.href='sales.html'">
-      <div class="card-label">Module 02</div>
-      <div class="card-title">Sales</div>
-      <div class="card-desc">Equipment list and quotation builder for dome sales projects.</div>
-      <span class="arrow">&rarr;</span>
+  </div>
+
+  <!-- RIGHT: rental projects panel -->
+  <div class="right">
+    <div class="panel-header">
+      <span class="panel-title">Rental Projects</span>
+      <span class="panel-count" id="panelCount"></span>
+      <button class="panel-refresh" onclick="loadProjects()" title="Refresh">↻</button>
     </div>
-    <div class="card" onclick="window.open('https://docs.google.com/spreadsheets/d/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/edit','_blank')">
-      <div class="card-label">Module 03</div>
-      <div class="card-title">Inventory</div>
-      <div class="card-desc">Full dome and equipment inventory database in Google Sheets.</div>
-      <span class="arrow">&rarr;</span>
+    <div class="proj-list" id="projList">
+      <div class="loading">Loading projects...</div>
     </div>
   </div>
 </div>
+
 <footer>
-  <span class="ft">Fulldome.pro &copy; 2026 &mdash; Internal use only</span>
+  <span class="ft">Fulldome.pro © 2026 — Internal use only</span>
   <div style="display:flex;align-items:center;gap:10px">
-    <span class="ft">Team channel:</span>
-    <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:12px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:4px 14px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram &nearr;</a>
+    <span class="ft">Team:</span>
+    <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:10px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:3px 10px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram ↗</a>
   </div>
 </footer>
-<script src="auth.js?v=20260411182448"></script>
+
+<script src="auth.js?v=20260411183449"></script>
 <script>
-initGoogleAuth(function() {
-  console.log("Authenticated");
-});
-
-// ═══ LAST PROJECT ═══════════════════════════════
-function setLastProject(id, name){
-  localStorage.setItem('last_project_id', id);
-  localStorage.setItem('last_project_name', name);
-}
-function goLastProject(){
-  var id = localStorage.getItem('last_project_id');
-  var name = localStorage.getItem('last_project_name');
-  if(id) window.location.href='project_map_rental.html?project='+encodeURIComponent(id)+'&name='+encodeURIComponent(name);
-}
-(function(){
-  var id = localStorage.getItem('last_project_id');
-  var name = localStorage.getItem('last_project_name');
-  if(id && name){
-    document.getElementById('lastProjectName').textContent = name;
-    document.getElementById('lastProjectBar').style.display = 'block';
-  }
-})();
-
-// ═══ RENTAL LONG PRESS ═══════════════════════════
-var _lpTimer = null;
-var _lpActive = false;
-var _hoverProject = null;
-var _projectsLoaded = false;
-var _rentalProjects = [];
-
-var rentalCard = document.getElementById('rentalCard');
-var rentalPopup = document.getElementById('rentalPopup');
-
-function startLongPress(e){
-  e.preventDefault();
-  _lpActive = false;
-  _lpTimer = setTimeout(function(){
-    _lpActive = true;
-    loadAndShowPopup();
-  }, 900);
-}
-
-function endLongPress(e){
-  clearTimeout(_lpTimer);
-  if(_lpActive){
-    if(_hoverProject){
-      window.location.href = 'project_map_rental.html?project='+encodeURIComponent(_hoverProject.id)+'&name='+encodeURIComponent(_hoverProject.name);
-    }
-    // else popup stays open for mouse navigation
-  } else {
-    window.location.href = 'rental.html';
-  }
-  _lpActive = false;
-}
-
-function closePopup(){
-  rentalPopup.classList.remove('open');
-  _hoverProject = null;
-  _lpActive = false;
-}
-
-async function loadAndShowPopup(){
-  rentalPopup.classList.add('open');
-  if(_projectsLoaded){ renderPopup(); return; }
-  try {
-    var r = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('RentalProjects!A:I'),
-      {headers:{Authorization:'Bearer '+localStorage.getItem('gtoken')}}
-    );
-    var d = await r.json();
-    var rows = d.values || [];
-    var projects = rows.slice(1).filter(function(r){ return r[0]&&r[1]&&r[7]!=='done'; }).map(function(r){
-      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',ship:''};
-    });
-    // Load shipping dates
-    try {
-      var tok = localStorage.getItem('gtoken');
-      var sr = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('Shipping!A:B'),{headers:{Authorization:'Bearer '+tok}});
-      var sd = await sr.json();
-      var shipRows = sd.values||[];
-      projects.forEach(function(p){ var sr=shipRows.find(function(r){return r[0]===String(p.id);}); if(sr&&sr[1])p.ship=sr[1]; });
-    } catch(e){}
-    _rentalProjects = projects;
-    _projectsLoaded = true;
-    renderPopup();
-  } catch(e){
-    document.getElementById('rentalPopupList').innerHTML = '<div class="proj-popup-empty">Sign in first</div>';
-  }
-}
+initGoogleAuth(function(){ loadProjects(); });
 
 function formatD(d){
   if(!d) return '';
   var p=d.split('-'); if(p.length===3) return p[1]+'/'+p[2]+'/'+p[0]; return d;
 }
-function renderPopup(){
-  var list = document.getElementById('rentalPopupList');
-  document.getElementById('projCount').textContent = _rentalProjects.length + ' projects';
-  if(!_rentalProjects.length){ list.innerHTML='<div class="proj-popup-empty">No active projects</div>'; return; }
-  list.innerHTML = _rentalProjects.map(function(p){
-    var tags = '';
-    if(p.address) tags += '<span class="proj-item-tag proj-item-loc">'+p.address+'</span>';
-    if(p.start) tags += '<span class="proj-item-tag proj-item-dl">'+formatD(p.start)+'</span>';
-    if(p.ship) tags += '<span class="proj-item-tag proj-item-ship">✈ '+formatD(p.ship)+'</span>';
-    return '<div class="proj-item" data-id="'+p.id+'" data-name="'+encodeURIComponent(p.name)+'">'
-      +'<div class="proj-item-left">'
-        +'<div class="proj-item-name">'+p.name+'</div>'
-        +(tags?'<div class="proj-item-tags" style="margin-top:5px;">'+tags+'</div>':'')
-      +'</div>'
-      +'<div class="proj-item-status proj-item-active">Active</div>'
-      +'</div>';
-  }).join('');
+
+async function loadProjects(){
+  var list = document.getElementById('projList');
+  list.innerHTML = '<div class="loading">Loading...</div>';
+  try {
+    var tok = localStorage.getItem('gtoken');
+    var r = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('RentalProjects!A:I')+'?_='+Date.now(),
+      {headers:{Authorization:'Bearer '+tok}}
+    );
+    var d = await r.json();
+    var rows = (d.values||[]).slice(1).filter(function(r){return r[0]&&r[1];});
+    var active = rows.filter(function(r){return r[7]!=='done';}).map(function(r){return{id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:'active',ship:''};});
+    var done = rows.filter(function(r){return r[7]==='done';}).map(function(r){return{id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:'done',ship:''};});
+
+    // Load shipping
+    try {
+      var sr = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('Shipping!A:B')+'?_='+Date.now(),{headers:{Authorization:'Bearer '+tok}});
+      var sd = await sr.json();
+      var shipRows = sd.values||[];
+      var allP = active.concat(done);
+      allP.forEach(function(p){ var s=shipRows.find(function(r){return r[0]===String(p.id);}); if(s&&s[1])p.ship=s[1]; });
+    } catch(e){}
+
+    document.getElementById('panelCount').textContent = active.length + ' active · ' + done.length + ' done';
+    renderProjects(active, done);
+  } catch(e){
+    list.innerHTML = '<div class="loading">Sign in to view projects</div>';
+  }
+}
+
+function renderProjects(active, done){
+  var list = document.getElementById('projList');
+  var html = '';
+
+  if(!active.length && !done.length){ list.innerHTML='<div class="empty-state">No projects yet</div>'; return; }
+
+  if(active.length){
+    html += '<div class="panel-section">Current Projects (' + active.length + ')</div>';
+    html += active.map(function(p){ return makeCard(p); }).join('');
+  }
+  if(done.length){
+    html += '<div class="panel-section">Completed (' + done.length + ')</div>';
+    html += done.map(function(p){ return makeCard(p); }).join('');
+  }
+  list.innerHTML = html;
   list.querySelectorAll('.proj-item').forEach(function(el){
-    el.addEventListener('mouseenter', function(){
-      _hoverProject = {id:el.dataset.id, name:decodeURIComponent(el.dataset.name)};
-    });
-    el.addEventListener('mouseleave', function(){ _hoverProject = null; });
-    el.addEventListener('mouseup', function(){
-      window.location.href = 'project_map_rental.html?project='+encodeURIComponent(el.dataset.id)+'&name='+el.dataset.name;
+    el.addEventListener('click', function(){
+      window.location.href='project_map_rental.html?project='+encodeURIComponent(el.dataset.id)+'&name='+encodeURIComponent(el.dataset.name);
     });
   });
 }
 
-rentalCard.addEventListener('mousedown', startLongPress);
-rentalCard.addEventListener('mouseup', endLongPress);
-rentalCard.addEventListener('mouseleave', function(){ clearTimeout(_lpTimer); });
-
-document.addEventListener('mouseup', function(e){
-  if(!rentalPopup.contains(e.target) && e.target !== rentalCard){ closePopup(); _lpActive=false; }
-});
+function makeCard(p){
+  var tags = '';
+  if(p.address) tags += '<span class="proj-tag tag-loc">'+p.address+'</span>';
+  if(p.start) tags += '<span class="proj-tag tag-dl">'+formatD(p.start)+'</span>';
+  if(p.ship) tags += '<span class="proj-tag tag-ship">✈ '+formatD(p.ship)+'</span>';
+  var isDone = p.status==='done';
+  return '<div class="proj-item'+(isDone?' done-item':'')+'" data-id="'+p.id+'" data-name="'+encodeURIComponent(p.name)+'">'
+    +'<div class="proj-item-left">'
+      +'<div class="proj-item-name">'+p.name+'</div>'
+      +(tags?'<div class="proj-item-tags">'+tags+'</div>':'')
+    +'</div>'
+    +'<div class="proj-status '+(isDone?'status-done':'status-active')+'">'+(isDone?'Done':'Active')+'</div>'
+    +'<div class="proj-arrow">→</div>'
+    +'</div>';
+}
 </script>
 </body>
 </html>
