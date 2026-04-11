@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411190453";
+  var V="20260411191141";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -93,6 +95,10 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
       </div>
       <div class="proj-scroll" id="rentalList"><div class="pempty">Loading...</div></div>
     </div>
+    <div class="qa-col" id="rentalQA">
+      <div class="qa-head">Quick Actions</div>
+      <div class="qa-empty">← hover a project</div>
+    </div>
   </div>
 
   <!-- ROW 2: SALES -->
@@ -110,6 +116,10 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
         <button class="proj-refresh" onclick="loadSales()" title="Refresh">↻</button>
       </div>
       <div class="proj-scroll" id="salesList"><div class="pempty">Loading...</div></div>
+    </div>
+    <div class="qa-col" id="salesQA">
+      <div class="qa-head">Quick Actions</div>
+      <div class="qa-empty">← hover a project</div>
     </div>
   </div>
 
@@ -160,7 +170,7 @@ async function loadRental(){
     var ship = await fetchSheet('Shipping!A:B');
     var projects = rows.map(function(r){
       var s = ship.find(function(x){return x[0]===String(r[0]);});
-      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:r[7]||'active',ship:s&&s[1]?s[1]:''};
+      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:r[7]||'active',ship:s&&s[1]?s[1]:'',tg1:r[4]||'',tg2:r[5]||''};
     });
     renderList('rentalList','rentalCount',projects,'rental');
   } catch(e){ document.getElementById('rentalList').innerHTML='<div class="pempty">Error loading</div>'; }
@@ -171,7 +181,7 @@ async function loadSales(){
   try {
     var rows = (await fetchSheet('SalesProjects!A:I')).slice(1).filter(function(r){return r[0]&&r[1];});
     var projects = rows.map(function(r){
-      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:r[7]||'active',ship:''};
+      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:r[7]||'active',ship:'',tg1:r[4]||'',tg2:r[5]||''};
     });
     renderList('salesList','salesCount',projects,'sales');
   } catch(e){ document.getElementById('salesList').innerHTML='<div class="pempty">Error loading</div>'; }
@@ -194,18 +204,39 @@ function renderList(listId, countId, projects, type){
     html += done.map(function(p){ return makeRow(p,type); }).join('');
   }
   el.innerHTML = html;
+  var qaId = type==='rental' ? 'rentalQA' : 'salesQA';
   el.querySelectorAll('.prow').forEach(function(r){
     r.addEventListener('click', function(){
       window.location.href='project_map_rental.html?project='+encodeURIComponent(r.dataset.id)+'&name='+r.dataset.name+'&type='+type;
     });
+    r.addEventListener('mouseenter', function(){
+      showQA(qaId, r.dataset.id, decodeURIComponent(r.dataset.name), r.dataset.tg1, r.dataset.tg2, type);
+    });
   });
+}
+
+function showQA(qaId, pid, name, tg1, tg2, type){
+  var qa = document.getElementById(qaId);
+  var enc = encodeURIComponent(pid);
+  var encName = encodeURIComponent(name);
+  var html = '<div class="qa-head">Quick Actions</div>';
+  html += '<div class="qa-project">';
+  html += '<div class="qa-project-name">'+name+'</div>';
+  html += '<div class="qa-btns">';
+  if(tg1 && tg1!="undefined") html += '<a class="qa-btn qa-btn-tg" href="'+tg1+'" target="_blank"><span class="qa-btn-icon">✈</span>US Projects</a>';
+  if(tg2 && tg2!="undefined") html += '<a class="qa-btn qa-btn-tg" href="'+tg2+'" target="_blank"><span class="qa-btn-icon">✈</span>Production</a>';
+  html += '<a class="qa-btn" href="equipment.html?project='+enc+'&name='+encName+'"><span class="qa-btn-icon">⚙</span>Equipment List</a>';
+  html += '<a class="qa-btn" href="server_configurator.html?project='+enc+'&name='+encName+'"><span class="qa-btn-icon">⚙</span>Server Config</a>';
+  html += '<a class="qa-btn" href="project_map_rental.html?project='+enc+'&name='+encName+'&type='+type+'"><span class="qa-btn-icon">⚙</span>Project Map</a>';
+  html += '</div></div>';
+  qa.innerHTML = html;
 }
 
 function makeRow(p, type){
   var tags='';
   if(p.address) tags+='<span class="ptag ptag-loc">'+p.address+'</span>';
   var isDone=p.status==='done';
-  return '<div class="prow'+(isDone?' is-done':'')+'" data-id="'+p.id+'" data-name="'+encodeURIComponent(p.name)+'">'
+  return '<div class="prow'+(isDone?' is-done':'')+'" data-id="'+p.id+'" data-name="'+encodeURIComponent(p.name)+'" data-tg1="'+(p.tg1||'')+'" data-tg2="'+(p.tg2||'')+'">'
     +'<div class="prow-name">'+p.name+'</div>'
     +(tags?'<div class="prow-tags">'+tags+'</div>':'')
     +'<div class="prow-status '+(isDone?'st-done':'st-active')+'">'+(isDone?'Done':'Active')+'</div>'
