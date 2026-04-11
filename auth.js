@@ -48,7 +48,7 @@ function requireAuth(onReady) {
 
 async function sheetsGet(range) {
   const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?_=${Date.now()}`,
     { headers: { Authorization: 'Bearer ' + accessToken } }
   );
   if (r.status === 401) {

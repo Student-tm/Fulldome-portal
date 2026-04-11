@@ -4,10 +4,20 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411033108";
+  var V="20260411172354";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -63,13 +73,14 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .status-done{color:#555;background:#2a2a2a;border:1px solid #555;}
 
 /* Shipping */
-.ship-panel{display:flex;flex-direction:row;align-items:center;gap:8px;}
-.ship-date{font-size:16px;font-weight:700;color:#f0a500;flex:1;}
+.ship-panel{display:flex;flex-direction:row;align-items:center;justify-content:space-between;width:100%;}
+.ship-date{font-size:16px;font-weight:700;color:#f0a500;}
 .ship-empty{font-size:12px;color:#333;font-style:italic;}
-.ship-countdown{font-size:16px;font-weight:700;padding:0;border-radius:2px;display:inline-block;flex:1;text-align:left;text-transform:uppercase;}
-.ship-countdown.future{color:#f0a500;}
-.ship-countdown.today{color:#CC0000;animation:pulse 1s infinite;}
-.ship-countdown.past{color:#444;}
+.ship-countdown{font-size:16px;font-weight:700;padding:2px 8px;border-radius:2px;display:inline-block;text-align:right;text-transform:uppercase;border:1px dashed #f0a500;flex-shrink:0;}
+.ship-countdown.future{color:#f0a500;border-color:#f0a500;}
+.ship-countdown.urgent{color:#CC0000;border-color:#CC0000;animation:flash3 0.6s ease-in-out 3;}
+.ship-countdown.today{color:#CC0000;border-color:#CC0000;animation:pulse 1s infinite;}
+.ship-countdown.past{color:#444;border-color:#333;border-style:dashed;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
 @keyframes flash3{0%,100%{color:#f0a500;}25%,75%{color:#CC0000;opacity:1;}50%{color:#CC0000;opacity:0.2;}}
 .ship-countdown.urgent{color:#CC0000;animation:flash3 0.6s ease-in-out 3;}
@@ -166,10 +177,12 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <div class="panel">
       <div class="panel-label">Quick Actions</div>
       <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;gap:6px;">
+          <div class="tg-action" id="tg1Btn" style="flex:1"><span class="tg-action-icon">✈</span><span class="tg-action-label">US Projects</span></div>
+          <div class="tg-action" id="tg2Btn" style="flex:1"><span class="tg-action-icon">✈</span><span class="tg-action-label">Production</span></div>
+        </div>
         <div class="btn-wrap"><span class="btn-label">Packing list & dome setup</span><div class="abtn abtn-red" id="equipBtn"><div class="abtn-icon">&#9634;</div><div class="abtn-label">Equipment List</div></div></div>
         <div class="btn-wrap"><span class="btn-label">Projection system setup</span><div class="abtn" id="serverBtn"><div class="abtn-icon" style="color:#CC0000">&#9881;</div><div class="abtn-label">Server Config</div></div></div>
-        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg1Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">US Projects</span></div></div>
-        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg2Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">Production</span></div></div>
         <div class="btn-wrap"><span class="btn-label">Project files</span><div class="abtn" id="driveFolderBtn"><div class="abtn-icon" id="driveIcon" style="color:#4a90d9">📁</div><div class="abtn-label" id="driveBtnLabel">Create Project Folder</div></div></div>
         <div class="btn-wrap"><span class="btn-label">Project photos</span><div class="abtn" id="drivePhotosBtn"><div class="abtn-icon" id="photosIcon" style="color:#4a90d9">📷</div><div class="abtn-label" id="photosBtnLabel">Project Photos</div></div></div>
       </div>
@@ -263,7 +276,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411033108"></script>
+<script src="auth.js?v=20260411172354"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -399,18 +412,13 @@ function loadProjectTG(){
 async function loadShippingDate(){
   try {
     await ensureSheet('Shipping');
-    // Force fresh data with direct fetch bypassing sheetsGet cache
-    var r = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/'+encodeURIComponent('Shipping!A:B')+'?_='+Date.now(),
-      {headers:{Authorization:'Bearer '+accessToken}}
-    );
-    var data = await r.json();
+    var data = await sheetsGet('Shipping!A:C');
     var rows = data.values || [];
     var row = rows.find(function(r){ return r[0] === String(projectId); });
     if(row && row[1]){
       var d = row[1];
-      var parts = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      if(parts) d = parts[2]+'/'+parts[3]+'/'+parts[1];
+      var parts2 = d.split('-');
+      if(parts2.length===3) d = parts2[1]+'/'+parts2[2]+'/'+parts2[0];
       document.getElementById('projShipping').textContent = d;
       document.getElementById('projShipping').style.display = 'inline-block';
       document.getElementById('projShippingEmpty').style.display = 'none';
@@ -420,7 +428,7 @@ async function loadShippingDate(){
       document.getElementById('projShippingEmpty').style.display = 'inline-block';
       document.getElementById('shipCountdown').style.display = 'none';
     }
-  } catch(e){ console.log('No shipping data'); }
+  } catch(e){ console.error('loadShippingDate error:', e); }
 }
 
 function showCountdown(isoDate){
