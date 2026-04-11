@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411221712";
+  var V="20260411222013";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -341,7 +342,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411221712"></script>
+<script src="auth.js?v=20260411222013"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -400,7 +401,37 @@ async function loadEqMirror(){
       });
     }
     if(!accessToken){ el.innerHTML='<span class="eq-empty">Auth needed</span>'; return; }
-    var data = await loadEquipment(projectId);
+    var sheet = 'EQ_' + String(projectId).substring(0, 10);
+    var r = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
+      {headers:{Authorization:'Bearer '+accessToken}}
+    );
+    var d = await r.json();
+    var rows = d.values || [];
+    var dataRow = rows.find(function(r){ return r[0]==='data'; });
+    if(!dataRow){ el.innerHTML='<span class="eq-empty">No equipment data yet</span>'; return; }
+    var data = JSON.parse(dataRow[1]);
+    if(!data || !data.groups || !data.groups.length){
+      el.innerHTML = '<span class="eq-empty">No items added yet</span>'; return;
+    }
+    var html = '';
+    if(data.dome && data.dome.size) html += '<div class="eq-dome">'+data.dome.size+'</div>';
+    data.groups.forEach(function(g){
+      var rows2 = g.rows || g.items || [];
+      var filled = rows2.filter(function(row){ return row.item && row.item.trim(); });
+      if(!filled.length) return;
+      html += '<div class="eq-group"><div class="eq-group-name">'+(g.label||g.name||'Group')+'</div>';
+      filled.forEach(function(row){
+        html += '<div class="eq-item"><span class="eq-item-name">'+(row.item||'')+'</span><span class="eq-item-qty">×'+(row.qty||1)+'</span></div>';
+      });
+      html += '</div>';
+    });
+    el.innerHTML = html || '<span class="eq-empty">No items added yet</span>';
+  } catch(e){
+    el.innerHTML = '<span class="eq-empty">Error: '+e.message+'</span>';
+    console.error('loadEqMirror:', e);
+  }
+}
     if(!data || !data.groups || !data.groups.length){
       el.innerHTML = '<span class="eq-empty">No equipment data yet</span>';
       return;
