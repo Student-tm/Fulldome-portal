@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411031905";
+  var V="20260411032404";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -158,6 +159,18 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     </div>
 
     <div class="panel">
+      <div class="panel-label">Quick Actions</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="btn-wrap"><span class="btn-label">Packing list & dome setup</span><div class="abtn abtn-red" id="equipBtn"><div class="abtn-icon">&#9634;</div><div class="abtn-label">Equipment List</div></div></div>
+        <div class="btn-wrap"><span class="btn-label">Projection system setup</span><div class="abtn" id="serverBtn"><div class="abtn-icon" style="color:#CC0000">&#9881;</div><div class="abtn-label">Server Config</div></div></div>
+        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg1Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">US Projects</span></div></div>
+        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg2Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">Production</span></div></div>
+        <div class="btn-wrap"><span class="btn-label">Project files</span><div class="abtn" id="driveFolderBtn"><div class="abtn-icon" id="driveIcon" style="color:#4a90d9">📁</div><div class="abtn-label" id="driveBtnLabel">Create Project Folder</div></div></div>
+        <div class="btn-wrap"><span class="btn-label">Project photos</span><div class="abtn" id="drivePhotosBtn"><div class="abtn-icon" id="photosIcon" style="color:#4a90d9">📷</div><div class="abtn-label" id="photosBtnLabel">Project Photos</div></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
       <div class="panel-label">Notes</div>
       <div id="notesRows">
         <div class="note-row"><span class="note-num">1</span><input class="note-text" placeholder="—" data-note="0"/><button class="note-icon" onclick="editNote(0)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(0)" title="Clear">✕</button></div>
@@ -181,18 +194,6 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
         <button class="notes-save" id="notesBtn">Save Notes</button>
       </div>
       <span style="font-size:10px;color:#555;margin-top:4px;display:block;" id="notesSaveStatus"></span>
-    </div>
-
-    <div class="panel">
-      <div class="panel-label">Quick Actions</div>
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <div class="btn-wrap"><span class="btn-label">Packing list & dome setup</span><div class="abtn abtn-red" id="equipBtn"><div class="abtn-icon">&#9634;</div><div class="abtn-label">Equipment List</div></div></div>
-        <div class="btn-wrap"><span class="btn-label">Projection system setup</span><div class="abtn" id="serverBtn"><div class="abtn-icon" style="color:#CC0000">&#9881;</div><div class="abtn-label">Server Config</div></div></div>
-        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg1Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">US Projects</span></div></div>
-        <div class="btn-wrap"><span class="btn-label">Telegram Group</span><div class="tg-action" id="tg2Btn"><span class="tg-action-icon">✈</span><span class="tg-action-label">Production</span></div></div>
-        <div class="btn-wrap"><span class="btn-label">Project files</span><div class="abtn" id="driveFolderBtn"><div class="abtn-icon" id="driveIcon" style="color:#4a90d9">📁</div><div class="abtn-label" id="driveBtnLabel">Create Project Folder</div></div></div>
-        <div class="btn-wrap"><span class="btn-label">Project photos</span><div class="abtn" id="drivePhotosBtn"><div class="abtn-icon" id="photosIcon" style="color:#4a90d9">📷</div><div class="abtn-label" id="photosBtnLabel">Project Photos</div></div></div>
-      </div>
     </div>
   </div>
 
@@ -257,7 +258,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411031905"></script>
+<script src="auth.js?v=20260411032404"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
