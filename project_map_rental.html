@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260408034956";
+  var V="20260411015827";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -166,7 +167,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260408034956"></script>
+<script src="auth.js?v=20260411015827"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -230,14 +231,21 @@ function loadBrief(){
 }
 
 document.getElementById('saveBtn').onclick = function(){
-  var inputs = document.querySelectorAll('.brief-val [data-field]');
   var rows = [];
-  inputs.forEach(function(inp){
-    var label = inp.getAttribute('data-label') || inp.getAttribute('data-field');
-    // Find comment input in same row
-    var row = inp.closest('.brief-row');
-    var commentInp = row ? row.querySelector('.brief-comment input') : null;
-    rows.push({ field: label, value: inp.value, comment: commentInp ? commentInp.value : '' });
+  // Walk all children of brief-wrap in DOM order to preserve sections
+  var wrap = document.querySelector('.brief-wrap');
+  var children = wrap.querySelectorAll('.brief-section, .brief-row');
+  children.forEach(function(el){
+    if(el.classList.contains('brief-section')){
+      // Save section header as a row with marker
+      rows.push({ field: '=== ' + el.textContent.trim().toUpperCase() + ' ===', value: '', comment: '' });
+    } else {
+      var inp = el.querySelector('.brief-val [data-field]');
+      if(!inp) return;
+      var label = inp.getAttribute('data-label') || inp.getAttribute('data-field');
+      var commentInp = el.querySelector('.brief-comment input');
+      rows.push({ field: label, value: inp.value, comment: commentInp ? commentInp.value : '' });
+    }
   });
   document.getElementById('saveStatus').textContent = 'Saving...';
   saveBrief(projectId, rows).then(function(){
