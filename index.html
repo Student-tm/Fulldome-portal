@@ -4,10 +4,13 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411181057";
+  var V="20260411181920";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
 
 
 
@@ -39,7 +42,7 @@ header{padding:20px 40px;border-bottom:3px solid #CC0000;display:flex;align-item
 .card-desc{font-size:14px;color:#555;line-height:1.6;}
 .arrow{font-size:21px;color:#333;margin-top:16px;display:block;transition:color 0.2s;}
 .soon{opacity:0.4;cursor:default;}
-.proj-popup{display:none;position:absolute;bottom:calc(100% + 12px);left:0;background:#1a1a1a;border:1px solid #CC0000;border-radius:3px;min-width:260px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;}
+.proj-popup{display:none;position:fixed;top:50%;left:calc(50% + 140px);transform:translateY(-50%);background:#111;border:1px solid #CC0000;border-radius:3px;width:600px;max-height:80vh;z-index:200;box-shadow:0 16px 60px rgba(0,0,0,0.9);overflow:hidden;flex-direction:column;}
 .proj-popup.open{display:block;}
 .proj-popup-header{padding:8px 14px;font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;border-bottom:1px solid #2a2a2a;background:#111;}
 .proj-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #1e1e1e;transition:background 0.1s;}
@@ -78,7 +81,7 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
         <span class="arrow">&rarr;</span>
       </div>
       <div class="proj-popup" id="rentalPopup">
-        <div class="proj-popup-header">Active Projects</div>
+        <div class="proj-popup-header">Rental — Active Projects <span id="projCount"></span></div>
         <div id="rentalPopupList"><div class="proj-popup-empty">Loading...</div></div>
       </div>
     </div>
@@ -103,7 +106,7 @@ footer{padding:16px 40px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:12px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:4px 14px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram &nearr;</a>
   </div>
 </footer>
-<script src="auth.js?v=20260411181057"></script>
+<script src="auth.js?v=20260411181920"></script>
 <script>
 initGoogleAuth(function() {
   console.log("Authenticated");
@@ -138,29 +141,27 @@ var _rentalProjects = [];
 var rentalCard = document.getElementById('rentalCard');
 var rentalPopup = document.getElementById('rentalPopup');
 
-function startLongPress(){
+function startLongPress(e){
+  e.preventDefault();
+  _lpActive = false;
   _lpTimer = setTimeout(function(){
     _lpActive = true;
     loadAndShowPopup();
-  }, 1000);
+  }, 900);
 }
 
-function cancelLongPress(){
+function endLongPress(e){
   clearTimeout(_lpTimer);
-  if(!_lpActive) window.location.href='rental.html';
-  _lpActive = false;
-}
-
-function endLongPress(){
-  clearTimeout(_lpTimer);
-  if(_lpActive && _hoverProject){
-    window.location.href = 'project_map_rental.html?project='+encodeURIComponent(_hoverProject.id)+'&name='+encodeURIComponent(_hoverProject.name);
-  } else if(_lpActive){
-    closePopup();
+  if(_lpActive){
+    // Long press — go to hovered project or close popup
+    if(_hoverProject){
+      window.location.href = 'project_map_rental.html?project='+encodeURIComponent(_hoverProject.id)+'&name='+encodeURIComponent(_hoverProject.name);
+    }
+    // else popup stays open, user can hover items
   } else {
+    // Short click — go to rental
     window.location.href = 'rental.html';
   }
-  _lpActive = false;
 }
 
 function closePopup(){
@@ -178,9 +179,18 @@ async function loadAndShowPopup(){
     );
     var d = await r.json();
     var rows = d.values || [];
-    _rentalProjects = rows.slice(1).filter(function(r){ return r[0]&&r[1]&&r[7]!=='done'; }).map(function(r){
-      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||''};
+    var projects = rows.slice(1).filter(function(r){ return r[0]&&r[1]&&r[7]!=='done'; }).map(function(r){
+      return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',ship:''};
     });
+    // Load shipping dates
+    try {
+      var tok = localStorage.getItem('gtoken');
+      var sr = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('Shipping!A:B'),{headers:{Authorization:'Bearer '+tok}});
+      var sd = await sr.json();
+      var shipRows = sd.values||[];
+      projects.forEach(function(p){ var sr=shipRows.find(function(r){return r[0]===String(p.id);}); if(sr&&sr[1])p.ship=sr[1]; });
+    } catch(e){}
+    _rentalProjects = projects;
     _projectsLoaded = true;
     renderPopup();
   } catch(e){
@@ -188,13 +198,25 @@ async function loadAndShowPopup(){
   }
 }
 
+function formatD(d){
+  if(!d) return '';
+  var p=d.split('-'); if(p.length===3) return p[1]+'/'+p[2]+'/'+p[0]; return d;
+}
 function renderPopup(){
   var list = document.getElementById('rentalPopupList');
+  document.getElementById('projCount').textContent = _rentalProjects.length + ' projects';
   if(!_rentalProjects.length){ list.innerHTML='<div class="proj-popup-empty">No active projects</div>'; return; }
   list.innerHTML = _rentalProjects.map(function(p){
+    var tags = '';
+    if(p.address) tags += '<span class="proj-item-tag proj-item-loc">'+p.address+'</span>';
+    if(p.start) tags += '<span class="proj-item-tag proj-item-dl">'+formatD(p.start)+'</span>';
+    if(p.ship) tags += '<span class="proj-item-tag proj-item-ship">✈ '+formatD(p.ship)+'</span>';
     return '<div class="proj-item" data-id="'+p.id+'" data-name="'+encodeURIComponent(p.name)+'">'
-      +'<div class="proj-item-name">'+p.name+'</div>'
-      +(p.address||p.start ? '<div class="proj-item-sub">'+(p.address||'')+(p.start?' · '+p.start:'')+'</div>' : '')
+      +'<div class="proj-item-left">'
+        +'<div class="proj-item-name">'+p.name+'</div>'
+        +(tags?'<div class="proj-item-tags" style="margin-top:5px;">'+tags+'</div>':'')
+      +'</div>'
+      +'<div class="proj-item-status proj-item-active">Active</div>'
       +'</div>';
   }).join('');
   list.querySelectorAll('.proj-item').forEach(function(el){
