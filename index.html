@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412005955";
+  var V="20260412232603";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -220,13 +222,14 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
   <a href="https://t.me/c/3563769716/4" target="_blank" style="font-size:9px;color:#CC0000;text-decoration:none;border:1px solid #CC0000;padding:3px 10px;border-radius:2px;text-transform:uppercase;letter-spacing:0.1em">Telegram ↗</a>
 </footer>
 
-<script src="auth.js?v=20260411183931"></script>
+<script src="auth.js?v=20260412232603"></script>
 <script>
 var SHEET_ID = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
 
 initGoogleAuth(function(){
   loadRental();
   loadSales();
+  setInterval(function(){ loadRental(); loadSales(); }, 60000);
 });
 
 function fmtD(d){
