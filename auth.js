@@ -46,9 +46,13 @@ function requireAuth(onReady) {
   initGoogleAuth(onReady);
 }
 
+function encodeRange(range) {
+  const parts = range.split('!');
+  return encodeURIComponent(parts[0]) + (parts[1] ? '!' + parts[1] : '');
+}
 async function sheetsGet(range) {
   const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?_=${Date.now()}`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeRange(range)}?_=${Date.now()}`,
     { headers: { Authorization: 'Bearer ' + accessToken } }
   );
   if (r.status === 401) {
@@ -63,7 +67,7 @@ async function sheetsGet(range) {
 
 async function sheetsUpdate(range, values) {
   return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeRange(range)}?valueInputOption=RAW`,
     {
       method: 'PUT',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
@@ -74,7 +78,7 @@ async function sheetsUpdate(range, values) {
 
 async function sheetsAppend(range, values) {
   return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeRange(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
     {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
@@ -84,8 +88,10 @@ async function sheetsAppend(range, values) {
 }
 
 async function sheetsClear(range) {
+  const parts = range.split('!');
+  const encoded = encodeURIComponent(parts[0]) + (parts[1] ? '!' + parts[1] : '');
   return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:clear`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encoded}:clear`,
     {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + accessToken }
