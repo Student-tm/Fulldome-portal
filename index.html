@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412004729";
+  var V="20260412005355";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -269,15 +270,19 @@ async function loadSales(){
   renderList('salesList','salesCount',null,'sales');
   try {
     var rows = (await fetchSheet('SalesProjects!A:I')).slice(1).filter(function(r){return r[0]&&r[1];});
+    // If empty, try once more after 2 seconds (token may have just refreshed)
+    if(!rows.length){
+      await new Promise(function(r){ setTimeout(r, 2000); });
+      rows = (await fetchSheet('SalesProjects!A:I')).slice(1).filter(function(r){return r[0]&&r[1];});
+    }
     var projects = rows.map(function(r){
       return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:r[7]||'active',ship:'',tg1:r[4]||'',tg2:r[5]||''};
     });
     renderList('salesList','salesCount',projects,'sales');
     var activeCount = projects.filter(function(p){return p.status!=='done';}).length;
     var badge = document.getElementById('salesBadge');
-    badge.textContent = activeCount + ' active';
-    badge.style.display = 'inline-flex';
-  } catch(e){ document.getElementById('salesList').innerHTML='<div class="pempty">Error loading</div>'; }
+    if(badge){ badge.textContent = activeCount + ' active'; badge.style.display = 'inline-flex'; }
+  } catch(e){ document.getElementById('salesList').innerHTML='<div class="pempty">Error: '+e.message+'</div>'; }
 }
 
 function renderList(listId, countId, projects, type){
