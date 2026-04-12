@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411212410";
+  var V="20260412004729";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -232,7 +233,9 @@ function fmtD(d){
 
 async function fetchSheet(range){
   var tok = localStorage.getItem('gtoken');
+  if(!tok) return [];
   var r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?_='+Date.now(), {headers:{Authorization:'Bearer '+tok}});
+  if(r.status===401) return [];
   var d = await r.json();
   return d.values || [];
 }
@@ -306,7 +309,8 @@ function renderList(listId, countId, projects, type){
 
   el.querySelectorAll('.prow').forEach(function(r){
     r.addEventListener('click', function(){
-      window.location.href='project_map_rental.html?project='+encodeURIComponent(r.dataset.id)+'&name='+r.dataset.name+'&type='+type;
+      var mapPage = type==='sales' ? 'project_map_sales.html' : 'project_map_rental.html';
+      window.location.href=mapPage+'?project='+encodeURIComponent(r.dataset.id)+'&name='+r.dataset.name+'&type='+type;
     });
   });
   var qaId = type==='rental' ? 'rentalQA' : 'salesQA';
