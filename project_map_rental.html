@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412235136";
+  var V="20260412235522";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -381,7 +382,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260412235136"></script>
+<script src="auth.js?v=20260412235522"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -404,10 +405,11 @@ async function loadBriefFromSheet(){
 
 async function saveBriefToSheet(rows){
   await ensureSheet(briefSheetName);
-  await sheetsClear(briefSheetName+'!A:C');
+  // Only clear rows 1-39 to preserve notes at row 40+
+  await sheetsClear(briefSheetName+'!A1:C39');
   var vals = [['Field','Value','Comment']];
   rows.forEach(function(r){ vals.push([r.field, r.value||'', r.comment||'']); });
-  await sheetsAppend(briefSheetName+'!A:C', vals);
+  await sheetsUpdate(briefSheetName+'!A1:C'+vals.length, vals);
 }
 var projectType = params.get('type') || 'rental';
 
