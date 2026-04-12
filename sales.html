@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412003703";
+  var V="20260412004357";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -233,7 +234,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260412003703"></script>
+<script src="auth.js?v=20260412004357"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -279,12 +280,12 @@ async function deleteSalesProject(id){
 requireAuth(function(){ loadShipping().then(function(){ loadProjects(); }); });
 
 function loadProjects(){
-  document.getElementById('emptyMsg').textContent='Loading...';
+  var emptyEl=document.getElementById('emptyMsg'); if(emptyEl) emptyEl.textContent='Loading...';
   getSalesProjects().then(function(data){
     projects=data||[];
     render();
   }).catch(function(e){
-    document.getElementById('emptyMsg').textContent='Error: '+e.message;
+    var emptyEl=document.getElementById('emptyMsg'); if(emptyEl) emptyEl.textContent='Error: '+e.message;
   });
 }
 
