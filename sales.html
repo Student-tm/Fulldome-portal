@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412011259";
+  var V="20260412011707";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -144,7 +145,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
 <body>
 <header>
   <div class="back" onclick="window.location.href='index.html'">&#8592; Portal</div>
-  <span class="header-title">Rental &mdash; Projects</span>
+  <span class="header-title">Sales &mdash; Projects</span>
   <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
 </header>
 <div style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:5px 32px;display:flex;gap:16px;align-items:center;">
@@ -180,7 +181,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
 
 <div class="overlay" id="newModal">
   <div class="mbox">
-    <div class="mtitle" id="modalTitle">New Rental Project</div>
+    <div class="mtitle" id="modalTitle">New Sales Project</div>
     <input class="minput" id="projName" placeholder="Project name (e.g. 10m Planetarium NY)..."/>
     <select class="minput" id="projAddress" style="color:#888;cursor:pointer">
       <option value="" disabled selected style="color:#444">Location (State)...</option>
@@ -235,7 +236,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260412011259"></script>
+<script src="auth.js?v=20260412011707"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -253,7 +254,7 @@ function loadProjects(){
 
 document.getElementById('newBtn').onclick=function(){
   editId=null;
-  document.getElementById('modalTitle').textContent='New Rental Project';
+  document.getElementById('modalTitle').textContent='New Sales Project';
   document.getElementById('projName').value='';
   document.getElementById('projAddress').value='';
   document.getElementById('projStart').value='';
