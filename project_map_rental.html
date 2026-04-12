@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411233834";
+  var V="20260412224036";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -375,7 +376,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411233834"></script>
+<script src="auth.js?v=20260412224036"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -451,14 +452,20 @@ async function confirmClearAll(){
 
 async function loadNotes(){
   try {
-    await ensureSheet('Notes');
-    var data = await sheetsGet('Notes!A:Q');
+    await ensureSheet(briefSheetName);
+    var data = await sheetsGet(briefSheetName+'!A:B');
     var rows = data.values || [];
-    var row = rows.find(function(r){ return r[0] === String(projectId); });
-    if(row){
-      getNoteInputs().forEach(function(inp, i){
-        inp.value = row[i+1] || '';
-      });
+    // Find === NOTES === section
+    var notesStart = -1;
+    for(var i=0;i<rows.length;i++){
+      if(rows[i][0] && rows[i][0].indexOf('=== NOTES ===') >= 0){ notesStart = i+1; break; }
+    }
+    if(notesStart >= 0){
+      var inputs = getNoteInputs();
+      for(var j=0;j<inputs.length;j++){
+        var r = rows[notesStart+j];
+        inputs[j].value = (r && r[1]) ? r[1] : '';
+      }
     }
   } catch(e){ console.log('No notes yet'); }
 }
@@ -468,17 +475,27 @@ async function saveNotes(){
   var btn = document.getElementById('notesSaveStatus');
   btn.textContent = 'Saving...';
   try {
-    await ensureSheet('Notes');
-    var data = await sheetsGet('Notes!A:A');
+    await ensureSheet(briefSheetName);
+    var data = await sheetsGet(briefSheetName+'!A:B');
     var rows = data.values || [];
-    var rowIdx = -1;
-    for(var i=0;i<rows.length;i++){ if(rows[i][0]===String(projectId)){rowIdx=i+1;break;} }
-    var vals = [[projectId].concat(notes)];
-    if(rowIdx>0){ await sheetsUpdate('Notes!A'+rowIdx+':Q'+rowIdx, vals); }
-    else { await sheetsAppend('Notes!A:Q', vals); }
+    // Find or create === NOTES === section
+    var notesStart = -1;
+    for(var i=0;i<rows.length;i++){
+      if(rows[i][0] && rows[i][0].indexOf('=== NOTES ===') >= 0){ notesStart = i+1; break; }
+    }
+    if(notesStart < 0){
+      // Append section header and notes
+      var toAppend = [['=== NOTES ===','']];
+      notes.forEach(function(n,i){ toAppend.push(['Note '+(i+1), n]); });
+      await sheetsAppend(briefSheetName+'!A:B', toAppend);
+    } else {
+      // Update existing note rows
+      var updateVals = notes.map(function(n,i){ return ['Note '+(i+1), n]; });
+      await sheetsUpdate(briefSheetName+'!A'+(notesStart+1)+':B'+(notesStart+notes.length), updateVals);
+    }
     btn.textContent = 'Saved ✓';
     setTimeout(function(){ btn.textContent=''; }, 2000);
-  } catch(e){ btn.textContent = 'Error'; }
+  } catch(e){ btn.textContent = 'Error: '+e.message; console.error(e); }
 }
 
 document.getElementById('notesBtn').onclick = saveNotes;
