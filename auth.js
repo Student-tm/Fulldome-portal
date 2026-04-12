@@ -225,8 +225,17 @@ async function getDomes() {
   }));
 }
 
-async function loadEquipment(projectId) {
-  const sheet = 'EQ_' + String(projectId).substring(0, 10);
+
+function eqSheetName(projectId, projectName) {
+  if(projectName && projectName.trim()) {
+    var safe = projectName.trim().replace(/[\\\/:?*\[\]]/g, '').substring(0, 50);
+    return 'EQ_' + safe;
+  }
+  return 'EQ_' + String(projectId).substring(0, 10);
+}
+
+async function loadEquipment(projectId, projectName) {
+  const sheet = eqSheetName(projectId, projectName);
   try {
     const data = await sheetsGet(`${sheet}!A:B`);
     const rows = data.values || [];
@@ -266,8 +275,8 @@ async function ensureSheet(sheetName) {
   await _pendingEnsure[sheetName];
 }
 
-async function saveEquipment(projectId, equipData) {
-  const sheet = 'EQ_' + String(projectId).substring(0, 10);
+async function saveEquipment(projectId, equipData, projectName) {
+  const sheet = eqSheetName(projectId, projectName);
   try {
     await ensureSheet(sheet);
     await sheetsClear(`${sheet}!A:B`);
