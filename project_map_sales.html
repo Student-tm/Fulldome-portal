@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412232911";
+  var V="20260412235136";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -380,7 +381,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260412232911"></script>
+<script src="auth.js?v=20260412235136"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -459,17 +460,12 @@ async function loadNotes(){
     await ensureSheet(briefSheetName);
     var data = await sheetsGet(briefSheetName+'!A:B');
     var rows = data.values || [];
-    // Find === NOTES === section
-    var notesStart = -1;
-    for(var i=0;i<rows.length;i++){
-      if(rows[i][0] && rows[i][0].indexOf('=== NOTES ===') >= 0){ notesStart = i+1; break; }
-    }
-    if(notesStart >= 0){
-      var inputs = getNoteInputs();
-      for(var j=0;j<inputs.length;j++){
-        var r = rows[notesStart+j];
-        inputs[j].value = (r && r[1]) ? r[1] : '';
-      }
+    // Notes are always at row 41+ (row 40 is header)
+    var noteRow = 40; // 1-indexed, so array index is 39
+    var inputs = getNoteInputs();
+    for(var j=0;j<inputs.length;j++){
+      var r = rows[noteRow+j]; // row 41 = index 40
+      inputs[j].value = (r && r[1]) ? r[1] : '';
     }
   } catch(e){ console.log('No notes yet'); }
 }
@@ -487,16 +483,12 @@ async function saveNotes(){
     for(var i=0;i<rows.length;i++){
       if(rows[i][0] && rows[i][0].indexOf('=== NOTES ===') >= 0){ notesStart = i+1; break; }
     }
-    if(notesStart < 0){
-      // Append section header and notes
-      var toAppend = [['=== NOTES ===','']];
-      notes.forEach(function(n,i){ toAppend.push(['Note '+(i+1), n]); });
-      await sheetsAppend(briefSheetName+'!A:B', toAppend);
-    } else {
-      // Update existing note rows
-      var updateVals = notes.map(function(n,i){ return ['Note '+(i+1), n]; });
-      await sheetsUpdate(briefSheetName+'!A'+(notesStart+1)+':B'+(notesStart+notes.length), updateVals);
-    }
+    // Always write notes at fixed row 40 (header at 40, notes at 41-55)
+    var noteRow = 40;
+    var headerVals = [['=== NOTES ===', '']];
+    var noteVals = notes.map(function(n,i){ return ['Note '+(i+1), n]; });
+    await sheetsUpdate(briefSheetName+'!A'+noteRow+':B'+noteRow, headerVals);
+    await sheetsUpdate(briefSheetName+'!A'+(noteRow+1)+':B'+(noteRow+notes.length), noteVals);
     btn.textContent = 'Saved ✓';
     setTimeout(function(){ btn.textContent=''; }, 2000);
   } catch(e){ btn.textContent = 'Error: '+e.message; console.error(e); }
