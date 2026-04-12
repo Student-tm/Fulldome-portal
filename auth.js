@@ -228,8 +228,13 @@ async function getDomes() {
 
 function eqSheetName(projectId, projectName) {
   if(projectName && projectName.trim()) {
-    var safe = projectName.trim().replace(/[\\\/:?*\[\]]/g, '').substring(0, 50);
-    return 'EQ_' + safe;
+    // Remove all chars invalid in Sheets tab names, replace spaces with _
+    var safe = projectName.trim()
+      .replace(/[\/:?*\[\]']/g, '')
+      .replace(/\s+/g, '_')
+      .replace(/_+/g, '_')
+      .substring(0, 45);
+    if(safe.length > 0) return 'EQ_' + safe;
   }
   return 'EQ_' + String(projectId).substring(0, 10);
 }
