@@ -4,10 +4,22 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260411231417";
+  var V="20260411233834";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -92,11 +104,10 @@ header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-item
 .header-title{font-size:12px;font-weight:700;color:#eaeaea;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
 
 /* Dashboard layout */
-.dashboard{display:grid;grid-template-columns:30% 1fr 30%;gap:0;flex:1;}
-.sidebar{margin-right:1%;}
-.sidebar{background:#1f2128;border-right:1px solid #2e3039;padding:24px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 75px);}
+.dashboard{display:grid;grid-template-columns:25% 1fr 25%;gap:16px;padding:16px;flex:1;}
+.sidebar{background:#1f2128;padding:24px;display:flex;flex-direction:column;gap:24px;overflow-y:auto;}
 .content{padding:32px;overflow-y:auto;}
-.right-panel{border-left:1px solid #2e3039;background:#1f2128;border-left:2px solid #2e3039;display:flex;flex-direction:column;padding:24px;gap:16px;overflow-y:auto;}
+.right-panel{background:#1f2128;padding:24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;}
 .eq-g{margin-bottom:12px;}
 .eq-g-name{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
 .eq-r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #232530;font-size:12px;}
@@ -364,7 +375,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260411231417"></script>
+<script src="auth.js?v=20260411233834"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -725,17 +736,27 @@ async function loadEqMirror(){
     var data = JSON.parse(dataRow[1]);
     if(!data||!data.groups||!data.groups.length){ el.innerHTML='<span style="color:#4a4f5c">No items added yet</span>'; return; }
     var html = '';
-    // Dome info block
+    // Dome info as table
     if(data.dome){
-      html += '<div style="background:#17171a;border:1px solid #2e3039;border-radius:3px;padding:10px 12px;margin-bottom:12px;">';
-      if(data.dome.size) html += '<div style="font-size:13px;font-weight:700;color:#CC0000;margin-bottom:6px;">'+data.dome.size+'</div>';
-      if(data.domeSer) html += '<div style="font-size:11px;color:#888c98;margin-bottom:2px;">S/N: '+data.domeSer+'</div>';
-      if(data.dome.ductSize) html += '<div style="font-size:11px;color:#888c98;margin-bottom:2px;">Duct: '+data.dome.ductSize+'</div>';
-      html += '</div>';
+      html += '<div class="eq-g"><div class="eq-g-name">DOME</div>';
+      html += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:10px;">';
+      html += '<thead><tr style="background:#17171a;">';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;">SIZE</th>';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;">SERIAL #</th>';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;">DUCT SIZE</th>';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;color:#6b7080;font-weight:700;">TRUSS</th>';
+      html += '</tr></thead><tbody>';
+      html += '<tr style="border-bottom:1px solid #232530;">';
+      html += '<td style="padding:4px 6px;color:#CC0000;font-weight:700;border-right:1px solid #232530;">'+(data.dome.size||'—')+'</td>';
+      html += '<td style="padding:4px 6px;color:#eaeaea;border-right:1px solid #232530;">'+(data.domeSer||data.dome.serials&&data.dome.serials[0]||'—')+'</td>';
+      html += '<td style="padding:4px 6px;color:#eaeaea;border-right:1px solid #232530;">'+(data.dome.ductSize||'—')+'</td>';
+      html += '<td style="padding:4px 6px;color:#eaeaea;">'+(data.dome.truss||'—')+'</td>';
+      html += '</tr>';
+      html += '</tbody></table></div></div>';
     }
     // Groups as full tables matching equipment.html columns
     data.groups.forEach(function(g){
-      var items = (g.rows||g.items||[]).filter(function(x){ return x.item && x.item.trim(); });
+      var items = (g.rows||g.items||[]);
       html += '<div class="eq-g">';
       html += '<div class="eq-g-name">'+(g.label||g.name||'Group')+'</div>';
       html += '<div style="overflow-x:auto;">';
