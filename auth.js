@@ -108,6 +108,54 @@ async function getProjects() {
   }));
 }
 
+
+async function getSalesProjects() {
+  const data = await sheetsGet('SalesProjects!A:I');
+  const rows = data.values || [];
+  const all = rows.filter(r => r[0] && r[1]);
+  return all.map(r => ({
+    id: r[0] || '',
+    name: r[1] || '',
+    address: r[2] || '',
+    start: r[3] || '',
+    tg1: r[4] || '',
+    tg2: r[5] || '',
+    created: r[6] ? parseInt(r[6]) : Date.now(),
+    status: r[7] || 'active'
+  }));
+}
+
+async function saveSalesProject(p) {
+  const data = await sheetsGet('SalesProjects!A:A');
+  const rows = data.values || [];
+  let rowIdx = -1;
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i][0] === String(p.id)) { rowIdx = i + 1; break; }
+  }
+  const vals = [[p.id, p.name, p.address||'', p.start||'', p.tg1||'', p.tg2||'', p.created, p.status||'active']];
+  if (rowIdx > 0) {
+    await sheetsUpdate(`SalesProjects!A${rowIdx}:H${rowIdx}`, vals);
+  } else {
+    await sheetsAppend('SalesProjects!A:H', vals);
+  }
+}
+
+async function deleteSalesProject(id) {
+  const data = await sheetsGet('SalesProjects!A:A');
+  const rows = data.values || [];
+  let rowIdx = -1;
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i][0] === String(id)) { rowIdx = i; break; }
+  }
+  if (rowIdx < 0) return;
+  const sheetId = await getSheetId('SalesProjects');
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requests: [{ deleteDimension: { range: { sheetId, dimension: 'ROWS', startIndex: rowIdx, endIndex: rowIdx + 1 } } }] })
+  });
+}
+
 async function saveProject(p) {
   const data = await sheetsGet('RentalProjects!A:A');
   const rows = data.values || [];
