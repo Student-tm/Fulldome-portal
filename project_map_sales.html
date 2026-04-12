@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+/* AUTO CACHE BUSTER */
+(function(){
+  var V="20260412003655";
+  if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fulldome.pro — Project Map Sales</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Consolas,"Courier New",monospace;background:#17171a;color:#eaeaea;min-height:100vh;display:flex;flex-direction:column;}
+header{padding:16px 32px;border-bottom:3px solid #CC0000;display:flex;align-items:center;gap:20px;background:#1f2128;}
+.back{font-size:12px;color:#6b7080;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;}
+.back:hover{color:#CC0000;}
+.header-title{font-size:12px;font-weight:700;color:#eaeaea;text-transform:uppercase;letter-spacing:0.15em;flex:1;}
+
+/* Dashboard layout */
+.dashboard{display:grid;grid-template-columns:25% 1fr 25%;gap:16px;padding:16px;flex:1;}
+.sidebar{background:#1f2128;padding:24px;display:flex;flex-direction:column;gap:24px;overflow-y:auto;}
+.content{padding:32px;overflow-y:auto;}
+.right-panel{background:#1f2128;padding:24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;}
+.eq-g{margin-bottom:12px;}
+.eq-g-name{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.eq-r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #232530;font-size:12px;}
+.eq-r span:first-child{color:#eaeaea;}
+.eq-r span:last-child{color:#f0a500;font-weight:700;}
+.eq-dome{font-size:11px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.15em;padding-bottom:6px;border-bottom:1px solid #2e3039;margin-bottom:4px;}
+.eq-group{margin-bottom:12px;}
+.eq-group-name{font-size:10px;font-weight:700;color:#888c98;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.eq-item{display:flex;align-items:center;justify-content:space-between;padding:3px 0;border-bottom:1px solid #232530;}
+.eq-item-name{font-size:12px;color:#eaeaea;}
+.eq-item-qty{font-size:11px;font-weight:700;color:#f0a500;min-width:24px;text-align:right;}
+.eq-empty{font-size:12px;color:#4a4f5c;font-style:italic;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#1f2128;border:1px solid #2e3039;border-top:2px solid #CC0000;border-radius:3px;padding:24px;min-width:280px;font-family:Consolas,monospace;}
+.modal-title{font-size:12px;font-weight:700;color:#eaeaea;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.modal-text{font-size:12px;color:#888c98;margin-bottom:20px;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+.modal-btn{padding:6px 16px;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;border-radius:2px;border:1px solid #2e3039;}
+.modal-btn-cancel{background:transparent;color:#6b7080;}
+.modal-btn-cancel:hover{border-color:#6b7080;color:#eaeaea;}
+.modal-btn-confirm{background:#CC0000;color:#fff;border-color:#CC0000;}
+.modal-btn-confirm:hover{background:#aa0000;}
+
+/* Sidebar panels */
+.panel{display:flex;flex-direction:column;gap:10px;}
+.panel-label{font-size:9px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;padding-bottom:8px;border-bottom:1px solid #2e3039;}
+
+/* Status badge */
+.status-badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:2px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;}
+.status-active{color:#1D9E75;background:#0f2a1e;border:1px solid #1D9E75;}
+.status-done{color:#6b7080;background:#2a2a2a;border:1px solid #555;}
+
+/* Shipping */
+.ship-panel{display:flex;flex-direction:row;align-items:center;justify-content:space-between;width:100%;}
+.ship-date{font-size:16px;font-weight:700;color:#f0a500;}
+.ship-empty{font-size:12px;color:#4a4f5c;font-style:italic;}
+.ship-countdown{font-size:16px;font-weight:700;padding:2px 8px;border-radius:2px;display:inline-block;text-align:right;text-transform:uppercase;border:1px dashed #f0a500;flex-shrink:0;}
+.ship-countdown.future{color:#f0a500;border-color:#f0a500;}
+.ship-countdown.urgent{color:#CC0000;border-color:#CC0000;animation:flash3 0.6s ease-in-out 3;}
+.ship-countdown.today{color:#CC0000;border-color:#CC0000;animation:pulse 1s infinite;}
+.ship-countdown.past{color:#444;border-color:#4a4f5c;border-style:dashed;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+@keyframes flash3{0%,100%{color:#f0a500;}25%,75%{color:#CC0000;opacity:1;}50%{color:#CC0000;opacity:0.2;}}
+.ship-countdown.urgent{color:#CC0000;animation:flash3 0.6s ease-in-out 3;}
+
+/* Notes */
+.note-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #1a1a1a;}
+.note-row:last-of-type{border-bottom:none;}
+.note-num{font-size:9px;color:#444;min-width:14px;text-align:center;font-weight:700;}
+.note-text{flex:1;background:transparent;border:none;color:#ccc;font-family:Consolas,monospace;font-size:12px;padding:3px 6px;outline:none;border-radius:2px;}
+.note-text:focus{background:#17171a;color:#eaeaea;}
+.note-text::placeholder{color:#2a2a2a;}
+.note-text.readonly{color:#6b7080;pointer-events:none;}
+.note-icon{background:none;border:none;cursor:pointer;font-size:12px;padding:2px 4px;color:#4a4f5c;flex-shrink:0;line-height:1;}
+.note-icon:hover{color:#CC0000;}
+.notes-actions{display:flex;gap:6px;margin-top:8px;}
+.notes-save{flex:1;padding:5px;background:#CC0000;border:none;border-radius:2px;color:#eaeaea;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;}
+.notes-save:hover{background:#aa0000;}
+.notes-clear-all{flex:1;padding:5px;background:transparent;border:1px solid #2e3039;border-radius:2px;color:#6b7080;font-family:Consolas,monospace;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;}
+.notes-clear-all:hover{border-color:#CC0000;color:#CC0000;}
+
+/* Actions */
+.btn-wrap{display:flex;flex-direction:column;gap:2px;}
+.btn-label{font-size:9px;font-weight:700;color:#6b7080;text-transform:uppercase;letter-spacing:0.1em;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:flex-end;}
+.abtn{display:flex;align-items:center;gap:8px;background:#1f2128;border:1px solid #2e3039;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;text-decoration:none;font-family:Consolas,monospace;}
+.abtn:hover{border-color:#CC0000;}
+.abtn-red{border-color:#2a2a2a;}
+.abtn-red:hover{background:#CC0000;border-color:#CC0000;}
+.abtn-red:hover .abtn-label{color:#eaeaea;}
+.abtn-red:hover .abtn-icon{color:#eaeaea;}
+.abtn-icon{font-size:14px;color:#CC0000;}
+.abtn-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#eaeaea;}
+.tg-action{display:flex;align-items:center;gap:8px;background:#1f2128;border:1px solid #2e3039;border-radius:4px;padding:7px 14px;cursor:pointer;transition:border-color 0.15s;text-decoration:none;}
+.tg-action:hover{border-color:#4a90d9;}
+.tg-action-icon{font-size:14px;color:#4a90d9;}
+.tg-action-label{font-size:11px;font-weight:700;color:#eaeaea;text-transform:uppercase;letter-spacing:0.08em;}
+
+/* Section label */
+.section-label{font-size:11px;font-weight:700;color:#CC0000;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #2e3039;}
+
+/* Brief table */
+.brief-wrap{background:#1f2128;border:1px solid #2e3039;border-radius:3px;overflow:hidden;}
+.brief-section{background:#CC0000;padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#eaeaea;}
+.brief-row{display:grid;grid-template-columns:240px 1fr 1fr;border-bottom:1px solid #2e3039;}
+.brief-row:last-child{border-bottom:none;}
+.brief-row:hover{background:#2a2d35;}
+.brief-field{font-size:12px;color:#6b7080;padding:7px 14px;border-right:1px solid #2e3039;display:flex;align-items:center;}
+.brief-val{font-size:12px;color:#eaeaea;padding:4px 8px;border-right:1px solid #2e3039;}
+.brief-val input{width:100%;background:transparent;border:none;color:#eaeaea;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
+.brief-val input:focus{background:#17171a;border-radius:2px;}
+.brief-val input::placeholder{color:#4a4f5c;}
+.brief-select{width:100%;background:#17171a;border:none;color:#eaeaea;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;cursor:pointer;border-radius:2px;}
+.brief-select option{background:#1f2128;}
+.brief-comment{font-size:12px;color:#6b7080;padding:4px 8px;}
+.brief-comment input{width:100%;background:transparent;border:none;color:#888;font-family:Consolas,monospace;font-size:12px;padding:4px 8px;outline:none;}
+.brief-comment input:focus{background:#17171a;border-radius:2px;}
+.brief-comment input::placeholder{color:#4a4f5c;}
+.brief-header{display:grid;grid-template-columns:240px 1fr 1fr;background:#1a1b23;border-bottom:1px solid #2a2a2a;}
+.brief-header div{font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.15em;padding:6px 14px;}
+
+.save-bar{position:fixed;bottom:24px;right:32px;display:flex;gap:10px;align-items:center;z-index:50;}
+.save-btn{background:#CC0000;color:#eaeaea;border:none;padding:10px 24px;font-family:Consolas,monospace;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;border-radius:3px;}
+.save-btn:hover{background:#aa0000;}
+.save-status{font-size:11px;color:#6b7080;text-transform:uppercase;}
+footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;}
+.ft{font-size:12px;color:#4a4f5c;text-transform:uppercase;letter-spacing:0.1em;}
+</style>
+</head>
+<body>
+<header>
+  <div class="back" id="backBtn">&#8592; Projects</div>
+  <span class="header-title" id="pageTitle">Project Map — <span style="color:#CC0000" id="projNameSpan"></span></span>
+  <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
+</header>
+<div style="background:#17171a;border-bottom:1px solid #1a1a1a;padding:5px 32px;display:flex;gap:16px;align-items:center;">
+  <a href="index.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">⌂ Portal</a>
+  <span style="color:#222;">|</span>
+  <a href="sales.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">Rental</a>
+  <span style="color:#222;">|</span>
+  <a href="sales.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">Sales</a>
+</div>
+<div class="dashboard">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid #2e3039;">
+        <div class="panel-label" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">Project Status</div>
+        <span class="status-badge" id="projStatus">—</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Shipping Date <button onclick="loadShippingDate()" style="background:none;border:none;color:#6b7080;cursor:pointer;font-size:10px;padding:0 4px;font-family:Consolas,monospace;" title="Refresh">↻</button></div>
+      <div class="ship-panel">
+        <span class="ship-date" id="projShipping" style="display:none"></span>
+        <span class="ship-countdown" id="shipCountdown" style="display:none"></span>
+        <span class="ship-empty" id="projShippingEmpty">— not set</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Quick Actions</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;gap:6px;">
+          <div class="tg-action" id="tg1Btn" style="flex:1"><span class="tg-action-icon">✈</span><span class="tg-action-label">US Projects</span></div>
+          <div class="tg-action" id="tg2Btn" style="flex:1"><span class="tg-action-icon">✈</span><span class="tg-action-label">Production</span></div>
+        </div>
+        <div class="btn-wrap"><span class="btn-label">Packing list & dome setup</span><div class="abtn abtn-red" id="equipBtn"><div class="abtn-icon">⚙</div><div class="abtn-label">Equipment List</div></div></div>
+        <div class="btn-wrap"><span class="btn-label">Projection system setup</span><div class="abtn" id="serverBtn"><div class="abtn-icon">⚙</div><div class="abtn-label">Server Config</div></div></div>
+        <div style="display:flex;gap:6px;align-items:flex-end;">
+          <div class="btn-wrap" style="flex:1"><span class="btn-label">Project files</span><div class="abtn" id="driveFolderBtn"><div class="abtn-icon" id="driveIcon">⚙</div><div class="abtn-label" id="driveBtnLabel">Create Project Folder</div></div></div>
+          <div class="abtn" title="Add file" style="flex-shrink:0;padding:7px 14px;font-size:18px;font-weight:700;color:#CC0000;">+</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:flex-end;">
+          <div class="btn-wrap" style="flex:1"><span class="btn-label">Project photos</span><div class="abtn" id="drivePhotosBtn"><div class="abtn-icon" id="photosIcon">⚙</div><div class="abtn-label" id="photosBtnLabel">Project Photos</div></div></div>
+          <div class="abtn" title="Add photo" style="flex-shrink:0;padding:7px 14px;font-size:18px;font-weight:700;color:#CC0000;">+</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Notes</div>
+      <div id="notesRows">
+        <div class="note-row"><span class="note-num">1</span><input class="note-text" placeholder="—" data-note="0"/><button class="note-icon" onclick="editNote(0)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(0)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">2</span><input class="note-text" placeholder="—" data-note="1"/><button class="note-icon" onclick="editNote(1)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(1)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">3</span><input class="note-text" placeholder="—" data-note="2"/><button class="note-icon" onclick="editNote(2)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(2)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">4</span><input class="note-text" placeholder="—" data-note="3"/><button class="note-icon" onclick="editNote(3)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(3)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">5</span><input class="note-text" placeholder="—" data-note="4"/><button class="note-icon" onclick="editNote(4)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(4)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">6</span><input class="note-text" placeholder="—" data-note="5"/><button class="note-icon" onclick="editNote(5)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(5)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">7</span><input class="note-text" placeholder="—" data-note="6"/><button class="note-icon" onclick="editNote(6)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(6)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">8</span><input class="note-text" placeholder="—" data-note="7"/><button class="note-icon" onclick="editNote(7)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(7)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">9</span><input class="note-text" placeholder="—" data-note="8"/><button class="note-icon" onclick="editNote(8)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(8)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">10</span><input class="note-text" placeholder="—" data-note="9"/><button class="note-icon" onclick="editNote(9)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(9)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">11</span><input class="note-text" placeholder="—" data-note="10"/><button class="note-icon" onclick="editNote(10)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(10)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">12</span><input class="note-text" placeholder="—" data-note="11"/><button class="note-icon" onclick="editNote(11)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(11)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">13</span><input class="note-text" placeholder="—" data-note="12"/><button class="note-icon" onclick="editNote(12)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(12)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">14</span><input class="note-text" placeholder="—" data-note="13"/><button class="note-icon" onclick="editNote(13)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(13)" title="Clear">✕</button></div>
+        <div class="note-row"><span class="note-num">15</span><input class="note-text" placeholder="—" data-note="14"/><button class="note-icon" onclick="editNote(14)" title="Edit">✎</button><button class="note-icon" onclick="clearNote(14)" title="Clear">✕</button></div>
+      </div>
+      <div class="notes-actions">
+        <button class="notes-clear-all" onclick="clearAllNotes()">Clear All</button>
+        <button class="notes-save" id="notesBtn">Save Notes</button>
+      </div>
+      <span style="font-size:10px;color:#6b7080;margin-top:4px;display:block;" id="notesSaveStatus"></span>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel" id="rightPanel">
+    <div class="panel-label">Equipment List</div>
+
+
+    <div id="eqMirror" style="font-size:12px;color:#4a4f5c;font-style:italic;">Loading...</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+  <div class="section-label">General Info — Brief</div>
+  <div class="brief-wrap">
+    <div class="brief-header">
+      <div>Field</div><div>Specification</div><div>Comments</div>
+    </div>
+
+    <div class="brief-section">Information about client and venue</div>
+    <div class="brief-row"><div class="brief-field">Company / Client name</div><div class="brief-val"><input data-field="client_name" data-label="Company / Client name" placeholder="—"/></div><div class="brief-comment"><input data-field="client_name_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Event name</div><div class="brief-val"><input data-field="event_name" data-label="Event name" placeholder="—"/></div><div class="brief-comment"><input data-field="event_name_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Client contact</div><div class="brief-val"><input data-field="client_contact" data-label="Client contact" placeholder="—"/></div><div class="brief-comment"><input data-field="client_contact_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Address of installation / event</div><div class="brief-val"><input data-field="address" data-label="Address of installation / event" placeholder="—"/></div><div class="brief-comment"><input data-field="address_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Installation start time-date</div><div class="brief-val"><input data-field="install_start" data-label="Installation start time-date" placeholder="—"/></div><div class="brief-comment"><input data-field="install_start_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Client walk-through time</div><div class="brief-val"><input data-field="walkthrough" data-label="Client walk-through time" placeholder="—"/></div><div class="brief-comment"><input data-field="walkthrough_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Event break-down time</div><div class="brief-val"><input data-field="breakdown" data-label="Event break-down time" placeholder="—"/></div><div class="brief-comment"><input data-field="breakdown_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Dome description</div>
+    <div class="brief-row"><div class="brief-field">Dome size</div><div class="brief-val"><select data-field="dome_size" data-label="Dome size" class="brief-select"><option value="">—</option><option value="2.5m Open">2.5m Open</option><option value="3m Open">3m Open</option><option value="4.5m SRD">4.5m SRD</option><option value="4.7m Open">4.7m Open</option><option value="4.7m Open Wisd">4.7m Open Wisd</option><option value="5m">5m</option><option value="6m Reality">6m Reality</option><option value="6m Open">6m Open</option><option value="7m">7m</option><option value="7m VR">7m VR</option><option value="8m Open">8m Open</option><option value="8m SRD 2D/1D">8m SRD 2D/1D</option><option value="8m SRD">8m SRD</option><option value="8m">8m</option><option value="10m">10m</option><option value="12m">12m</option><option value="12m WISD frame/screen">12m WISD frame/screen</option><option value="14m">14m</option><option value="27m">27m</option></select></div><div class="brief-comment"><input data-field="dome_size_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Blackout / Open dome</div><div class="brief-val"><select data-field="blackout" data-label="Blackout / Open dome" class="brief-select"><option value="">—</option><option value="Blackout">Blackout</option><option value="Open">Open</option></select></div><div class="brief-comment"><input data-field="blackout_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Indoor / Outdoor</div><div class="brief-val"><select data-field="indoor" data-label="Indoor / Outdoor" class="brief-select"><option value="">—</option><option value="Indoor">Indoor</option><option value="Outdoor">Outdoor</option></select></div><div class="brief-comment"><input data-field="indoor_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Inflatable decor cover</div><div class="brief-val"><select data-field="decor_cover" data-label="Inflatable decor cover" class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option></select></div><div class="brief-comment"><input data-field="decor_cover_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Projection system description</div>
+    <div class="brief-row"><div class="brief-field">VJ Server</div><div class="brief-val"><select data-field="vj_server" data-label="VJ Server" class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option></select></div><div class="brief-comment"><input data-field="vj_server_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Capture card</div><div class="brief-val"><select data-field="capture_card" data-label="Capture card" class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option></select></div><div class="brief-comment"><input data-field="capture_card_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Projectors, number and brand</div><div class="brief-val"><input data-field="projectors" data-label="Projectors, number and brand" placeholder="—"/></div><div class="brief-comment"><input data-field="projectors_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Sound system brand</div><div class="brief-val"><input data-field="sound" data-label="Sound system brand" placeholder="—"/></div><div class="brief-comment"><input data-field="sound_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">HVACs</div><div class="brief-val"><select data-field="hvac" data-label="HVACs" class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option></select></div><div class="brief-comment"><input data-field="hvac_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Content</div>
+    <div class="brief-row"><div class="brief-field">Content for the event list</div><div class="brief-val"><input data-field="content_list" data-label="Content for the event list" placeholder="—"/></div><div class="brief-comment"><input data-field="content_list_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Content on the server</div><div class="brief-val"><input data-field="content_server" data-label="Content on the server" placeholder="—"/></div><div class="brief-comment"><input data-field="content_server_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Encoder needed</div><div class="brief-val"><select data-field="encoder" data-label="Encoder needed" class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option></select></div><div class="brief-comment"><input data-field="encoder_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Promo materials</div><div class="brief-val"><input data-field="promo" data-label="Promo materials" placeholder="—"/></div><div class="brief-comment"><input data-field="promo_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Setup on site</div>
+    <div class="brief-row"><div class="brief-field">Crane, boom, etc.</div><div class="brief-val"><select data-field="crane" data-label="Crane, boom, etc." class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option></select></div><div class="brief-comment"><input data-field="crane_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Local labour / union, contact person</div><div class="brief-val"><input data-field="labour" data-label="Local labour / union, contact person" placeholder="—"/></div><div class="brief-comment"><input data-field="labour_c" placeholder="—"/></div></div>
+
+    <div class="brief-section">Additional info</div>
+    <div class="brief-row"><div class="brief-field">Certificates (fire)</div><div class="brief-val"><select data-field="certificates" data-label="Certificates (fire)" class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option><option value="Required">Required</option></select></div><div class="brief-comment"><input data-field="certificates_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Permits (we provide info only)</div><div class="brief-val"><input data-field="permits" data-label="Permits (we provide info only)" placeholder="—"/></div><div class="brief-comment"><input data-field="permits_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Flooring type</div><div class="brief-val"><input data-field="flooring" data-label="Flooring type" placeholder="—"/></div><div class="brief-comment"><input data-field="flooring_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Electricity required</div><div class="brief-val"><select data-field="electricity" data-label="Electricity required" class="brief-select"><option value="">—</option><option value="Yes">Yes</option><option value="No">No</option></select></div><div class="brief-comment"><input data-field="electricity_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Safety signs (fire extinguisher, exit)</div><div class="brief-val"><input data-field="safety" data-label="Safety signs (fire extinguisher, exit)" placeholder="—"/></div><div class="brief-comment"><input data-field="safety_c" placeholder="—"/></div></div>
+    <div class="brief-row"><div class="brief-field">Packing / flight cases type</div><div class="brief-val"><input data-field="packing" data-label="Packing / flight cases type" placeholder="—"/></div><div class="brief-comment"><input data-field="packing_c" placeholder="—"/></div></div>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-title">Clear All Notes</div>
+    <div class="modal-text">Are you sure? This will erase all 15 notes and save immediately.</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('confirmModal').classList.remove('open')">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmClearAll()">Clear All</button>
+    </div>
+  </div>
+</div>
+<div class="save-bar">
+  <span class="save-status" id="saveStatus"></span>
+  <button class="save-btn" id="saveBtn">Save Brief</button>
+</div>
+
+<footer>
+  <span class="ft">Fulldome.pro &copy; 2026</span>
+</footer>
+
+<script src="auth.js?v=20260412003655"></script>
+<script>
+var params = new URLSearchParams(window.location.search);
+var projectId = params.get('project') || '';
+var projectName = params.get('name') ? decodeURIComponent(params.get('name')) : 'Project';
+var briefSheetName = 'Brief — ' + projectName;
+
+// Custom brief functions using per-project sheet
+async function loadBriefFromSheet(){
+  try {
+    await ensureSheet(briefSheetName);
+    var data = await sheetsGet(briefSheetName+'!A:C');
+    var rows = data.values || [];
+    rows.slice(1).forEach(function(r){
+      if(!r[0]) return;
+      var inp = document.querySelector('.brief-val [data-label="'+r[0]+'"]');
+      if(inp) inp.value = r[1] || '';
+    });
+  } catch(e){ console.error('loadBrief error', e); }
+}
+
+async function saveBriefToSheet(rows){
+  await ensureSheet(briefSheetName);
+  await sheetsClear(briefSheetName+'!A:C');
+  var vals = [['Field','Value','Comment']];
+  rows.forEach(function(r){ vals.push([r.field, r.value||'', r.comment||'']); });
+  await sheetsAppend(briefSheetName+'!A:C', vals);
+}
+var projectType = params.get('type') || 'rental';
+
+document.getElementById('projNameSpan').textContent = projectName;
+localStorage.setItem('last_project_id', projectId);
+localStorage.setItem('last_project_name', projectName);
+document.getElementById('backBtn').onclick = function(){
+  window.location.href = (projectType==='sales' ? 'sales.html' : 'sales.html');
+};
+
+// TG buttons — loaded from project data
+document.getElementById('equipBtn').onclick = function(){
+  window.location.href = 'equipment.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
+};
+document.getElementById('serverBtn').onclick = function(){
+  window.location.href = 'server_configurator.html?project='+encodeURIComponent(projectId)+'&name='+encodeURIComponent(projectName);
+};
+
+
+requireAuth(function(){
+  loadBrief();
+  loadProjectTG();
+  initDriveFolder();
+  loadNotes();
+  loadShippingDate();
+  setTimeout(loadEqMirror, 1000);
+});
+
+function getNoteInputs(){
+  return Array.from(document.querySelectorAll('.note-text'));
+}
+function editNote(i){
+  var inp = getNoteInputs()[i];
+  inp.focus(); inp.select();
+}
+function clearNote(i){
+  getNoteInputs()[i].value = '';
+}
+function clearAllNotes(){
+  document.getElementById('confirmModal').classList.add('open');
+}
+async function confirmClearAll(){
+  document.getElementById('confirmModal').classList.remove('open');
+  getNoteInputs().forEach(function(inp){ inp.value=''; });
+  await saveNotes();
+}
+
+async function loadNotes(){
+  try {
+    await ensureSheet('Notes');
+    var data = await sheetsGet('Notes!A:Q');
+    var rows = data.values || [];
+    var row = rows.find(function(r){ return r[0] === String(projectId); });
+    if(row){
+      getNoteInputs().forEach(function(inp, i){
+        inp.value = row[i+1] || '';
+      });
+    }
+  } catch(e){ console.log('No notes yet'); }
+}
+
+async function saveNotes(){
+  var notes = getNoteInputs().map(function(inp){ return inp.value || ''; });
+  var btn = document.getElementById('notesSaveStatus');
+  btn.textContent = 'Saving...';
+  try {
+    await ensureSheet('Notes');
+    var data = await sheetsGet('Notes!A:A');
+    var rows = data.values || [];
+    var rowIdx = -1;
+    for(var i=0;i<rows.length;i++){ if(rows[i][0]===String(projectId)){rowIdx=i+1;break;} }
+    var vals = [[projectId].concat(notes)];
+    if(rowIdx>0){ await sheetsUpdate('Notes!A'+rowIdx+':Q'+rowIdx, vals); }
+    else { await sheetsAppend('Notes!A:Q', vals); }
+    btn.textContent = 'Saved ✓';
+    setTimeout(function(){ btn.textContent=''; }, 2000);
+  } catch(e){ btn.textContent = 'Error'; }
+}
+
+document.getElementById('notesBtn').onclick = saveNotes;
+
+
+async function getSalesProjects(){
+  await ensureSheet('SalesProjects');
+  var data=await sheetsGet('SalesProjects!A:I');
+  var rows=data.values||[];
+  if(rows.length&&rows[0][0]==='ID') rows=rows.slice(1);
+  return rows.filter(function(r){return r[0]&&r[1];}).map(function(r){return{
+    id:r[0]||'',name:r[1]||'',address:r[2]||'',start:r[3]||'',
+    tg1:r[4]||'',tg2:r[5]||'',created:r[6]?parseInt(r[6]):Date.now(),status:r[7]||'active'
+  };});
+}
+function loadProjectTG(){
+  var loader = getSalesProjects();
+  loader.then(function(projects){
+    var p = projects.find(function(x){ return x.id === projectId; });
+    if(!p) return;
+    // TG buttons
+    if(p.tg1){
+      document.getElementById('tg1Btn').onclick = function(){ window.open(p.tg1, '_blank'); };
+      document.getElementById('tg1Btn').style.cursor = 'pointer';
+    }
+    if(p.tg2){
+      document.getElementById('tg2Btn').onclick = function(){ window.open(p.tg2, '_blank'); };
+      document.getElementById('tg2Btn').style.cursor = 'pointer';
+    }
+    // Status
+    var isDone = p.status === 'done';
+    var sb = document.getElementById('projStatus');
+    sb.textContent = isDone ? 'Done' : 'Active';
+    sb.className = 'status-badge ' + (isDone ? 'status-done' : 'status-active');
+  }).catch(function(e){ console.error('loadProjectTG error', e); });
+}
+
+async function loadShippingDate(){
+  try {
+    // Wait for accessToken if not ready yet
+    if(!accessToken){
+      await new Promise(function(resolve){
+        var check = setInterval(function(){
+          if(accessToken){ clearInterval(check); resolve(); }
+        }, 100);
+        setTimeout(function(){ clearInterval(check); resolve(); }, 5000);
+      });
+    }
+    if(!accessToken){ console.warn('No accessToken for shipping'); return; }
+    await ensureSheet('Shipping');
+    var data = await sheetsGet('Shipping!A:C');
+    var rows = data.values || [];
+    var row = rows.find(function(r){ return r[0] === String(projectId); });
+    if(row && row[1]){
+      var d = row[1];
+      var parts2 = d.split('-');
+      if(parts2.length===3) d = parts2[1]+'/'+parts2[2]+'/'+parts2[0];
+      document.getElementById('projShipping').textContent = d;
+      document.getElementById('projShipping').style.display = 'inline-block';
+      document.getElementById('projShippingEmpty').style.display = 'none';
+      showCountdown(row[1]);
+    } else {
+      document.getElementById('projShipping').style.display = 'none';
+      document.getElementById('projShippingEmpty').style.display = 'inline-block';
+      document.getElementById('shipCountdown').style.display = 'none';
+    }
+  } catch(e){ console.error('loadShippingDate error:', e); }
+}
+
+function showCountdown(isoDate){
+  var el = document.getElementById('shipCountdown');
+  if(!isoDate){ el.style.display='none'; return; }
+  function update(){
+    var today = new Date(); today.setHours(0,0,0,0);
+    var parts2 = isoDate.split('-');
+    var ship = new Date(parseInt(parts2[0]), parseInt(parts2[1])-1, parseInt(parts2[2]));
+    var diff = Math.round((ship - today) / 86400000);
+    el.style.display = 'inline-block';
+    if(diff === 0){
+      el.textContent = 'TODAY';
+      el.className = 'ship-countdown today';
+    } else if(diff > 0 && diff <= 3){
+      el.textContent = 'IN ' + diff + ' DAY' + (diff===1?'':'S');
+      el.className = 'ship-countdown future urgent';
+    } else if(diff > 3){
+      el.textContent = 'IN ' + diff + ' DAYS';
+      el.className = 'ship-countdown future';
+    } else {
+      el.textContent = Math.abs(diff) + ' DAY' + (Math.abs(diff)===1?'':'S') + ' AGO';
+      el.className = 'ship-countdown past';
+    }
+  }
+  update();
+  // Refresh at midnight
+  var now = new Date();
+  var msToMidnight = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1) - now;
+  setTimeout(function(){ update(); setInterval(update, 86400000); }, msToMidnight);
+}
+
+// ═══ GOOGLE DRIVE FOLDER ═══════════════════════════
+var DRIVE_TOKEN = null;
+var DRIVE_FOLDER_URL = null;
+
+async function driveFetch(url, opts){
+  var token = localStorage.getItem('drive_token');
+  if(!token){ initDriveAuth(); return null; }
+  var headers = Object.assign({'Authorization':'Bearer '+token}, (opts&&opts.headers)||{});
+  var r = await fetch(url, Object.assign({}, opts, {headers:headers}));
+  if(r.status===401){ localStorage.removeItem('drive_token'); localStorage.removeItem('drive_token_time'); return null; }
+  return r;
+}
+
+async function findOrCreateFolder(name, parentId){
+  var q = "name='"+name.replace(/'/g,"\\'")+"' and mimeType='application/vnd.google-apps.folder' and trashed=false";
+  if(parentId) q += " and '"+parentId+"' in parents";
+  var r = await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,webViewLink)');
+  if(!r) return null;
+  var d = await r.json();
+  if(d.files && d.files.length) return d.files[0];
+  var meta = {name:name, mimeType:'application/vnd.google-apps.folder'};
+  if(parentId) meta.parents = [parentId];
+  var cr = await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id,webViewLink',{
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(meta)
+  });
+  if(!cr) return null;
+  return cr.json();
+}
+
+function initDriveAuth(){
+  var saved = localStorage.getItem('drive_token');
+  var savedTime = localStorage.getItem('drive_token_time');
+  var expired = !savedTime || (Date.now()-parseInt(savedTime)) > 3500000;
+  if(saved && !expired){ DRIVE_TOKEN=saved; return; }
+  var s=document.createElement('script');
+  s.src='https://accounts.google.com/gsi/client';
+  s.onload=function(){
+    var tc=google.accounts.oauth2.initTokenClient({
+      client_id:'673039541518-jurnkvne074u3ib66u52skjoru204rn5.apps.googleusercontent.com',
+      scope:'https://www.googleapis.com/auth/drive',
+      callback:function(resp){
+        if(resp.error) return;
+        localStorage.setItem('drive_token',resp.access_token);
+        localStorage.setItem('drive_token_time',Date.now());
+        DRIVE_TOKEN=resp.access_token;
+      }
+    });
+    tc.requestAccessToken();
+  };
+  document.head.appendChild(s);
+}
+
+async function initDriveFolder(){
+  // Photos button
+  var photosBtn = document.getElementById('drivePhotosBtn');
+  photosBtn.onclick = async function(){
+    var token = localStorage.getItem('drive_token');
+    if(!token){ initDriveAuth(); return; }
+    document.getElementById('photosBtnLabel').textContent = 'Creating...';
+    try {
+      var root = await findOrCreateFolder('Rental_portal', null);
+      if(!root){ document.getElementById('photosBtnLabel').textContent='Auth needed'; initDriveAuth(); return; }
+      var projFolder = await findOrCreateFolder(projectName, root.id);
+      if(!projFolder){ document.getElementById('photosBtnLabel').textContent='Error'; return; }
+      var photosFolder = await findOrCreateFolder('Photos — '+projectName, projFolder.id);
+      if(!photosFolder){ document.getElementById('photosBtnLabel').textContent='Error'; return; }
+      document.getElementById('photosBtnLabel').textContent = 'Open Photos';
+      document.getElementById('photosIcon').textContent = '✓';
+      document.getElementById('photosIcon').style.color = '#1D9E75';
+      photosBtn.style.borderColor = '#1D9E75';
+      var url = photosFolder.webViewLink;
+      photosBtn.onclick = function(){ window.open(url,'_blank'); };
+      window.open(url, '_blank');
+    } catch(e){
+      document.getElementById('photosBtnLabel').textContent = 'Error';
+      console.error(e);
+    }
+  };
+
+  var btn = document.getElementById('driveFolderBtn');
+  btn.onclick = async function(){
+    if(DRIVE_FOLDER_URL){ window.open(DRIVE_FOLDER_URL,'_blank'); return; }
+    document.getElementById('driveBtnLabel').textContent = 'Creating...';
+    try {
+      var root = await findOrCreateFolder('Rental_portal', null);
+      if(!root){
+        document.getElementById('driveBtnLabel').textContent = 'Sign in & retry';
+        initDriveAuth();
+        return;
+      }
+      var folder = await findOrCreateFolder(projectName, root.id);
+      if(!folder){ document.getElementById('driveBtnLabel').textContent = 'Error'; return; }
+      DRIVE_FOLDER_URL = folder.webViewLink;
+      document.getElementById('driveBtnLabel').textContent = 'Open Project Folder';
+      document.getElementById('driveIcon').textContent = '✓';
+      document.getElementById('driveIcon').style.color = '#1D9E75';
+      btn.style.borderColor = '#1D9E75';
+      window.open(DRIVE_FOLDER_URL, '_blank');
+    } catch(e){
+      document.getElementById('driveBtnLabel').textContent = 'Error';
+      console.error(e);
+    }
+  };
+}
+
+function loadBrief(){
+  loadBriefFromSheet();
+}
+
+document.getElementById('saveBtn').onclick = function(){
+  var rows = [];
+  // Walk all children of brief-wrap in DOM order to preserve sections
+  var wrap = document.querySelector('.brief-wrap');
+  var children = wrap.querySelectorAll('.brief-section, .brief-row');
+  children.forEach(function(el){
+    if(el.classList.contains('brief-section')){
+      // Save section header as a row with marker
+      rows.push({ field: '=== ' + el.textContent.trim().toUpperCase() + ' ===', value: '', comment: '' });
+    } else {
+      var inp = el.querySelector('.brief-val [data-field]');
+      if(!inp) return;
+      var label = inp.getAttribute('data-label') || inp.getAttribute('data-field');
+      var commentInp = el.querySelector('.brief-comment input');
+      rows.push({ field: label, value: inp.value, comment: commentInp ? commentInp.value : '' });
+    }
+  });
+  document.getElementById('saveStatus').textContent = 'Saving...';
+  saveBriefToSheet(rows).then(function(){
+    document.getElementById('saveStatus').textContent = 'Saved ✓';
+    setTimeout(function(){ document.getElementById('saveStatus').textContent = ''; }, 3000);
+  }).catch(function(e){
+    document.getElementById('saveStatus').textContent = 'Error: ' + e.message;
+  });
+};
+
+async function loadEqMirror(){
+  var el = document.getElementById('eqMirror');
+  if(!el) return;
+  try {
+    var tok = localStorage.getItem('gtoken');
+    if(!tok){ el.innerHTML='<span style="color:#4a4f5c">Auth needed</span>'; return; }
+    var sid = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
+    var pid = String(projectId || new URLSearchParams(window.location.search).get('project') || '').substring(0, 10);
+    var sheet = 'EQ_' + pid;
+    el.innerHTML = '<span style="color:#4a4f5c">Loading EQ_'+pid+'...</span>';
+    var r = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/'+sid+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
+      {headers:{Authorization:'Bearer '+tok}}
+    );
+    if(r.status===401){ el.innerHTML='<span style="color:#4a4f5c">Token expired — refresh page</span>'; return; }
+    if(r.status===400){ el.innerHTML='<span style="color:#4a4f5c">Sheet '+sheet+' not found</span>'; return; }
+    var d = await r.json();
+    var rows = d.values || [];
+    var dataRow = rows.find(function(x){ return x[0]==='data'; });
+    if(!dataRow){ el.innerHTML='<span style="color:#4a4f5c">No equipment data yet</span>'; return; }
+    var data = JSON.parse(dataRow[1]);
+    if(!data||!data.groups||!data.groups.length){ el.innerHTML='<span style="color:#4a4f5c">No items added yet</span>'; return; }
+    var html = '';
+    // Dome info as table
+    if(data.dome){
+      html += '<div class="eq-g"><div class="eq-g-name">DOME</div>';
+      html += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:10px;">';
+      html += '<thead><tr style="background:#17171a;">';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;">SIZE</th>';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;">SERIAL #</th>';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;">DUCT SIZE</th>';
+      html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;color:#6b7080;font-weight:700;">TRUSS</th>';
+      html += '</tr></thead><tbody>';
+      html += '<tr style="border-bottom:1px solid #232530;">';
+      html += '<td style="padding:4px 6px;color:#CC0000;font-weight:700;border-right:1px solid #232530;">'+(data.dome.size||'—')+'</td>';
+      html += '<td style="padding:4px 6px;color:#eaeaea;border-right:1px solid #232530;">'+(data.domeSer||data.dome.serials&&data.dome.serials[0]||'—')+'</td>';
+      html += '<td style="padding:4px 6px;color:#eaeaea;border-right:1px solid #232530;">'+(data.dome.ductSize||'—')+'</td>';
+      html += '<td style="padding:4px 6px;color:#eaeaea;">'+(data.dome.truss||'—')+'</td>';
+      html += '</tr>';
+      html += '</tbody></table></div></div>';
+    }
+    // Groups as full tables matching equipment.html columns
+    data.groups.forEach(function(g){
+      var items = (g.rows||g.items||[]);
+      html += '<div class="eq-g">';
+      html += '<div class="eq-g-name">'+(g.label||g.name||'Group')+'</div>';
+      html += '<div style="overflow-x:auto;">';
+      html += '<table style="width:100%;border-collapse:collapse;font-size:10px;min-width:400px;">';
+      html += '<thead><tr style="background:#17171a;">';
+      var cols = ['MODEL','LABEL|IP','QTY','S/N','COLOR','HOURS','COMMENTS'];
+      cols.forEach(function(c,i){
+        var w = i===0?'130px':'80px';
+        html += '<th style="text-align:left;padding:4px 6px;border-bottom:1px solid #2e3039;border-right:1px solid #2e3039;color:#6b7080;font-weight:700;letter-spacing:0.05em;width:'+w+'">'+c+'</th>';
+      });
+      html += '</tr></thead><tbody>';
+      if(!items.length){
+        html += '<tr><td colspan="7" style="padding:6px;color:#4a4f5c;font-style:italic;">+ SELECT...</td></tr>';
+      } else {
+        items.forEach(function(x){
+          html += '<tr style="border-bottom:1px solid #232530;">';
+          html += '<td style="padding:4px 6px;color:#eaeaea;border-right:1px solid #232530;">'+(x.item||'—')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.labelIp||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#f0a500;text-align:center;border-right:1px solid #232530;">'+(x.qty||1)+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.sn||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.color||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;border-right:1px solid #232530;">'+(x.hours||'...')+'</td>';
+          html += '<td style="padding:4px 6px;color:#6b7080;">'+(x.comments||'...')+'</td>';
+          html += '</tr>';
+        });
+      }
+      html += '</tbody></table></div></div>';
+    });
+    el.innerHTML = html||'<span style="color:#4a4f5c">No items</span>';
+  } catch(e){ el.innerHTML='<span style="color:#CC0000">'+e.message+'</span>'; }
+}
+
+setInterval(loadEqMirror, 30000);
+</script>
+</body>
+</html>
