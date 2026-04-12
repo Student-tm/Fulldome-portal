@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412225402";
+  var V="20260412231834";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -105,7 +106,7 @@ tr:hover td{background:#fafafa;}
   .hdr { border-bottom: 3px solid #CC0000; }
 }
 </style>
-<script src="auth.js?v=20260412225402"></script></head>
+<script src="auth.js?v=20260412231834"></script></head>
 <body>
 <div class="hdr">
   <span id="backBtn" style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;white-space:nowrap;padding-right:14px;border-right:1px solid #222;margin-right:4px">&#8592; Projects</span>
@@ -673,6 +674,7 @@ function updateSum(){
 
 function autoSave(){
   var projectId = new URLSearchParams(window.location.search).get('project') || 'default';
+  var projectName = decodeURIComponent(new URLSearchParams(window.location.search).get('name') || '');
   var data = {
     projectName: document.getElementById('pname').value,
     dome: selDome,
