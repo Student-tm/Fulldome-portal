@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412005355";
+  var V="20260412005629";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -269,12 +270,10 @@ async function loadRental(){
 async function loadSales(){
   renderList('salesList','salesCount',null,'sales');
   try {
-    var rows = (await fetchSheet('SalesProjects!A:I')).slice(1).filter(function(r){return r[0]&&r[1];});
-    // If empty, try once more after 2 seconds (token may have just refreshed)
-    if(!rows.length){
-      await new Promise(function(r){ setTimeout(r, 2000); });
-      rows = (await fetchSheet('SalesProjects!A:I')).slice(1).filter(function(r){return r[0]&&r[1];});
-    }
+    var tok = localStorage.getItem('gtoken');
+    var r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('SalesProjects!A:I')+'?_='+Date.now(),{headers:{Authorization:'Bearer '+tok}});
+    var d = await r.json();
+    var rows = (d.values||[]).slice(1).filter(function(r){return r[0]&&r[1];});
     var projects = rows.map(function(r){
       return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:r[7]||'active',ship:'',tg1:r[4]||'',tg2:r[5]||''};
     });
