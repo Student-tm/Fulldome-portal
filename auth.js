@@ -237,23 +237,33 @@ async function loadEquipment(projectId) {
   return null;
 }
 
+const _ensuredSheets = new Set();
+const _pendingEnsure = {};
+
 async function ensureSheet(sheetName) {
-  const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets.properties.title`,
-    { headers: { Authorization: 'Bearer ' + accessToken } }
-  );
-  const data = await r.json();
-  const exists = data.sheets && data.sheets.some(s => s.properties.title === sheetName);
-  if (!exists) {
-    await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requests: [{ addSheet: { properties: { title: sheetName } } }] })
-      }
+  if (_ensuredSheets.has(sheetName)) return;
+  if (_pendingEnsure[sheetName]) { await _pendingEnsure[sheetName]; return; }
+  _pendingEnsure[sheetName] = (async () => {
+    const r = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets.properties.title`,
+      { headers: { Authorization: 'Bearer ' + accessToken } }
     );
-  }
+    const data = await r.json();
+    const exists = data.sheets && data.sheets.some(s => s.properties.title === sheetName);
+    if (!exists) {
+      await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
+        {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requests: [{ addSheet: { properties: { title: sheetName } } }] })
+        }
+      );
+    }
+    _ensuredSheets.add(sheetName);
+    delete _pendingEnsure[sheetName];
+  })();
+  await _pendingEnsure[sheetName];
 }
 
 async function saveEquipment(projectId, equipData) {
