@@ -4,7 +4,7 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412004357";
+  var V="20260412010806";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
@@ -111,7 +111,7 @@ header{background:#1f2128;padding:16px 32px;border-bottom:3px solid #CC0000;disp
 .ship-pencil:hover{color:#f0a500;}
 .ship-picker{display:none;position:absolute;z-index:200;background:#1f2128;border:1px solid #f0a500;border-radius:3px;padding:14px;box-shadow:0 4px 24px rgba(0,0,0,0.8);width:220px;}
 .ship-picker.open{display:block;}
-.ship-picker input[type=date]{background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:6px 10px;outline:none;color-scheme:dark;}
+.ship-picker input[type=date]{background:#0d0d0d;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:13px;padding:6px 10px;outline:none;color-scheme:dark;}
 .ship-picker input[type=date]:focus{border-color:#f0a500;}
 .ship-save-btn{margin-top:8px;width:100%;padding:6px;background:#f0a500;border:none;border-radius:2px;color:#111;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;}
 .ship-save-btn:hover{background:#e09400;}
@@ -125,12 +125,12 @@ header{background:#1f2128;padding:16px 32px;border-bottom:3px solid #CC0000;disp
 .mrow{display:flex;gap:10px;overflow:hidden;}
 .mtitle{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;}
 .mlabel{font-size:12px;color:#6b7080;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
-.minput{width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:14px;padding:10px 12px;outline:none;margin-bottom:12px;}
+.minput{width:100%;background:#0d0d0d;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:14px;padding:10px 12px;outline:none;margin-bottom:12px;}
 .minput:focus{border-color:#CC0000;}
 .minput::placeholder{color:#444;}
 input[type="date"]{color-scheme:dark;}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:0.5;}
-.tg-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#111;border:1px solid #333;border-radius:2px;padding:6px 10px;}
+.tg-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#0d0d0d;border:1px solid #333;border-radius:2px;padding:6px 10px;}
 .tg-label{font-size:12px;color:#6b7080;white-space:nowrap;min-width:100px;}
 .mbtn{padding:8px 20px;border-radius:3px;font-family:Consolas,monospace;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer;border:none;}
 .mbtn-red{background:#CC0000;color:#fff;}
@@ -143,13 +143,13 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
 <body>
 <header>
   <div class="back" onclick="window.location.href='index.html'">&#8592; Portal</div>
-  <span class="header-title">Sales &mdash; Projects</span>
+  <span class="header-title">Rental &mdash; Projects</span>
   <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
 </header>
 <div style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:5px 32px;display:flex;gap:16px;align-items:center;">
   <a href="index.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">⌂ Portal</a>
   <span style="color:#222;">|</span>
-  <a href="rental.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">Rental</a>
+  <a href="rental.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">Sales</a>
   <span style="color:#222;">|</span>
   <a href="sales.html" style="font-size:10px;color:#444;text-decoration:none;text-transform:uppercase;letter-spacing:0.1em;font-family:Consolas,monospace;font-weight:700;transition:color 0.15s;" onmouseover="this.style.color='#CC0000'" onmouseout="this.style.color='#444'">Sales</a>
 </div>
@@ -157,7 +157,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <div class="section-label">Create</div>
   <div class="new-btn" id="newBtn">
     <div class="ni">+</div>
-    <div><div class="nt">New Project</div><div class="ns">Create new sales project &nbsp;|&nbsp; General info</div></div>
+    <div><div class="nt">New Project</div><div class="ns">Create new rental project &nbsp;|&nbsp; General info</div></div>
   </div>
   <div class="section-toggle" onclick="toggleSection('active')">
     <span class="toggle-arrow" id="arrowActive">▾</span>
@@ -179,7 +179,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
 
 <div class="overlay" id="newModal">
   <div class="mbox">
-    <div class="mtitle" id="modalTitle">New Sales Project</div>
+    <div class="mtitle" id="modalTitle">New Rental Project</div>
     <input class="minput" id="projName" placeholder="Project name (e.g. 10m Planetarium NY)..."/>
     <select class="minput" id="projAddress" style="color:#888;cursor:pointer">
       <option value="" disabled selected style="color:#444">Location (State)...</option>
@@ -216,7 +216,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
     <div id="step2" style="display:none">
       <div class="mtitle">Enter PIN Code</div>
       <div style="font-size:12px;color:#6b7080;margin-bottom:16px">Enter 4-digit PIN to confirm.</div>
-      <input id="pinInput" type="password" maxlength="4" placeholder="_ _ _ _" style="width:100%;background:#111;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:24px;padding:12px;outline:none;text-align:center;letter-spacing:8px;margin-bottom:8px"/>
+      <input id="pinInput" type="password" maxlength="4" placeholder="_ _ _ _" style="width:100%;background:#0d0d0d;border:1px solid #333;border-radius:2px;color:#fff;font-family:Consolas,monospace;font-size:24px;padding:12px;outline:none;text-align:center;letter-spacing:8px;margin-bottom:8px"/>
       <div id="pinError" style="font-size:12px;color:#CC0000;text-align:center;height:16px;margin-bottom:12px"></div>
       <div class="mbtns">
         <button class="mbtn mbtn-gray" id="pinCancel">Cancel</button>
@@ -234,64 +234,25 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260412004357"></script>
+<script src="auth.js?v=20260412010806"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
-
-
-const SALES_SHEET='SalesProjects';
-
-async function getSalesProjects(){
-  await ensureSheet(SALES_SHEET);
-  var data=await sheetsGet(SALES_SHEET+'!A:I');
-  var rows=data.values||[];
-  if(rows.length&&rows[0][0]==='ID') rows=rows.slice(1);
-  return rows.filter(function(r){return r[0]&&r[1];}).map(function(r){return{
-    id:r[0]||'',name:r[1]||'',address:r[2]||'',start:r[3]||'',
-    tg1:r[4]||'',tg2:r[5]||'',created:r[6]?parseInt(r[6]):Date.now(),status:r[7]||'active'
-  };});
-}
-
-async function saveSalesProject(p){
-  await ensureSheet(SALES_SHEET);
-  var data=await sheetsGet(SALES_SHEET+'!A:A');
-  var rows=data.values||[];
-  var rowIdx=-1;
-  for(var i=1;i<rows.length;i++){if(rows[i][0]===String(p.id)){rowIdx=i+1;break;}}
-  var vals=[[p.id,p.name,p.address||'',p.start||'',p.tg1||'',p.tg2||'',p.created,p.status||'active']];
-  if(rowIdx>0){await sheetsUpdate(SALES_SHEET+'!A'+rowIdx+':H'+rowIdx,vals);}
-  else{await sheetsAppend(SALES_SHEET+'!A:H',vals);}
-}
-
-async function deleteSalesProject(id){
-  var data=await sheetsGet(SALES_SHEET+'!A:A');
-  var rows=data.values||[];
-  var rowIdx=-1;
-  for(var i=1;i<rows.length;i++){if(rows[i][0]===String(id)){rowIdx=i;break;}}
-  if(rowIdx===-1)return;
-  var sheetId=await getSheetId(SALES_SHEET);
-  await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+':batchUpdate',{
-    method:'POST',
-    headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
-    body:JSON.stringify({requests:[{deleteDimension:{range:{sheetId:sheetId,dimension:'ROWS',startIndex:rowIdx,endIndex:rowIdx+1}}}]})
-  });
-}
 
 requireAuth(function(){ loadShipping().then(function(){ loadProjects(); }); });
 
 function loadProjects(){
-  var emptyEl=document.getElementById('emptyMsg'); if(emptyEl) emptyEl.textContent='Loading...';
+  document.getElementById('emptyMsg').textContent='Loading...';
   getSalesProjects().then(function(data){
     projects=data||[];
     render();
   }).catch(function(e){
-    var emptyEl=document.getElementById('emptyMsg'); if(emptyEl) emptyEl.textContent='Error: '+e.message;
+    document.getElementById('emptyMsg').textContent='Error: '+e.message;
   });
 }
 
 document.getElementById('newBtn').onclick=function(){
   editId=null;
-  document.getElementById('modalTitle').textContent='New Sales Project';
+  document.getElementById('modalTitle').textContent='New Rental Project';
   document.getElementById('projName').value='';
   document.getElementById('projAddress').value='';
   document.getElementById('projStart').value='';
@@ -399,7 +360,7 @@ async function saveShippingToSheet(pid, date, eventId){
   var data = await sheetsGet('Shipping!A:A');
   var rows = data.values || [];
   var rowIdx = -1;
-  for(var i=1;i<rows.length;i++){ if(rows[i][0]===String(pid)){rowIdx=i+1;break;} }
+  for(var i=0;i<rows.length;i++){ if(rows[i][0]===String(pid)){rowIdx=i+1;break;} }
   var vals = [[pid, date, eventId]];
   if(rowIdx>0) await sheetsUpdate('Shipping!A'+rowIdx+':C'+rowIdx, vals);
   else await sheetsAppend('Shipping!A:C', vals);
@@ -587,7 +548,7 @@ function render(){
       document.getElementById('confirmModal').classList.add('open');
     };
     card.onclick=function(){
-      window.location.href='project_map_sales.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name)+'&type=sales';
+      window.location.href='project_map_sales.html?project='+encodeURIComponent(p.id)+'&name='+encodeURIComponent(p.name);
     };
     if(isDone) card.style.opacity='0.6';
 
