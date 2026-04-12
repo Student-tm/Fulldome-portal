@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412232603";
+  var V="20260412232911";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -379,7 +380,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260412232603"></script>
+<script src="auth.js?v=20260412232911"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -740,10 +741,11 @@ async function loadEqMirror(){
     var tok = localStorage.getItem('gtoken');
     if(!tok){ el.innerHTML='<span style="color:#4a4f5c">Auth needed</span>'; return; }
     var sid = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
-    var sheet = eqSheetName(projectId, projectName);
+    var safe = projectName ? projectName.trim().replace(/[/:?*\[\]']/g,'').replace(/\s+/g,'_').replace(/_+/g,'_').substring(0,45) : '';
+    var sheet = safe.length ? 'EQ_'+safe : 'EQ_'+String(projectId).substring(0,10);
     el.innerHTML = '<span style="color:#4a4f5c">Loading '+sheet+'...</span>';
     var r = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/'+sid+'/values/'+encodeURIComponent(sheet+'!A:B')+'?_='+Date.now(),
+      'https://sheets.googleapis.com/v4/spreadsheets/'+sid+'/values/'+encodeURIComponent(sheet)+'!A:B?_='+Date.now(),
       {headers:{Authorization:'Bearer '+tok}}
     );
     if(r.status===401){ el.innerHTML='<span style="color:#4a4f5c">Token expired — refresh page</span>'; return; }
