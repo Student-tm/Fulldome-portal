@@ -242,6 +242,7 @@ function eqSheetName(projectId, projectName) {
 async function loadEquipment(projectId, projectName) {
   const sheet = eqSheetName(projectId, projectName);
   try {
+    await ensureSheet(sheet);
     const data = await sheetsGet(`${sheet}!A:B`);
     const rows = data.values || [];
     for (const r of rows) {
