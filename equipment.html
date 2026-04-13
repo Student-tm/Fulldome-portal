@@ -4,7 +4,7 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260413004505";
+  var V="20260413120000";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
@@ -104,6 +104,15 @@ tr:hover td{background:#fafafa;}
 .iopt:hover{border-color:#CC0000;background:#1f0000;}
 .clbl{font-size:9px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.1em;padding:8px 0 3px;border-top:1px solid #e8e8e8;margin-top:5px;}
 .clbl:first-child{border-top:none;margin-top:0;}
+.db-cat-btn{padding:6px 12px;border-radius:3px;border:1px solid #444;background:#111;color:#888;cursor:pointer;font-family:Consolas,monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;transition:all 0.15s;}
+.db-cat-btn:hover{opacity:0.8;}
+.db-cat-btn.active{outline:2px solid currentColor;outline-offset:2px;}
+.db-field-label{font-size:9px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;margin-top:12px;display:block;}
+.db-field-label:first-child{margin-top:0;}
+.db-inp{width:100%;padding:7px 10px;border:1px solid #333;border-radius:2px;font-size:12px;font-family:Consolas,monospace;outline:none;background:#111;color:#fff;}
+.db-inp:focus{border-color:#1D9E75;}
+.db-serial-row{display:flex;gap:6px;margin-bottom:5px;}
+.db-serial-row .db-inp{flex:1;}
 @media print {
   .hdr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .ghdr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -117,7 +126,7 @@ tr:hover td{background:#fafafa;}
   .hdr { border-bottom: 3px solid #CC0000; }
 }
 </style>
-<script src="auth.js?v=20260413004505"></script></head>
+<script src="auth.js?v=20260413120000"></script></head>
 <body>
 <div class="hdr">
   <span id="backBtn" style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;white-space:nowrap;padding-right:14px;border-right:1px solid #222;margin-right:4px">&#8592; Projects</span>
@@ -147,6 +156,12 @@ tr:hover td{background:#fafafa;}
         <div class="mitem" id="mn-custom" style="color:#888"><div class="dot8" style="background:#aaa"></div>Custom</div>
       </div>
     </div>
+    <div style="border-top:1px solid #2e3039;margin:4px 0;"></div>
+    <div class="sidebar-label">Inventory DB</div>
+    <button type="button" class="tg-sb-btn" id="addToDBBtn" onclick="openAddDBModal()" style="border-color:#1D9E7566;color:#1D9E75;background:#0d1f18;width:100%;border:1px solid #1D9E75;cursor:pointer;">
+      <span style="font-size:14px;line-height:1">+</span>
+      <span class="tg-btn-label" style="color:#1D9E75;">Add to DB</span>
+    </button>
   </div>
   <!-- RIGHT CONTENT: metrics + dome + groups -->
   <div class="eq-content">
@@ -758,6 +773,436 @@ function exportCSV(){
   var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=p.replace(/\s+/g,'_')+'.csv';a.click();
 }
+<div class="overlay" id="addDBModal">
+  <div class="mbox" style="width:500px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="mtitle" id="dbModalTitle">Add to Inventory DB</div>
+      <button class="bsm bsm-light" id="closeDBModalBtn">Close</button>
+    </div>
+    <div id="dbCatSelect" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+      <button type="button" class="db-cat-btn" data-cat="dome"    onclick="dbCatSelect(this)" style="color:#1D9E75;border-color:#1D9E7555;">Dome</button>
+      <button type="button" class="db-cat-btn" data-cat="proj"    onclick="dbCatSelect(this)" style="color:#CC0000;border-color:#CC000055;">Projector</button>
+      <button type="button" class="db-cat-btn" data-cat="speaker" onclick="dbCatSelect(this)" style="color:#cc6600;border-color:#cc660055;">Speaker</button>
+      <button type="button" class="db-cat-btn" data-cat="server"  onclick="dbCatSelect(this)" style="color:#4a90d9;border-color:#4a90d955;">Server</button>
+      <button type="button" class="db-cat-btn" data-cat="cables"  onclick="dbCatSelect(this)" style="color:#6600cc;border-color:#6600cc55;">Cable</button>
+      <button type="button" class="db-cat-btn" data-cat="tools"   onclick="dbCatSelect(this)" style="color:#998800;border-color:#99880055;">Tool</button>
+    </div>
+    <div id="dbFormArea" style="min-height:60px;"></div>
+    <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:16px;border-top:1px solid #2a2a2a;padding-top:14px">
+      <span id="dbSaveStatus" style="font-size:10px;color:#1D9E75;flex:1;"></span>
+      <button class="bsm bsm-light" id="closeDBModalBtn2">Cancel</button>
+      <button class="hbtn hbtn-red" id="saveDBBtn" style="display:none;">Save to DB</button>
+    </div>
+  </div>
+</div>
+<script>
+// ═══ ADD TO INVENTORY DB ══════════════════════════════════
+var dbCurrentCat = null;
+var dbSerials = [''];
+
+var DB_FORMS = {
+  dome:    { title:'Add Dome',       sheet:'DOMES',         render:renderDBDomeForm,    collect:collectDBDomeForm },
+  proj:    { title:'Add Projector',  sheet:'DB_Projectors', render:renderDBProjForm,    collect:collectDBProjForm },
+  speaker: { title:'Add Speaker',    sheet:'DB_Speakers',   render:renderDBSpeakerForm, collect:collectDBSpeakerForm },
+  server:  { title:'Add Server',     sheet:'DB_Servers',    render:renderDBServerForm,  collect:collectDBServerForm },
+  cables:  { title:'Add Cable',      sheet:'DB_Cables',     render:renderDBCablesForm,  collect:collectDBCablesForm },
+  tools:   { title:'Add Tool',       sheet:'DB_Tools',      render:renderDBToolsForm,   collect:collectDBToolsForm }
+};
+
+function openAddDBModal(){
+  dbCurrentCat = null;
+  dbSerials = [''];
+  document.getElementById('dbFormArea').innerHTML = '<div style="color:#555;font-size:11px;text-align:center;padding:24px 0;text-transform:uppercase;letter-spacing:0.08em;">Select category above</div>';
+  document.getElementById('saveDBBtn').style.display = 'none';
+  document.getElementById('dbSaveStatus').textContent = '';
+  document.getElementById('dbModalTitle').textContent = 'Add to Inventory DB';
+  document.querySelectorAll('.db-cat-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('addDBModal').classList.add('open');
+}
+
+function dbCatSelect(btn){
+  dbCurrentCat = btn.dataset.cat;
+  document.querySelectorAll('.db-cat-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  var form = DB_FORMS[dbCurrentCat];
+  if(!form) return;
+  document.getElementById('dbModalTitle').textContent = form.title;
+  document.getElementById('dbSaveStatus').textContent = '';
+  form.render();
+  document.getElementById('saveDBBtn').style.display = 'inline-block';
+}
+
+function closeAddDBModal(){
+  document.getElementById('addDBModal').classList.remove('open');
+}
+
+document.getElementById('closeDBModalBtn').onclick  = closeAddDBModal;
+document.getElementById('closeDBModalBtn2').onclick = closeAddDBModal;
+document.getElementById('addDBModal').onclick = function(e){ if(e.target===this) closeAddDBModal(); };
+
+document.getElementById('saveDBBtn').onclick = function(){
+  if(!dbCurrentCat) return;
+  var form = DB_FORMS[dbCurrentCat];
+  var data = form.collect();
+  if(!data) return;
+  var btn = this;
+  btn.disabled = true; btn.textContent = 'Saving...';
+  document.getElementById('dbSaveStatus').textContent = '';
+  document.getElementById('dbSaveStatus').style.color = '#1D9E75';
+  saveToDB(form.sheet, data).then(function(){
+    btn.disabled = false; btn.textContent = 'Save to DB';
+    document.getElementById('dbSaveStatus').textContent = '✓ Saved!';
+    if(dbCurrentCat === 'dome') getDomes().then(function(d){ DOMES = d; });
+    setTimeout(function(){ closeAddDBModal(); document.getElementById('dbSaveStatus').textContent=''; }, 1200);
+  }).catch(function(e){
+    btn.disabled = false; btn.textContent = 'Save to DB';
+    document.getElementById('dbSaveStatus').style.color = '#CC0000';
+    document.getElementById('dbSaveStatus').textContent = 'Error: ' + e.message;
+  });
+};
+
+async function saveToDB(sheetName, rowData) {
+  await ensureSheet(sheetName, INVENTORY_SHEET_ID);
+  await sheetsAppend(sheetName + '!A:Z', [rowData], INVENTORY_SHEET_ID);
+  await autoResizeColumns(sheetName, INVENTORY_SHEET_ID);
+}
+
+function dbField(label, id, placeholder, parent){
+  var l = document.createElement('span'); l.className='db-field-label'; l.textContent=label; parent.appendChild(l);
+  var inp = document.createElement('input'); inp.className='db-inp'; inp.id=id; inp.placeholder=placeholder||''; parent.appendChild(inp);
+  return inp;
+}
+
+// ── DOME ──────────────────────────────────────────────────
+function renderDBDomeForm(){
+  dbSerials = [''];
+  var el = document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Size *', 'dbf-size', '7m, 12ft, 20ft...', el);
+  var l2 = document.createElement('span'); l2.className='db-field-label'; l2.textContent='Serial Numbers'; el.appendChild(l2);
+  var sw = document.createElement('div'); sw.id='dbSerialWrap'; el.appendChild(sw);
+  var addS = document.createElement('button'); addS.type='button'; addS.className='bsm bsm-light'; addS.textContent='+ Add serial'; addS.style.marginTop='4px';
+  addS.onclick=function(){ dbSerials.push(''); renderDBSerials(); };
+  el.appendChild(addS);
+  dbField('Duct Size', 'dbf-duct', '8"', el);
+  dbField('Truss', 'dbf-truss', 'Truss type...', el);
+  dbField('Drawing URL', 'dbf-draw', 'https://...', el);
+  renderDBSerials();
+}
+function renderDBSerials(){
+  var wrap = document.getElementById('dbSerialWrap'); if(!wrap) return;
+  wrap.innerHTML='';
+  dbSerials.forEach(function(val,i){
+    var row=document.createElement('div'); row.className='db-serial-row';
+    var inp=document.createElement('input'); inp.className='db-inp'; inp.value=val; inp.placeholder='SN-XXXXXXXX';
+    inp.oninput=(function(idx){return function(){dbSerials[idx]=this.value;};})(i);
+    row.appendChild(inp);
+    if(dbSerials.length>1){
+      var del=document.createElement('button'); del.type='button'; del.className='bsm bsm-del'; del.textContent='×'; del.style.cssText='padding:4px 10px;flex-shrink:0';
+      del.onclick=(function(idx){return function(){ dbSerials.splice(idx,1); renderDBSerials(); };})(i);
+      row.appendChild(del);
+    }
+    wrap.appendChild(row);
+  });
+}
+function collectDBDomeForm(){
+  var size=(document.getElementById('dbf-size').value||'').trim();
+  if(!size){ alert('Size is required'); document.getElementById('dbf-size').focus(); return null; }
+  var serials=dbSerials.map(function(s){return s.trim();}).filter(Boolean).join('\n');
+  var duct=(document.getElementById('dbf-duct').value||'').trim();
+  var truss=(document.getElementById('dbf-truss').value||'').trim();
+  var draw=(document.getElementById('dbf-draw').value||'').trim();
+  return [Date.now(), size, serials, duct, truss, draw];
+}
+
+// ── PROJECTOR ─────────────────────────────────────────────
+function renderDBProjForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Brand *', 'dbf-brand', 'EPSON, Christie, Barco...', el);
+  dbField('Model *', 'dbf-model', 'EB-PU2216B...', el);
+  dbField('Label / IP', 'dbf-labelip', 'P1 / 192.168.1.10', el);
+  dbField('Serial Number', 'dbf-sn', 'SN-...', el);
+  dbField('Color', 'dbf-color', 'Black, White...', el);
+  dbField('Hours', 'dbf-hours', '0', el);
+}
+function collectDBProjForm(){
+  var brand=(document.getElementById('dbf-brand').value||'').trim();
+  var model=(document.getElementById('dbf-model').value||'').trim();
+  if(!brand||!model){ alert('Brand and Model are required'); return null; }
+  return [brand, model,
+    (document.getElementById('dbf-labelip').value||'').trim(),
+    (document.getElementById('dbf-sn').value||'').trim(),
+    (document.getElementById('dbf-color').value||'').trim(),
+    (document.getElementById('dbf-hours').value||'').trim()];
+}
+
+// ── SPEAKER ───────────────────────────────────────────────
+function renderDBSpeakerForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Brand *', 'dbf-brand', 'L-Acoustics, QSC...', el);
+  dbField('Model *', 'dbf-model', '5XT, K12.2...', el);
+  dbField('Power (W)', 'dbf-power', '500', el);
+  dbField('Current @120V', 'dbf-current', '4.2A', el);
+  dbField('Max SPL', 'dbf-spl', '130dB', el);
+  dbField('Frequency', 'dbf-freq', '60Hz–20kHz', el);
+}
+function collectDBSpeakerForm(){
+  var brand=(document.getElementById('dbf-brand').value||'').trim();
+  var model=(document.getElementById('dbf-model').value||'').trim();
+  if(!brand||!model){ alert('Brand and Model are required'); return null; }
+  return [brand, model,
+    (document.getElementById('dbf-power').value||'').trim(),
+    (document.getElementById('dbf-current').value||'').trim(),
+    (document.getElementById('dbf-spl').value||'').trim(),
+    (document.getElementById('dbf-freq').value||'').trim()];
+}
+
+// ── SERVER ────────────────────────────────────────────────
+function renderDBServerForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Server Name *', 'dbf-srvname', 'FD-Server-01', el);
+  dbField('Proj. System', 'dbf-projsys', 'Immersive, Disguise...', el);
+  dbField('Resolution | PJT', 'dbf-res', '4K / 6x proj', el);
+  dbField('Location', 'dbf-loc', 'Rack 1, Position A', el);
+  dbField('GPU', 'dbf-gpu', 'RTX 4090', el);
+}
+function collectDBServerForm(){
+  var name=(document.getElementById('dbf-srvname').value||'').trim();
+  if(!name){ alert('Server Name is required'); return null; }
+  return [name,
+    (document.getElementById('dbf-projsys').value||'').trim(),
+    (document.getElementById('dbf-res').value||'').trim(),
+    (document.getElementById('dbf-loc').value||'').trim(),
+    (document.getElementById('dbf-gpu').value||'').trim()];
+}
+
+// ── CABLE ─────────────────────────────────────────────────
+function renderDBCablesForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Cable Name *', 'dbf-cable', 'HDMI 2.0 15ft, SDI 50ft...', el);
+  dbField('Notes', 'dbf-cnotes', 'Optional notes...', el);
+}
+function collectDBCablesForm(){
+  var name=(document.getElementById('dbf-cable').value||'').trim();
+  if(!name){ alert('Cable name is required'); return null; }
+  return [name, (document.getElementById('dbf-cnotes').value||'').trim()];
+}
+
+// ── TOOL ──────────────────────────────────────────────────
+function renderDBToolsForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Tool Name *', 'dbf-tool', 'Allen wrench set, Laser level...', el);
+  dbField('Notes', 'dbf-tnotes', 'Optional notes...', el);
+}
+function collectDBToolsForm(){
+  var name=(document.getElementById('dbf-tool').value||'').trim();
+  if(!name){ alert('Tool name is required'); return null; }
+  return [name, (document.getElementById('dbf-tnotes').value||'').trim()];
+}
 </script>
-</body>
-</html>
+</body></html>
+
+var DB_FORMS = {
+  dome:    { title:'Add Dome',       sheet:'DOMES',         render:renderDBDomeForm,    collect:collectDBDomeForm },
+  proj:    { title:'Add Projector',  sheet:'DB_Projectors', render:renderDBProjForm,    collect:collectDBProjForm },
+  speaker: { title:'Add Speaker',    sheet:'DB_Speakers',   render:renderDBSpeakerForm, collect:collectDBSpeakerForm },
+  server:  { title:'Add Server',     sheet:'DB_Servers',    render:renderDBServerForm,  collect:collectDBServerForm },
+  cables:  { title:'Add Cable',      sheet:'DB_Cables',     render:renderDBCablesForm,  collect:collectDBCablesForm },
+  tools:   { title:'Add Tool',       sheet:'DB_Tools',      render:renderDBToolsForm,   collect:collectDBToolsForm }
+};
+
+document.getElementById('addToDBBtn').onclick = function(){
+  dbCurrentCat = null;
+  dbSerials = [''];
+  document.getElementById('dbFormArea').innerHTML = '<div style="color:#444;font-size:11px;text-align:center;padding:20px 0;text-transform:uppercase;letter-spacing:0.08em;">Select category above</div>';
+  document.getElementById('saveDBBtn').style.display = 'none';
+  document.getElementById('dbSaveStatus').textContent = '';
+  document.getElementById('dbModalTitle').textContent = 'Add to Inventory DB';
+  document.querySelectorAll('.db-cat-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('addDBModal').classList.add('open');
+};
+document.getElementById('closeDBModalBtn').onclick  = function(){ document.getElementById('addDBModal').classList.remove('open'); };
+document.getElementById('closeDBModalBtn2').onclick = function(){ document.getElementById('addDBModal').classList.remove('open'); };
+document.getElementById('addDBModal').onclick = function(e){ if(e.target===this) this.classList.remove('open'); };
+
+document.querySelectorAll('.db-cat-btn').forEach(function(btn){
+  btn.onclick = function(){
+    dbCurrentCat = this.dataset.cat;
+    document.querySelectorAll('.db-cat-btn').forEach(function(b){ b.classList.remove('active'); });
+    this.classList.add('active');
+    var form = DB_FORMS[dbCurrentCat];
+    document.getElementById('dbModalTitle').textContent = form.title;
+    document.getElementById('dbSaveStatus').textContent = '';
+    form.render();
+    document.getElementById('saveDBBtn').style.display = 'inline-block';
+  };
+});
+
+document.getElementById('saveDBBtn').onclick = function(){
+  if(!dbCurrentCat) return;
+  var form = DB_FORMS[dbCurrentCat];
+  var data = form.collect();
+  if(!data) return;
+  var btn = this;
+  btn.disabled = true; btn.textContent = 'Saving...';
+  document.getElementById('dbSaveStatus').textContent = '';
+  document.getElementById('dbSaveStatus').style.color = '#1D9E75';
+  saveToDB(form.sheet, data).then(function(){
+    btn.disabled = false; btn.textContent = 'Save to DB';
+    document.getElementById('dbSaveStatus').textContent = '✓ Saved!';
+    if(dbCurrentCat === 'dome') getDomes().then(function(d){ DOMES = d; });
+    setTimeout(function(){
+      document.getElementById('addDBModal').classList.remove('open');
+      document.getElementById('dbSaveStatus').textContent = '';
+    }, 1200);
+  }).catch(function(e){
+    btn.disabled = false; btn.textContent = 'Save to DB';
+    document.getElementById('dbSaveStatus').style.color = '#CC0000';
+    document.getElementById('dbSaveStatus').textContent = 'Error: ' + e.message;
+  });
+};
+
+async function saveToDB(sheetName, rowData) {
+  await ensureSheet(sheetName, INVENTORY_SHEET_ID);
+  await sheetsAppend(sheetName + '!A:Z', [rowData], INVENTORY_SHEET_ID);
+  await autoResizeColumns(sheetName, INVENTORY_SHEET_ID);
+}
+
+function dbField(label, id, placeholder, parent){
+  var l = document.createElement('span'); l.className='db-field-label'; l.textContent=label; parent.appendChild(l);
+  var inp = document.createElement('input'); inp.className='db-inp'; inp.id=id; inp.placeholder=placeholder||''; parent.appendChild(inp);
+  return inp;
+}
+
+// ── DOME ──────────────────────────────────────────────────
+function renderDBDomeForm(){
+  dbSerials = [''];
+  var el = document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Size *', 'dbf-size', '7m, 12ft, 20ft...', el);
+  var l2 = document.createElement('span'); l2.className='db-field-label'; l2.textContent='Serial Numbers'; el.appendChild(l2);
+  var sw = document.createElement('div'); sw.id='dbSerialWrap'; el.appendChild(sw);
+  var addS = document.createElement('button'); addS.className='bsm bsm-light'; addS.textContent='+ Add serial'; addS.style.marginTop='4px';
+  addS.onclick=function(e){e.preventDefault();dbSerials.push('');renderDBSerials();};
+  el.appendChild(addS);
+  dbField('Duct Size', 'dbf-duct', '8"', el);
+  dbField('Truss', 'dbf-truss', 'Truss type...', el);
+  dbField('Drawing URL', 'dbf-draw', 'https://...', el);
+  renderDBSerials();
+}
+function renderDBSerials(){
+  var wrap = document.getElementById('dbSerialWrap'); if(!wrap) return;
+  wrap.innerHTML='';
+  dbSerials.forEach(function(val,i){
+    var row=document.createElement('div'); row.className='db-serial-row';
+    var inp=document.createElement('input'); inp.className='db-inp'; inp.value=val; inp.placeholder='SN-XXXXXXXX';
+    inp.oninput=(function(idx){return function(){dbSerials[idx]=this.value;};})(i);
+    row.appendChild(inp);
+    if(dbSerials.length>1){
+      var del=document.createElement('button'); del.className='bsm bsm-del'; del.textContent='×'; del.style.cssText='padding:4px 10px;flex-shrink:0';
+      del.onclick=(function(idx){return function(e){e.preventDefault();dbSerials.splice(idx,1);renderDBSerials();};})(i);
+      row.appendChild(del);
+    }
+    wrap.appendChild(row);
+  });
+}
+function collectDBDomeForm(){
+  var size=(document.getElementById('dbf-size').value||'').trim();
+  if(!size){alert('Size is required');document.getElementById('dbf-size').focus();return null;}
+  var serials=dbSerials.map(function(s){return s.trim();}).filter(Boolean).join('\n');
+  var duct=(document.getElementById('dbf-duct').value||'').trim();
+  var truss=(document.getElementById('dbf-truss').value||'').trim();
+  var draw=(document.getElementById('dbf-draw').value||'').trim();
+  // A=timestamp-id, B=size, C=serials, D=ductSize, E=truss, F=drawing
+  return [Date.now(), size, serials, duct, truss, draw];
+}
+
+// ── PROJECTOR ─────────────────────────────────────────────
+function renderDBProjForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Brand *', 'dbf-brand', 'EPSON, Christie, Barco...', el);
+  dbField('Model *', 'dbf-model', 'EB-PU2216B...', el);
+  dbField('Label / IP', 'dbf-labelip', 'P1 / 192.168.1.10', el);
+  dbField('Serial Number', 'dbf-sn', 'SN-...', el);
+  dbField('Color', 'dbf-color', 'Black, White...', el);
+  dbField('Hours', 'dbf-hours', '0', el);
+}
+function collectDBProjForm(){
+  var brand=(document.getElementById('dbf-brand').value||'').trim();
+  var model=(document.getElementById('dbf-model').value||'').trim();
+  if(!brand||!model){alert('Brand and Model are required');return null;}
+  // A=brand, B=model, C=labelIp, D=sn, E=color, F=hours
+  return [brand, model,
+    (document.getElementById('dbf-labelip').value||'').trim(),
+    (document.getElementById('dbf-sn').value||'').trim(),
+    (document.getElementById('dbf-color').value||'').trim(),
+    (document.getElementById('dbf-hours').value||'').trim()];
+}
+
+// ── SPEAKER ───────────────────────────────────────────────
+function renderDBSpeakerForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Brand *', 'dbf-brand', 'L-Acoustics, QSC...', el);
+  dbField('Model *', 'dbf-model', '5XT, K12.2...', el);
+  dbField('Power (W)', 'dbf-power', '500', el);
+  dbField('Current @120V', 'dbf-current', '4.2A', el);
+  dbField('Max SPL', 'dbf-spl', '130dB', el);
+  dbField('Frequency', 'dbf-freq', '60Hz–20kHz', el);
+}
+function collectDBSpeakerForm(){
+  var brand=(document.getElementById('dbf-brand').value||'').trim();
+  var model=(document.getElementById('dbf-model').value||'').trim();
+  if(!brand||!model){alert('Brand and Model are required');return null;}
+  // A=brand, B=model, C=power, D=current, E=spl, F=freq
+  return [brand, model,
+    (document.getElementById('dbf-power').value||'').trim(),
+    (document.getElementById('dbf-current').value||'').trim(),
+    (document.getElementById('dbf-spl').value||'').trim(),
+    (document.getElementById('dbf-freq').value||'').trim()];
+}
+
+// ── SERVER ────────────────────────────────────────────────
+function renderDBServerForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Server Name *', 'dbf-srvname', 'FD-Server-01', el);
+  dbField('Proj. System', 'dbf-projsys', 'Immersive, Disguise...', el);
+  dbField('Resolution | PJT', 'dbf-res', '4K / 6x proj', el);
+  dbField('Location', 'dbf-loc', 'Rack 1, Position A', el);
+  dbField('GPU', 'dbf-gpu', 'RTX 4090', el);
+}
+function collectDBServerForm(){
+  var name=(document.getElementById('dbf-srvname').value||'').trim();
+  if(!name){alert('Server Name is required');return null;}
+  // A=name, B=projSystem, C=resolution, D=location, E=gpu
+  return [name,
+    (document.getElementById('dbf-projsys').value||'').trim(),
+    (document.getElementById('dbf-res').value||'').trim(),
+    (document.getElementById('dbf-loc').value||'').trim(),
+    (document.getElementById('dbf-gpu').value||'').trim()];
+}
+
+// ── CABLE ─────────────────────────────────────────────────
+function renderDBCablesForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Cable Name *', 'dbf-cable', 'HDMI 2.0 15ft, SDI 50ft...', el);
+  dbField('Notes', 'dbf-cnotes', 'Optional notes...', el);
+}
+function collectDBCablesForm(){
+  var name=(document.getElementById('dbf-cable').value||'').trim();
+  if(!name){alert('Cable name is required');return null;}
+  // A=name, B=notes
+  return [name, (document.getElementById('dbf-cnotes').value||'').trim()];
+}
+
+// ── TOOL ──────────────────────────────────────────────────
+function renderDBToolsForm(){
+  var el=document.getElementById('dbFormArea'); el.innerHTML='';
+  dbField('Tool Name *', 'dbf-tool', 'Allen wrench set, Laser level...', el);
+  dbField('Notes', 'dbf-tnotes', 'Optional notes...', el);
+}
+function collectDBToolsForm(){
+  var name=(document.getElementById('dbf-tool').value||'').trim();
+  if(!name){alert('Tool name is required');return null;}
+  // A=name, B=notes
+  return [name, (document.getElementById('dbf-tnotes').value||'').trim()];
+}
+</script>
+</body></html>
