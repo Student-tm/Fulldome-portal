@@ -1,7 +1,7 @@
 // v20260412232430
 const CLIENT_ID = '673039541518-jurnkvne074u3ib66u52skjoru204rn5.apps.googleusercontent.com';
 const RENTAL_SHEET_ID  = '10VyF7SmTugetZGwGSLzY63vS_U4GTnajB9fjg2p8U3I';
-const SALES_SHEET_ID   = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw'; // temp until Sales sheet created
+const SALES_SHEET_ID   = '1AyzeKi9YehTDUJgvwHMVbGvBhG67D1ufJx79RnC43ng';
 const INVENTORY_SHEET_ID = ''; // will be added later
 const SPREADSHEET_ID = RENTAL_SHEET_ID; // default (overridden per page)
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar';
@@ -124,7 +124,7 @@ async function getProjects() {
 
 
 async function getSalesProjects() {
-  const data = await sheetsGet('SalesProjects!A:I');
+  const data = await sheetsGet('SalesProjects!A:I', SALES_SHEET_ID);
   const rows = data.values || [];
   const all = rows.filter(r => r[0] && r[1]);
   return all.map(r => ({
@@ -139,8 +139,9 @@ async function getSalesProjects() {
   }));
 }
 
-async function saveSalesProject(p) {
-  const data = await sheetsGet('SalesProjects!A:A');
+async function saveSalesProject(p, sid) {
+  sid = sid || SALES_SHEET_ID;
+  const data = await sheetsGet('SalesProjects!A:A', sid);
   const rows = data.values || [];
   let rowIdx = -1;
   for (let i = 0; i < rows.length; i++) {
@@ -148,14 +149,15 @@ async function saveSalesProject(p) {
   }
   const vals = [[p.id, p.name, p.address||'', p.start||'', p.tg1||'', p.tg2||'', p.created, p.status||'active']];
   if (rowIdx > 0) {
-    await sheetsUpdate(`SalesProjects!A${rowIdx}:H${rowIdx}`, vals);
+    await sheetsUpdate(`SalesProjects!A${rowIdx}:H${rowIdx}`, vals, sid);
   } else {
-    await sheetsAppend('SalesProjects!A:H', vals);
+    await sheetsAppend('SalesProjects!A:H', vals, sid);
   }
 }
 
-async function deleteSalesProject(id) {
-  const data = await sheetsGet('SalesProjects!A:A');
+async function deleteSalesProject(id, sid) {
+  sid = sid || SALES_SHEET_ID;
+  const data = await sheetsGet('SalesProjects!A:A', sid);
   const rows = data.values || [];
   let rowIdx = -1;
   for (let i = 0; i < rows.length; i++) {

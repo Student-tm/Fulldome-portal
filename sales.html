@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260413004505";
+  var V="20260413011728";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -240,7 +241,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260413004505"></script>
+<script src="auth.js?v=20260413011728"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
@@ -292,7 +293,7 @@ document.getElementById('createBtn').onclick=function(){
   };
   document.getElementById('createBtn').textContent='Saving...';
   document.getElementById('createBtn').disabled=true;
-  saveSalesProject(p).then(function(){
+  saveSalesProject(p, SID).then(function(){
     if(editId){
       var idx=projects.findIndex(function(x){return x.id===editId;});
       if(idx!==-1) projects[idx]=p;
@@ -324,7 +325,7 @@ document.getElementById('confirmYes').onclick=function(){
 document.getElementById('pinCancel').onclick=function(){resetConfirm();};
 document.getElementById('pinOk').onclick=function(){
   if(document.getElementById('pinInput').value==='1008'){
-    deleteSalesProject(deleteTarget).then(function(){
+    deleteSalesProject(deleteTarget, SID).then(function(){
       projects=projects.filter(function(p){return p.id!==deleteTarget;});
       resetConfirm();render();
     });
@@ -532,7 +533,7 @@ function render(){
       e.stopPropagation();
       var proj=projects.find(function(x){return x.id===p.id;});
       proj.status=proj.status==='done'?'active':'done';
-      saveSalesProject(proj).then(function(){render();});
+      saveSalesProject(proj, SID).then(function(){render();});
     };
     card.querySelector('.pedit').onclick=function(e){
       e.stopPropagation();
