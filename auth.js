@@ -110,7 +110,7 @@ async function sheetsClear(range, spreadsheetId) {
 async function getProjects() {
   const data = await sheetsGet('RentalProjects!A:I');
   const rows = data.values || [];
-  return rows.slice(1).filter(r => r[0] && r[1]).map(r => ({
+  return rows.filter(r => r[0] && r[1]).map(r => ({
     id: r[0] || '',
     name: r[1] || '',
     address: r[2] || '',

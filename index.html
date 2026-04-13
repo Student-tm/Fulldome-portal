@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412232603";
+  var V="20260413005837";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -224,7 +225,8 @@ footer{padding:10px 40px;border-top:1px solid #2e3039;display:flex;align-items:c
 
 <script src="auth.js?v=20260412232603"></script>
 <script>
-var SHEET_ID = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
+var RENTAL_ID = '10VyF7SmTugetZGwGSLzY63vS_U4GTnajB9fjg2p8U3I';
+var SALES_ID = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
 
 initGoogleAuth(function(){
   loadRental();
@@ -237,10 +239,10 @@ function fmtD(d){
   var p=d.split('-'); return p.length===3 ? p[1]+'/'+p[2]+'/'+p[0] : d;
 }
 
-async function fetchSheet(range){
+async function fetchSheet(range, sid){
   var tok = localStorage.getItem('gtoken');
   if(!tok) return [];
-  var r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?_='+Date.now(), {headers:{Authorization:'Bearer '+tok}});
+  var r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+(sid||RENTAL_ID)+'/values/'+encodeURIComponent(range)+'?_='+Date.now(), {headers:{Authorization:'Bearer '+tok}});
   if(r.status===401) return [];
   var d = await r.json();
   return d.values || [];
@@ -249,8 +251,8 @@ async function fetchSheet(range){
 async function loadRental(){
   renderList('rentalList', 'rentalCount', null, 'rental');
   try {
-    var rows = (await fetchSheet('RentalProjects!A:I')).slice(1).filter(function(r){return r[0]&&r[1];});
-    var ship = await fetchSheet('Shipping!A:B');
+    var rows = (await fetchSheet('RentalProjects!A:I', RENTAL_ID)).filter(function(r){return r[0]&&r[1];});
+    var ship = await fetchSheet('Shipping!A:B', RENTAL_ID);
     var projects = rows.map(function(r){
       var s = ship.find(function(x){return x[0]===String(r[0]);});
       return {id:r[0],name:r[1],address:r[2]||'',start:r[3]||'',status:r[7]||'active',ship:s&&s[1]?s[1]:'',tg1:r[4]||'',tg2:r[5]||''};
@@ -275,7 +277,7 @@ async function loadSales(){
   renderList('salesList','salesCount',null,'sales');
   try {
     var tok = localStorage.getItem('gtoken');
-    var r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw/values/'+encodeURIComponent('SalesProjects!A:I')+'?_='+Date.now(),{headers:{Authorization:'Bearer '+tok}});
+    var r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SALES_ID+'/values/'+encodeURIComponent('SalesProjects!A:I')+'?_='+Date.now(),{headers:{Authorization:'Bearer '+tok}});
     var d = await r.json();
     var allRows = (d.values||[]);
     // Skip header row only if first cell looks like a header
