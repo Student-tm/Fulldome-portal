@@ -273,19 +273,21 @@ async function loadEquipment(projectId, projectName) {
 const _ensuredSheets = new Set();
 const _pendingEnsure = {};
 
-async function ensureSheet(sheetName) {
-  if (_ensuredSheets.has(sheetName)) return;
-  if (_pendingEnsure[sheetName]) { await _pendingEnsure[sheetName]; return; }
-  _pendingEnsure[sheetName] = (async () => {
+async function ensureSheet(sheetName, sid) {
+  sid = sid || SPREADSHEET_ID;
+  const cacheKey = sid + ':' + sheetName;
+  if (_ensuredSheets.has(cacheKey)) return;
+  if (_pendingEnsure[cacheKey]) { await _pendingEnsure[cacheKey]; return; }
+  _pendingEnsure[cacheKey] = (async () => {
     const r = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets.properties.title`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${sid}?fields=sheets.properties.title`,
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
     const data = await r.json();
     const exists = data.sheets && data.sheets.some(s => s.properties.title === sheetName);
     if (!exists) {
       await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${sid}:batchUpdate`,
         {
           method: 'POST',
           headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
@@ -293,10 +295,10 @@ async function ensureSheet(sheetName) {
         }
       );
     }
-    _ensuredSheets.add(sheetName);
-    delete _pendingEnsure[sheetName];
+    _ensuredSheets.add(cacheKey);
+    delete _pendingEnsure[cacheKey];
   })();
-  await _pendingEnsure[sheetName];
+  await _pendingEnsure[cacheKey];
 }
 
 async function autoResizeColumns(sheetName, sid) {

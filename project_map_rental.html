@@ -4,10 +4,12 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260413010312";
+  var V="20260413012230";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
 
 
 
@@ -384,7 +386,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260413010312"></script>
+<script src="auth.js?v=20260413012230"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -394,7 +396,7 @@ var briefSheetName = 'Brief — ' + projectName;
 // Custom brief functions using per-project sheet
 async function loadBriefFromSheet(){
   try {
-    await ensureSheet(briefSheetName);
+    await ensureSheet(briefSheetName, SID);
     var data = await sheetsGet(briefSheetName+'!A:C', SID);
     var rows = data.values || [];
     rows.slice(1).forEach(function(r){
@@ -406,7 +408,7 @@ async function loadBriefFromSheet(){
 }
 
 async function saveBriefToSheet(rows){
-  await ensureSheet(briefSheetName);
+  await ensureSheet(briefSheetName, SID);
   // Only clear rows 1-39 to preserve notes at row 40+
   await sheetsClear(briefSheetName+'!A1:C39', SID);
   var vals = [['Field','Value','Comment']];
@@ -462,7 +464,7 @@ async function confirmClearAll(){
 
 async function loadNotes(){
   try {
-    await ensureSheet(briefSheetName);
+    await ensureSheet(briefSheetName, SID);
     var data = await sheetsGet(briefSheetName+'!A:B', SID);
     var rows = data.values || [];
     // Notes are always at row 41+ (row 40 is header)
@@ -480,7 +482,7 @@ async function saveNotes(){
   var btn = document.getElementById('notesSaveStatus');
   btn.textContent = 'Saving...';
   try {
-    await ensureSheet(briefSheetName);
+    await ensureSheet(briefSheetName, SID);
     var data = await sheetsGet(briefSheetName+'!A:B', SID);
     var rows = data.values || [];
     // Find or create === NOTES === section
@@ -546,7 +548,7 @@ async function loadShippingDate(){
       });
     }
     if(!accessToken){ console.warn('No accessToken for shipping'); return; }
-    await ensureSheet('Shipping');
+    await ensureSheet('Shipping', SID);
     var data = await sheetsGet('Shipping!A:C', SID);
     var rows = data.values || [];
     var row = rows.find(function(r){ return r[0] === String(projectId); });
@@ -737,7 +739,7 @@ async function loadEqMirror(){
   try {
     var tok = localStorage.getItem('gtoken');
     if(!tok){ el.innerHTML='<span style="color:#4a4f5c">Auth needed</span>'; return; }
-    var sid = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
+    var sid = SID;
     // Build sheet name same way as eqSheetName
     var safe = projectName ? projectName.trim().replace(/[/:?*\[\]']/g,'').replace(/\s+/g,'_').replace(/_+/g,'_').substring(0,45) : '';
     var sheet = safe.length ? 'EQ_'+safe : 'EQ_'+String(projectId).substring(0,10);
