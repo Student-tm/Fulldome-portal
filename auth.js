@@ -297,6 +297,27 @@ async function ensureSheet(sheetName) {
   await _pendingEnsure[sheetName];
 }
 
+async function autoResizeColumns(sheetName, sid) {
+  sid = sid || SPREADSHEET_ID;
+  try {
+    const sheetId = await getSheetId(sheetName, sid);
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${sid}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requests: [{
+            autoResizeDimensions: {
+              dimensions: { sheetId: sheetId, dimension: 'COLUMNS', startIndex: 0, endIndex: 10 }
+            }
+          }]
+        })
+      }
+    );
+  } catch(e) { console.log('autoResize error', e); }
+}
+
 async function saveEquipment(projectId, equipData, projectName) {
   const sheet = eqSheetName(projectId, projectName);
   try {
