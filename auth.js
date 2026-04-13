@@ -1,6 +1,9 @@
 // v20260412232430
 const CLIENT_ID = '673039541518-jurnkvne074u3ib66u52skjoru204rn5.apps.googleusercontent.com';
-const SPREADSHEET_ID = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw';
+const RENTAL_SHEET_ID  = '10VyF7SmTugetZGwGSLzY63vS_U4GTnajB9fjg2p8U3I';
+const SALES_SHEET_ID   = '1FZ5Y4ukKpUs0LmrC8e02am2pN3rc9QuG6ePNKb51mfw'; // temp until Sales sheet created
+const INVENTORY_SHEET_ID = ''; // will be added later
+const SPREADSHEET_ID = RENTAL_SHEET_ID; // default (overridden per page)
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/calendar';
 
 let tokenClient, accessToken = null;
@@ -51,9 +54,10 @@ function encodeRange(range) {
   const parts = range.split('!');
   return encodeURIComponent(parts[0]) + (parts[1] ? '!' + parts[1] : '');
 }
-async function sheetsGet(range) {
+async function sheetsGet(range, spreadsheetId) {
+  spreadsheetId = spreadsheetId || SPREADSHEET_ID;
   const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeRange(range)}?_=${Date.now()}`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeRange(range)}?_=${Date.now()}`,
     { headers: { Authorization: 'Bearer ' + accessToken } }
   );
   if (r.status === 401) {
@@ -66,9 +70,10 @@ async function sheetsGet(range) {
   return r.json();
 }
 
-async function sheetsUpdate(range, values) {
+async function sheetsUpdate(range, values, spreadsheetId) {
+  spreadsheetId = spreadsheetId || SPREADSHEET_ID;
   return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeRange(range)}?valueInputOption=RAW`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeRange(range)}?valueInputOption=RAW`,
     {
       method: 'PUT',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
@@ -77,9 +82,10 @@ async function sheetsUpdate(range, values) {
   );
 }
 
-async function sheetsAppend(range, values) {
+async function sheetsAppend(range, values, spreadsheetId) {
+  spreadsheetId = spreadsheetId || SPREADSHEET_ID;
   return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeRange(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeRange(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
     {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
@@ -88,11 +94,12 @@ async function sheetsAppend(range, values) {
   );
 }
 
-async function sheetsClear(range) {
+async function sheetsClear(range, spreadsheetId) {
+  spreadsheetId = spreadsheetId || SPREADSHEET_ID;
   const parts = range.split('!');
   const encoded = encodeURIComponent(parts[0]) + (parts[1] ? '!' + parts[1] : '');
   return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encoded}:clear`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encoded}:clear`,
     {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + accessToken }

@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412235522";
+  var V="20260413004505";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -382,7 +383,7 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   <span class="ft">Fulldome.pro &copy; 2026</span>
 </footer>
 
-<script src="auth.js?v=20260412235522"></script>
+<script src="auth.js?v=20260413004505"></script>
 <script>
 var params = new URLSearchParams(window.location.search);
 var projectId = params.get('project') || '';
@@ -393,7 +394,7 @@ var briefSheetName = 'Brief — ' + projectName;
 async function loadBriefFromSheet(){
   try {
     await ensureSheet(briefSheetName);
-    var data = await sheetsGet(briefSheetName+'!A:C');
+    var data = await sheetsGet(briefSheetName+'!A:C', SID);
     var rows = data.values || [];
     rows.slice(1).forEach(function(r){
       if(!r[0]) return;
@@ -406,10 +407,10 @@ async function loadBriefFromSheet(){
 async function saveBriefToSheet(rows){
   await ensureSheet(briefSheetName);
   // Only clear rows 1-39 to preserve notes at row 40+
-  await sheetsClear(briefSheetName+'!A1:C39');
+  await sheetsClear(briefSheetName+'!A1:C39', SID);
   var vals = [['Field','Value','Comment']];
   rows.forEach(function(r){ vals.push([r.field, r.value||'', r.comment||'']); });
-  await sheetsUpdate(briefSheetName+'!A1:C'+vals.length, vals);
+  await sheetsUpdate(briefSheetName+'!A1:C'+vals.length, vals, SID);
 }
 var projectType = params.get('type') || 'rental';
 
@@ -429,6 +430,7 @@ document.getElementById('serverBtn').onclick = function(){
 };
 
 
+var SID = RENTAL_SHEET_ID;
 requireAuth(function(){
   loadBrief();
   loadProjectTG();
@@ -460,7 +462,7 @@ async function confirmClearAll(){
 async function loadNotes(){
   try {
     await ensureSheet(briefSheetName);
-    var data = await sheetsGet(briefSheetName+'!A:B');
+    var data = await sheetsGet(briefSheetName+'!A:B', SID);
     var rows = data.values || [];
     // Notes are always at row 41+ (row 40 is header)
     var noteRow = 40; // 1-indexed, so array index is 39
@@ -478,7 +480,7 @@ async function saveNotes(){
   btn.textContent = 'Saving...';
   try {
     await ensureSheet(briefSheetName);
-    var data = await sheetsGet(briefSheetName+'!A:B');
+    var data = await sheetsGet(briefSheetName+'!A:B', SID);
     var rows = data.values || [];
     // Find or create === NOTES === section
     var notesStart = -1;
@@ -489,7 +491,7 @@ async function saveNotes(){
     var noteRow = 40;
     var headerVals = [['=== NOTES ===', '']];
     var noteVals = notes.map(function(n,i){ return ['Note '+(i+1), n]; });
-    await sheetsUpdate(briefSheetName+'!A'+noteRow+':B'+noteRow, headerVals);
+    await sheetsUpdate(briefSheetName+'!A'+noteRow+':B'+noteRow, headerVals, SID);
     await sheetsUpdate(briefSheetName+'!A'+(noteRow+1)+':B'+(noteRow+notes.length), noteVals);
     btn.textContent = 'Saved ✓';
     setTimeout(function(){ btn.textContent=''; }, 2000);
@@ -501,7 +503,7 @@ document.getElementById('notesBtn').onclick = saveNotes;
 
 async function getSalesProjects(){
   await ensureSheet('SalesProjects');
-  var data=await sheetsGet('SalesProjects!A:I');
+  var data=await sheetsGet('SalesProjects!A:I', SID);
   var rows=data.values||[];
   if(rows.length&&rows[0][0]==='ID') rows=rows.slice(1);
   return rows.filter(function(r){return r[0]&&r[1];}).map(function(r){return{
@@ -544,7 +546,7 @@ async function loadShippingDate(){
     }
     if(!accessToken){ console.warn('No accessToken for shipping'); return; }
     await ensureSheet('Shipping');
-    var data = await sheetsGet('Shipping!A:C');
+    var data = await sheetsGet('Shipping!A:C', SID);
     var rows = data.values || [];
     var row = rows.find(function(r){ return r[0] === String(projectId); });
     if(row && row[1]){

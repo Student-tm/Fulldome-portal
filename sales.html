@@ -4,10 +4,11 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260413000456";
+  var V="20260413004505";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
 
 
 
@@ -239,10 +240,11 @@ footer{padding:16px 32px;border-top:1px solid #1a1a1a;display:flex;align-items:c
   </div>
 </footer>
 
-<script src="auth.js?v=20260413000456"></script>
+<script src="auth.js?v=20260413004505"></script>
 <script>
 var projects=[], deleteTarget=null, editId=null;
 
+var SID = SALES_SHEET_ID;
 requireAuth(function(){ loadShipping().then(function(){ loadProjects(); }); });
 
 function loadProjects(){
@@ -352,7 +354,7 @@ var shippingData = {}; // { projectId: { date, eventId } }
 async function loadShipping(){
   try {
     await ensureSheet('Shipping');
-    var data = await sheetsGet('Shipping!A:C');
+    var data = await sheetsGet('Shipping!A:C', SID);
     var rows = data.values || [];
     rows.slice(1).forEach(function(r){
       if(r[0]) shippingData[r[0]] = { date: r[1]||'', eventId: r[2]||'' };
@@ -362,13 +364,13 @@ async function loadShipping(){
 
 async function saveShippingToSheet(pid, date, eventId){
   await ensureSheet('Shipping');
-  var data = await sheetsGet('Shipping!A:A');
+  var data = await sheetsGet('Shipping!A:A', SID);
   var rows = data.values || [];
   var rowIdx = -1;
   for(var i=0;i<rows.length;i++){ if(rows[i][0]===String(pid)){rowIdx=i+1;break;} }
   var vals = [[pid, date, eventId]];
-  if(rowIdx>0) await sheetsUpdate('Shipping!A'+rowIdx+':C'+rowIdx, vals);
-  else await sheetsAppend('Shipping!A:C', vals);
+  if(rowIdx>0) await sheetsUpdate('Shipping!A'+rowIdx+':C'+rowIdx, vals, SID);
+  else await sheetsAppend('Shipping!A:C', vals, SID);
 }
 
 async function createCalendarEvent(projectName, date){

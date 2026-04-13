@@ -4,10 +4,13 @@
 <script>
 /* AUTO CACHE BUSTER */
 (function(){
-  var V="20260412232603";
+  var V="20260413004505";
   if(localStorage.getItem("_fv")!==V){localStorage.setItem("_fv",V);if(performance.navigation.type!==1)location.reload(true);}
 })();
 </script>
+
+
+
 
 
 
@@ -23,6 +26,13 @@
 <title>Fulldome Equipment</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
+
+.eq-sidebar{width:220px;flex-shrink:0;background:#1f2128;border-right:1px solid #2e3039;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.sidebar-label{font-size:9px;font-weight:700;color:#4a4f5c;text-transform:uppercase;letter-spacing:0.12em;}
+.tg-sb-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#17171a;border:1px solid #2e3039;border-radius:3px;color:#eaeaea;text-decoration:none;font-size:11px;font-family:Consolas,monospace;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;transition:border-color 0.15s;}
+.tg-sb-btn:hover{border-color:#CC0000;color:#CC0000;}
+.eq-content{flex:1;padding:20px 24px;overflow-y:auto;background:#17171a;}
+
 body{font-family:Consolas,"Courier New",monospace;font-size:13px;background:#111;color:#fff;min-height:100vh;}
 .hdr{background:#111;padding:10px 20px;display:flex;align-items:center;gap:14px;border-bottom:3px solid #CC0000;}
 .pname{background:transparent;border:none;border-bottom:1px solid #333;color:#fff;font-family:Consolas,monospace;font-size:14px;font-weight:700;outline:none;padding:3px 0;flex:1;}
@@ -34,7 +44,7 @@ body{font-family:Consolas,"Courier New",monospace;font-size:13px;background:#111
 .tg-btn:hover{border-color:#4a90d9;}
 .tg-btn-icon{font-size:12px;color:#4a90d9;}
 .tg-btn-label{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;}
-.main{padding:16px 20px;max-width:1400px;margin:0 auto;}
+.main{display:flex;flex-direction:row;flex:1;min-height:calc(100vh - 75px);}
 .sbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
 .metric{background:#1a1a1a;border-radius:3px;padding:5px 14px;min-width:110px;border:1px solid #2a2a2a;border-left:3px solid #CC0000;}
 .ml{font-size:8px;color:#666;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;}
@@ -107,7 +117,7 @@ tr:hover td{background:#fafafa;}
   .hdr { border-bottom: 3px solid #CC0000; }
 }
 </style>
-<script src="auth.js?v=20260412232603"></script></head>
+<script src="auth.js?v=20260413004505"></script></head>
 <body>
 <div class="hdr">
   <span id="backBtn" style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;white-space:nowrap;padding-right:14px;border-right:1px solid #222;margin-right:4px">&#8592; Projects</span>
@@ -115,38 +125,47 @@ tr:hover td{background:#fafafa;}
   <span id="lstatus" style="font-size:10px;color:#555;font-family:Consolas,monospace;text-transform:uppercase;white-space:nowrap;display:none">Loading...</span>
   <button class="hbtn hbtn-red" id="exportBtn">Export CSV</button>
   <button class="hbtn" id="printBtn" style="border-color:#444;color:#ccc">Print PDF</button>
-  <a class="tg-btn" id="tg1Btn" style="display:none" target="_blank"><span class="tg-btn-icon">✈</span><span class="tg-btn-label">US Projects</span></a>
-  <a class="tg-btn" id="tg2Btn" style="display:none" target="_blank"><span class="tg-btn-icon">✈</span><span class="tg-btn-label">Production</span></a>
   <img src="logo.png" style="height:43px;margin-left:auto" alt="Fulldome.pro"/>
 </div>
 <div class="main">
-  <div class="sbar">
-    <div class="metric"><div class="ml">Dome</div><div class="mv" id="sDome" style="font-size:13px">-</div></div>
-    <div class="metric"><div class="ml">Items</div><div class="mv" id="sItems">0</div></div>
-    <div class="metric" style="border-left-color:#1D9E75"><div class="ml" style="color:#1D9E75">Ready</div><div class="mv" id="sReady" style="color:#1D9E75">0</div></div>
-    <div class="metric" style="border-left-color:#D85A30"><div class="ml" style="color:#D85A30">Needed</div><div class="mv" id="sNeeded" style="color:#D85A30">0</div></div>
-  </div>
-  <div class="grp">
-    <div class="ghdr gh-dome">
-      <span class="gtitle">Dome</span>
-      <button class="bsm" style="border-color:#333;color:#888" id="resetBtn">Reset</button>
-      <button class="bsm bsm-red" id="selDomeBtn">Select dome...</button>
-    </div>
-    <div id="domeContent"><div style="padding:20px;text-align:center;color:#aaa;font-size:11px;text-transform:uppercase">No dome selected</div></div>
-  </div>
-  <div style="position:relative;display:inline-block;margin-bottom:12px">
-    <button class="hbtn" id="addBtn" style="color:#aaa;border-color:#333;background:transparent;font-size:11px">+ Add Group</button>
-    <div class="menudrop" id="addMenu">
-      <div class="mitem" id="mn-server"><div class="dot8" style="background:#4a90d9"></div>Server Rack</div>
-      <div class="mitem" id="mn-proj"><div class="dot8" style="background:#CC0000"></div>Projectors</div>
-      <div class="mitem" id="mn-speaker"><div class="dot8" style="background:#cc6600"></div>Speakers</div>
-      <div class="mitem" id="mn-cables"><div class="dot8" style="background:#6600cc"></div>Cables</div>
-      <div class="mitem" id="mn-tools"><div class="dot8" style="background:#998800"></div>Tools</div>
-      <div style="border-top:1px solid #e8e8e8;margin:3px 0"></div>
-      <div class="mitem" id="mn-custom" style="color:#888"><div class="dot8" style="background:#aaa"></div>Custom</div>
+  <!-- LEFT SIDEBAR: TG buttons + Add Group -->
+  <div class="eq-sidebar">
+    <div class="sidebar-label">Quick Actions</div>
+    <a class="tg-sb-btn" id="tg1Btn-sb" style="display:none" target="_blank"><span class="tg-btn-icon">✈</span><span class="tg-btn-label">US Projects</span></a>
+    <a class="tg-sb-btn" id="tg2Btn-sb" style="display:none" target="_blank"><span class="tg-btn-icon">✈</span><span class="tg-btn-label">Production</span></a>
+    <div style="border-top:1px solid #2e3039;margin:8px 0;"></div>
+    <div class="sidebar-label">Add Group</div>
+    <div style="position:relative;">
+      <button class="hbtn" id="addBtn" style="color:#aaa;border-color:#333;background:transparent;font-size:11px;width:100%;">+ Add Group</button>
+      <div class="menudrop" id="addMenu">
+        <div class="mitem" id="mn-server"><div class="dot8" style="background:#4a90d9"></div>Server Rack</div>
+        <div class="mitem" id="mn-proj"><div class="dot8" style="background:#CC0000"></div>Projectors</div>
+        <div class="mitem" id="mn-speaker"><div class="dot8" style="background:#cc6600"></div>Speakers</div>
+        <div class="mitem" id="mn-cables"><div class="dot8" style="background:#6600cc"></div>Cables</div>
+        <div class="mitem" id="mn-tools"><div class="dot8" style="background:#998800"></div>Tools</div>
+        <div style="border-top:1px solid #e8e8e8;margin:3px 0"></div>
+        <div class="mitem" id="mn-custom" style="color:#888"><div class="dot8" style="background:#aaa"></div>Custom</div>
+      </div>
     </div>
   </div>
-  <div id="grps"></div>
+  <!-- RIGHT CONTENT: metrics + dome + groups -->
+  <div class="eq-content">
+    <div class="sbar">
+      <div class="metric"><div class="ml">Dome</div><div class="mv" id="sDome" style="font-size:13px">-</div></div>
+      <div class="metric"><div class="ml">Items</div><div class="mv" id="sItems">0</div></div>
+      <div class="metric" style="border-left-color:#1D9E75"><div class="ml" style="color:#1D9E75">Ready</div><div class="mv" id="sReady" style="color:#1D9E75">0</div></div>
+      <div class="metric" style="border-left-color:#D85A30"><div class="ml" style="color:#D85A30">Needed</div><div class="mv" id="sNeeded" style="color:#D85A30">0</div></div>
+    </div>
+    <div class="grp">
+      <div class="ghdr gh-dome">
+        <span class="gtitle">Dome</span>
+        <button class="bsm" style="border-color:#333;color:#888" id="resetBtn">Reset</button>
+        <button class="bsm bsm-red" id="selDomeBtn">Select dome...</button>
+      </div>
+      <div id="domeContent"><div style="padding:20px;text-align:center;color:#aaa;font-size:11px;text-transform:uppercase">No dome selected</div></div>
+    </div>
+    <div id="grps"></div>
+  </div>
 </div>
 <div id="confirmModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:200;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:3px;border-top:3px solid #CC0000;padding:24px;width:340px;box-shadow:0 8px 40px rgba(0,0,0,0.3);">
@@ -249,6 +268,8 @@ document.addEventListener('click',function(){document.getElementById('addMenu').
 document.getElementById('domeModal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
 document.getElementById('itemModal').onclick=function(e){if(e.target===this){this.classList.remove('open');pickerT=null;}};
 // Auto load on start
+var _type = new URLSearchParams(window.location.search).get('type') || 'rental';
+var SID = _type === 'sales' ? SALES_SHEET_ID : RENTAL_SHEET_ID;
 requireAuth(function(){
   autoLoad();
   loadProjectTG();
@@ -262,11 +283,11 @@ function loadProjectTG(){
     var p = projects.find(function(x){ return x.id === pid; });
     if(!p) return;
     if(p.tg1){
-      var b = document.getElementById('tg1Btn');
+      var b = document.getElementById('tg1Btn-sb');
       b.href = p.tg1; b.style.display = 'flex';
     }
     if(p.tg2){
-      var b = document.getElementById('tg2Btn');
+      var b = document.getElementById('tg2Btn-sb');
       b.href = p.tg2; b.style.display = 'flex';
     }
   });
