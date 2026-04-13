@@ -170,24 +170,26 @@ async function deleteSalesProject(id) {
   });
 }
 
-async function saveProject(p) {
-  const data = await sheetsGet('RentalProjects!A:A');
+async function saveProject(p, sid) {
+  sid = sid || SPREADSHEET_ID;
+  const data = await sheetsGet('RentalProjects!A:A', sid);
   const rows = data.values || [];
   let rowIdx = -1;
-  for (let i = 1; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     if (rows[i][0] === String(p.id)) { rowIdx = i + 1; break; }
   }
   const vals = [[p.id, p.name, p.address||'', p.start||'', p.tg1||'', p.tg2||'', p.created, p.status||'active']];
   if (rowIdx > 0) {
-    await sheetsUpdate(`RentalProjects!A${rowIdx}:H${rowIdx}`, vals);
+    await sheetsUpdate(`RentalProjects!A${rowIdx}:H${rowIdx}`, vals, sid);
   } else {
-    await sheetsAppend('RentalProjects!A:H', vals);
+    await sheetsAppend('RentalProjects!A:H', vals, sid);
   }
 }
 
-async function getSheetId(sheetName) {
+async function getSheetId(sheetName, sid) {
+  sid = sid || SPREADSHEET_ID;
   const r = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets.properties`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${sid}?fields=sheets.properties`,
     { headers: { Authorization: 'Bearer ' + accessToken } }
   );
   const data = await r.json();
@@ -199,11 +201,11 @@ async function deleteProject(id) {
   const data = await sheetsGet('RentalProjects!A:A');
   const rows = data.values || [];
   let rowIdx = -1;
-  for (let i = 1; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     if (rows[i][0] === String(id)) { rowIdx = i; break; }
   }
   if (rowIdx === -1) return;
-  const sheetId = await getSheetId('RentalProjects');
+  const sheetId = await getSheetId('RentalProjects', sid);
   await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`,
     {
